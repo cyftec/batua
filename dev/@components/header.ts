@@ -6,7 +6,7 @@ export const Header = () =>
     children: [
       m.H1({
         class: "ma0",
-        children: m.Text("Expenses"),
+        children: m.Text("Expenses list"),
       }),
     ],
   });
