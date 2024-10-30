@@ -1,12 +1,17 @@
-import { m } from "@maya/core";
+import { Component, m } from "@maya/core";
 
-export const Header = () =>
+type HeaderProps = {
+  title: string;
+};
+
+export const Header = Component<HeaderProps>(({ title }) =>
   m.Div({
-    class: "pv4 ph3",
+    class: "sticky left-0 top-0 right-0 pa3 bg-white",
     children: [
       m.H1({
         class: "ma0",
-        children: m.Text("Expenses list"),
+        children: m.Text(title),
       }),
     ],
-  });
+  })
+);

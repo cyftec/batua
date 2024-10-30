@@ -9,45 +9,40 @@ type TabData = {
 type NavbarProps = {
   tabs: TabData[];
   selectedTabIndex: number;
-  onTabSelect: (tabIndex: number) => void;
 };
 
-export const Navbar = Component<NavbarProps>(
-  ({ tabs, selectedTabIndex, onTabSelect }) =>
-    m.Div({
-      class: "left-0 right-0 bottom-0 bg-light-gray ph3",
-      style: "position: sticky;",
-      children: [
-        m.Div({
-          class: "flex items-center pb3",
-          children: m.For({
-            items: tabs,
-            map: (tab, i) =>
-              m.Div({
-                class: drstr`ph3 pt4 mr2 ${() =>
-                  selectedTabIndex.value === i
-                    ? "bg-white pb3 mb1 black"
-                    : "pb3 gray"}`,
-                onclick: () => onTabSelect(i),
-                children: m.Div({
-                  class: "flex items-center",
-                  children: [
-                    m.Span({
-                      class: "material-symbols-rounded",
-                      style: "font-size: 18px",
-                      children: m.Text(tab.icon),
-                    }),
-                    m.A({
-                      class: drstr`pl2 no-underline ${() =>
-                        selectedTabIndex.value === i ? "black" : "gray"}`,
-                      href: tab.href,
-                      children: m.Text(tab.label),
-                    }),
-                  ],
-                }),
+export const Navbar = Component<NavbarProps>(({ tabs, selectedTabIndex }) =>
+  m.Div({
+    class: "sticky left-0 right-0 bottom-0 bg-light-gray ph3",
+    children: [
+      m.Div({
+        class: "flex items-center pb2",
+        children: m.For({
+          items: tabs,
+          map: (tab, i) =>
+            m.A({
+              href: tab.href,
+              class: drstr`no-underline f7 ph3 pt2 mr3 pointer ${() =>
+                selectedTabIndex.value === i
+                  ? "bg-white pb2 mb1 black"
+                  : "pb2 gray"}`,
+              children: m.Div({
+                class: "flex flex-column items-center",
+                children: [
+                  m.Span({
+                    class: "material-symbols-rounded",
+                    style: "font-size: 28px",
+                    children: m.Text(tab.icon),
+                  }),
+                  m.Div({
+                    class: "f7 pt1",
+                    children: m.Text(tab.label),
+                  }),
+                ],
               }),
-          }),
+            }),
         }),
-      ],
-    })
+      }),
+    ],
+  })
 );
