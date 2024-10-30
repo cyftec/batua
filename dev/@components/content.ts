@@ -7,6 +7,7 @@ type ContentProps = {
 
 export const Content = ({ children, classNames }: ContentProps) =>
   m.Div({
-    class: drstr`pa3 ${classNames}`,
+    class: drstr`confined pv3 ${classNames}`,
+    style: "min-height: 40rem;",
     children,
   });

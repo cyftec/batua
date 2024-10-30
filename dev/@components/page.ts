@@ -1,26 +1,19 @@
-import {
-  Component,
-  defaultMetaTags,
-  m,
-  MaybeArray,
-  Node,
-  valueIsArray,
-} from "@maya/core";
+import { defaultMetaTags, m, MaybeArray, Node, valueIsArray } from "@maya/core";
 import { Content, Header, Navbar } from ".";
 
 type PageProps = {
   title: string;
   headerTitle: string;
-  scriptPageName?: string;
-  tabIndex: number;
+  scriptSrcPrefix?: string;
+  selectedTabIndex?: number;
   content: MaybeArray<Node>;
 };
 
 export const Page = ({
   title,
   headerTitle,
-  scriptPageName,
-  tabIndex,
+  scriptSrcPrefix,
+  selectedTabIndex = -1,
   content,
 }: PageProps) => {
   const childrenContent = valueIsArray(content) ? content : [content];
@@ -39,13 +32,14 @@ export const Page = ({
             rel: "stylesheet",
             href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0",
           }),
-          m.Link({ rel: "stylesheet", href: "assets/styles.css" }),
+          m.Link({ rel: "stylesheet", href: "/assets/styles.css" }),
         ],
       }),
       m.Body({
+        class: "mid-gray",
         children: [
           m.Script({
-            src: (scriptPageName ? `${scriptPageName}.` : "") + "main.js",
+            src: (scriptSrcPrefix ? `${scriptSrcPrefix}` : "") + "main.js",
             defer: "true",
           }),
           m.Div({
@@ -55,34 +49,45 @@ export const Page = ({
                 children: childrenContent,
               }),
               Navbar({
-                tabs: [
+                selectedLinkIndex: selectedTabIndex,
+                links: [
                   {
+                    index: 0,
                     icon: "sort",
                     label: "Expenses",
-                    href: "/",
+                    href: "/expenses",
                   },
                   {
+                    index: 1,
                     icon: "insert_chart",
                     label: "Charts & trends",
                     href: "/charts.html",
                   },
                   {
+                    index: 2,
                     icon: "savings",
                     label: "Budget & earnings",
                     href: "/budget.html",
                   },
                   {
+                    index: 3,
                     icon: "sell",
                     label: "Tags & categories",
                     href: "/tags.html",
                   },
                   {
+                    index: 4,
                     icon: "payments",
                     label: "Payment methods",
                     href: "/payment-methods.html",
                   },
                 ],
-                selectedTabIndex: tabIndex,
+                rightLink: {
+                  index: 5,
+                  icon: "settings",
+                  label: "Settings",
+                  href: "/settings.html",
+                },
               }),
             ],
           }),

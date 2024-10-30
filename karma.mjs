@@ -1,7 +1,7 @@
 export const APP_NAME = "my-first-maya-app";
 export const APP_SRC_DIRNAME = "dev";
 export const STAGING_DIRNAME = "stage";
-export const PUBLISH_DIRNAME = "prod";
+export const PUBLISH_DIRNAME = "docs";
 const TS_GLOBALS_FILENAME = "global.d.ts";
 const LIVE_SERVER_PORT = 5555;
 

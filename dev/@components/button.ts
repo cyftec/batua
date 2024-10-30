@@ -3,20 +3,16 @@ import { derived, Component, m } from "@maya/core";
 type ButtonProps = {
   label: string;
   onTap: () => void;
-  classNames?: string;
-  color?: string;
+  className?: string;
 };
 
-export const Button = Component<ButtonProps>(
-  ({ classNames, onTap, label, color }) =>
-    m.Button({
-      class: derived(
-        () =>
-          `pa2 b br3 ba bw1 b--gray pointer ${
-            color?.value || "bg-green  white"
-          } ${classNames?.value || ""}`
-      ),
-      onclick: onTap,
-      children: m.Text(label.value),
-    })
+export const Button = Component<ButtonProps>(({ className, onTap, label }) =>
+  m.Button({
+    class: derived(
+      () =>
+        `pv2 ph3 br-pill ba bw1 b--light-silver b--hover-black pointer bg-white black ${className}`
+    ),
+    onclick: onTap,
+    children: m.Text(label.value),
+  })
 );
