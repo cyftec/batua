@@ -1,5 +1,5 @@
 import { m } from "@maya/core";
-import { Page } from "./@components";
+import { Page } from "./@libs/ui-kit";
 
 export default () =>
   Page({

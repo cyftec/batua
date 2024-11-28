@@ -1,14 +1,15 @@
 import { Component, derived, drstr, m } from "@maya/core";
-import { Button } from "../../@components";
+import { Button } from "../../@libs/ui-kit";
 
 type SummaryProps = {
   className?: string;
   title: string;
   amount: string;
+  onAddExpense: () => void;
 };
 
 export const Summary = Component<SummaryProps>(
-  ({ className, title, amount }) => {
+  ({ className, title, amount, onAddExpense }) => {
     return m.Div({
       class: drstr`flex flex-column items-center ${className}`,
       style: "height: 38rem; min-width: 20rem;",
@@ -22,9 +23,7 @@ export const Summary = Component<SummaryProps>(
         Button({
           className: "ph3",
           label: "Add new expense",
-          onTap: function (): void {
-            throw new Error("Function not implemented.");
-          },
+          onTap: onAddExpense,
         }),
       ],
     });
