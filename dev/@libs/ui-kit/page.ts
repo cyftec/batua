@@ -54,8 +54,8 @@ export const Page = ({
                   {
                     index: 0,
                     icon: "sort",
-                    label: "Expenses",
-                    href: "/expenses",
+                    label: "Transactions",
+                    href: "/transactions",
                   },
                   {
                     index: 1,

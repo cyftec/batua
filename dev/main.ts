@@ -9,7 +9,7 @@ export default () =>
       children: [
         m.H3({ children: m.Text("home page stuff") }),
         m.Span({
-          children: m.Text(`Go to expenses`),
+          children: m.Text(`Go to transactions`),
         }),
       ],
     }),

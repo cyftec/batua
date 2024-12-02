@@ -4,7 +4,7 @@ import { Page } from "./@libs/ui-kit";
 export default () =>
   Page({
     title: "Batua | Tags & Categories",
-    headerTitle: "Categorise your expenses using tags",
+    headerTitle: "Categorise your transactions using tags",
     scriptSrcPrefix: "tags.",
     selectedTabIndex: 3,
     content: m.Span({

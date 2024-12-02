@@ -1,25 +1,25 @@
 import { m, signal } from "@maya/core";
 import { Page } from "../@libs/ui-kit";
-import { ExpenseEditor, Summary, Tile } from "./@components";
+import { TransactionEditor, Summary, TransactionTile } from "./@components";
 
 export default () => {
-  const isExpenseEditorOpen = signal(false);
-  const toggleExpenseEditorDIalog = () =>
-    (isExpenseEditorOpen.value = !isExpenseEditorOpen.value);
+  const isTransactionEditorOpen = signal(false);
+  const toggleTransactionEditorDIalog = () =>
+    (isTransactionEditorOpen.value = !isTransactionEditorOpen.value);
 
   return Page({
     title: "Batua - Money Tracker App",
-    headerTitle: "Expenses List",
+    headerTitle: "Transactions List",
     selectedTabIndex: 0,
     content: m.Div({
       class: "flex items-between justify-between",
       children: [
-        ExpenseEditor({
-          isOpen: isExpenseEditorOpen,
-          onCancel: () => (isExpenseEditorOpen.value = false),
-          onSave: (expense) => {
-            console.log(expense);
-            isExpenseEditorOpen.value = false;
+        TransactionEditor({
+          isOpen: isTransactionEditorOpen,
+          onCancel: () => (isTransactionEditorOpen.value = false),
+          onSave: (transaction) => {
+            console.log(transaction);
+            isTransactionEditorOpen.value = false;
           },
         }),
         m.Div({
@@ -43,14 +43,14 @@ export default () => {
                 paymentMethod: "Bhim UPI",
               })
             ),
-            map: (expense) =>
-              Tile({
+            map: (transaction) =>
+              TransactionTile({
                 className: "mb4 pb4",
-                amount: expense.amount,
-                title: expense.title,
-                date: expense.date,
-                tags: expense.tags,
-                paymentMethod: expense.paymentMethod,
+                amount: transaction.amount,
+                title: transaction.title,
+                date: transaction.date,
+                tags: transaction.tags,
+                paymentMethod: transaction.paymentMethod,
               }),
           }),
         }),
@@ -58,7 +58,7 @@ export default () => {
           className: "sticky top-3 right-0 bottom-0 bg-washed-yellow",
           title: "October 2024",
           amount: "48,513.56",
-          onAddExpense: toggleExpenseEditorDIalog,
+          onAddTransaction: toggleTransactionEditorDIalog,
         }),
       ],
     }),

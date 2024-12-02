@@ -1,6 +1,6 @@
 import { Component, derived, drstr, m } from "@maya/core";
 
-type TileProps = {
+type TransactionTileProps = {
   className?: string;
   amount: string;
   title: string;
@@ -9,7 +9,7 @@ type TileProps = {
   paymentMethod: string;
 };
 
-export const Tile = Component<TileProps>(
+export const TransactionTile = Component<TransactionTileProps>(
   ({ className, amount, title, date, tags, paymentMethod }) => {
     return m.Div({
       class: drstr`flex items-start ${className}`,
@@ -61,7 +61,6 @@ export const Tile = Component<TileProps>(
                     weekday: "short",
                     day: "numeric",
                     month: "short",
-                    // year: "2-digit",
                   })
                 )
               ),

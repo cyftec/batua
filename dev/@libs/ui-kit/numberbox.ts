@@ -11,7 +11,6 @@ export const NumberBox = Component<NumberBoxProps>(
   ({ classNames, placeholder, num, onchange }) => {
     const onTextChange = (e: KeyboardEvent) => {
       const text = (e.target as HTMLInputElement).value;
-      console.log(text);
       onchange(Number.parseFloat(Number.parseFloat(text || "0").toFixed(2)));
     };
 

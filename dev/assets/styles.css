@@ -67,7 +67,9 @@ body {
     font-weight: bold;
 }
 
-*/
+.w-inherit {width: inherit;}
+.w100px { width: 100px; }
+.mw65 { max-width: 40rem;}
 /* Min Width Percentages */
 .mnw-100 { min-width: 100%; }
 /* Min Width Scale */
@@ -82,4 +84,13 @@ body {
 .mnw9 { min-width: 96rem; }
 /* Min Width String Properties */
 .mnw-none { min-width: none; }
-/*
+/**/
+
+.bg-gray-80 {
+    background-color: rgba(128, 128, 128, 0.8);
+}
+
+.bg-gray-70 {
+    background-color: rgba(128, 128, 128, 0.7);
+}
+

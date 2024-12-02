@@ -1,5 +1,4 @@
-import { Component, DomEventValue, drstr, m, Signal, signal } from "@maya/core";
-import { InputBox } from "./inputbox";
+import { Component, DomEventValue, drstr, m } from "@maya/core";
 
 type TextBoxProps = {
   classNames?: string;
@@ -10,17 +9,16 @@ type TextBoxProps = {
 
 export const TextBox = Component<TextBoxProps>(
   ({ classNames, placeholder, text, onchange }) => {
-    const onTextChange = (text: string) => {
-      console.log(text);
-      onchange(text);
+    const onTextChange = (e: KeyboardEvent) => {
+      onchange((e.target as HTMLInputElement).value);
     };
 
-    return InputBox({
-      classNames,
+    return m.Input({
+      class: drstr`${classNames}`,
       type: "text",
       placeholder,
       value: text,
-      onchange: onTextChange,
+      onchange: onTextChange as DomEventValue,
     });
   }
 );

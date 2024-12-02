@@ -10,12 +10,12 @@ type ModalProps = {
 export const Modal = Component<ModalProps>(
   ({ classNames, isOpen, content, onTapOutside }) => {
     return m.Div({
-      class: drstr`bg-black-70 z-9999 absolute absolute--fill ${() =>
+      class: drstr`bg-gray-70 z-9999 absolute absolute--fill ${() =>
         isOpen?.value ? "db" : "dn"}`,
       onclick: onTapOutside,
       children: [
         m.Div({
-          class: drstr`bg-white pa3 ba br3 ${classNames}`,
+          class: drstr`bg-white pa3 ba br3 b--transparent ${classNames}`,
           style: `
             margin: 0;
             position: absolute;

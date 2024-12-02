@@ -1,4 +1,5 @@
 import { Component, drstr, m } from "@maya/core";
+import { Icon } from "./icon";
 
 type LinkData = {
   index: number;
@@ -30,10 +31,9 @@ const NavbarLink = Component<NavbarLink>(
       children: m.Div({
         class: "flex flex-column items-center",
         children: [
-          m.Span({
-            class: "material-symbols-rounded",
+          Icon({
             style: "font-size: 28px",
-            children: m.Text(icon.value),
+            iconName: icon,
           }),
           m.Div({
             class: "f7 pt1",
@@ -46,7 +46,6 @@ const NavbarLink = Component<NavbarLink>(
 
 export const Navbar = Component<NavbarProps>(
   ({ rightLink, links, selectedLinkIndex }) => {
-    console.log(selectedLinkIndex.value);
     return m.Div({
       class: "sticky left-0 right-0 bottom-0 bg-light-gray",
       children: [

@@ -1,4 +1,9 @@
 import { Component, derived, drstr, m } from "@maya/core";
+import {
+  getDateInputLocaleValue,
+  getDiffDaysFromToday,
+  WEEKDAYS,
+} from "../common";
 
 type DateTimePickerProps = {
   classNames?: string;
@@ -8,34 +13,13 @@ type DateTimePickerProps = {
 
 export const DateTimePicker = Component<DateTimePickerProps>(
   ({ classNames, dateTime, onchange }) => {
-    const dayOfWeek = derived(() => dateTime.value.toUTCString().split(",")[0]);
-    const date = derived(() => dateTime.value.toISOString().split("T")[0]);
-    const time = derived(() => dateTime.value.toLocaleTimeString());
-    const daysDiff = derived(() => {
-      const now = new Date();
-      const diffTime = now.getTime() - dateTime.value.getTime();
-      const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      console.log(diffDays);
-
-      if (diffDays >= 0 && diffDays < 1)
-        return { isFuture: false, label: "Today" };
-      else if (diffDays >= 1 && diffDays < 2)
-        return { isFuture: false, label: "Yesterday" };
-      else if (diffDays >= 2 && diffDays < 3)
-        return { isFuture: false, label: "Day before y'day" };
-      else if (diffDays < 0)
-        return { isFuture: true, label: "ERROR: Future date" };
-      else
-        return { isFuture: false, label: `${Math.floor(diffDays)} days back` };
-    });
-
-    const onDateChange = (e) => {
-      onchange(new Date(e.target.valueAsNumber));
-    };
-
-    const onTimeChange = (e) => {
-      console.log(e);
-    };
+    const dayOfWeek = derived(() =>
+      WEEKDAYS[dateTime.value.getDay()].substring(0, 3)
+    );
+    const dateTimeInputValue = derived(() =>
+      getDateInputLocaleValue(dateTime.value)
+    );
+    const daysDiff = derived(() => getDiffDaysFromToday(dateTime.value));
 
     return m.Div({
       class: drstr`dark-gray flex items-center justify-between ${classNames}`,
@@ -49,16 +33,10 @@ export const DateTimePicker = Component<DateTimePickerProps>(
             m.Span({ class: "pr3 mr3 br b--light-gray bw1" }),
             m.Input({
               class: "bn pointer",
-              type: "time",
-              value: time,
-              onchange: onTimeChange,
-            }),
-            m.Span({ class: "pr3 mr3 br b--light-gray bw1" }),
-            m.Input({
-              class: "bn pointer",
-              type: "date",
-              value: date,
-              onchange: onDateChange,
+              type: "datetime-local",
+              value: dateTimeInputValue,
+              onchange: (e) =>
+                onchange(new Date((e.target as HTMLInputElement).value)),
             }),
           ],
         }),

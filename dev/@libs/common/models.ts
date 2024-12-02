@@ -1,18 +1,3 @@
-export type PaymentMethodCode =
-  | "CASH"
-  | "BHIM"
-  | "GPAY"
-  | "PHONEPE"
-  | "DEBIT"
-  | "CREDIT";
-
-export type PaymentMethod = {
-  code: PaymentMethodCode;
-  displayName: string;
-  uniqueId?: string;
-  expiry?: Date;
-};
-
 export type CurrencyCode =
   | "AED"
   | "AFN"
@@ -181,6 +166,21 @@ export type CurrencyCode =
   | "ZMW"
   | "ZWD";
 
+export type PaymentMethodCode =
+  | "CASH"
+  | "BHIM"
+  | "GPAY"
+  | "PHONEPE"
+  | "DEBIT"
+  | "CREDIT";
+
+export type PaymentMethod = {
+  code: PaymentMethodCode;
+  displayName: string;
+  uniqueId?: string;
+  expiry?: Date;
+};
+
 export type CurrencyValue = {
   name: string;
   symbol: string;
@@ -194,11 +194,11 @@ export type Currency = {
 
 export type Payment = {
   amount: number;
-  currency: Currency;
-  method: PaymentMethod;
+  currencyCode: CurrencyCode;
+  paymentMethodCode: PaymentMethodCode;
 };
 
-export type Expense = {
+export type Transaction = {
   modifiedDate: Date;
   date: Date;
   title: string;

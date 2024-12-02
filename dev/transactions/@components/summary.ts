@@ -5,11 +5,11 @@ type SummaryProps = {
   className?: string;
   title: string;
   amount: string;
-  onAddExpense: () => void;
+  onAddTransaction: () => void;
 };
 
 export const Summary = Component<SummaryProps>(
-  ({ className, title, amount, onAddExpense }) => {
+  ({ className, title, amount, onAddTransaction }) => {
     return m.Div({
       class: drstr`flex flex-column items-center ${className}`,
       style: "height: 38rem; min-width: 20rem;",
@@ -22,8 +22,8 @@ export const Summary = Component<SummaryProps>(
         }),
         Button({
           className: "ph3",
-          label: "Add new expense",
-          onTap: onAddExpense,
+          label: "Add new transaction",
+          onTap: onAddTransaction,
         }),
       ],
     });
