@@ -1,4 +1,5 @@
-import { Component, drstr, m, Node } from "@maya/core";
+import { Component, m, Node } from "@maya/core";
+import { drstr } from "@maya/signal";
 
 type ContentProps = {
   classNames?: string;

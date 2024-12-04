@@ -1,4 +1,5 @@
-import { Component, drstr, m } from "@maya/core";
+import { Component, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 import { Icon } from "./icon";
 
 type SectionTitleProps = {

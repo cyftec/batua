@@ -1,6 +1,8 @@
-import { m, signal } from "@maya/core";
+import { m } from "@maya/core";
+import { signal } from "@maya/signal";
 import { Page } from "../@libs/ui-kit";
-import { TransactionEditor, Summary, TransactionTile } from "./@components";
+
+import { Summary, TransactionEditor, TransactionTile } from "./@components";
 
 export default () => {
   const isTransactionEditorOpen = signal(false);

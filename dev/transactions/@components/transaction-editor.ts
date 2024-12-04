@@ -1,5 +1,6 @@
-import { Component, drspread, drstr, m, receive, signal } from "@maya/core";
-import { Transaction, getDiffDaysFromToday, Payment } from "../../@libs/common";
+import { Component, m } from "@maya/core";
+import { drspread, drstr, receive, signal } from "@maya/signal";
+import { getDiffDaysFromToday, Payment, Transaction } from "../../@libs/common";
 import { Button, DateTimePicker, Modal, TextBox } from "../../@libs/ui-kit";
 import { Payments } from "./payments";
 import { TagsSelector } from "./tags-selector";

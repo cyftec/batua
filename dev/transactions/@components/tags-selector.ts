@@ -1,5 +1,6 @@
-import { Component, drstr, m, signal } from "@maya/core";
-import { Icon, Tag, TextBox } from "../../@libs/ui-kit";
+import { Component, m } from "@maya/core";
+import { drstr, signal } from "@maya/signal";
+import { Tag, TextBox } from "../../@libs/ui-kit";
 
 type TagsSelectorProps = {
   classNames?: string;

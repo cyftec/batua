@@ -1,4 +1,5 @@
-import { Component, derived, drstr, m } from "@maya/core";
+import { Component, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 import { Button } from "../../@libs/ui-kit";
 
 type SummaryProps = {

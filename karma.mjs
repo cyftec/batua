@@ -8,7 +8,7 @@ const LIVE_SERVER_PORT = 5555;
 const config = {
   npm: {
     appname: APP_NAME,
-    packages: ["@maya/core::file:/Users/ck/Desktop/code/maya-ui/core"],
+    packages: ["@maya::file:/Users/ck/Desktop/code/maya-ui/core"],
   },
   brahma: {
     srcDir: APP_SRC_DIRNAME,

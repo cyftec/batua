@@ -1,4 +1,5 @@
-import { Component, derived, DomEventValue, m } from "@maya/core";
+import { Component, DomEventValue, m } from "@maya/core";
+import { derived } from "@maya/signal";
 
 type NumberBoxProps = {
   classNames?: string;

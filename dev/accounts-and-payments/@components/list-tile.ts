@@ -1,4 +1,4 @@
-import { Component, drstr, m, Node } from "@maya/core";
+import { Component, m, Node } from "@maya/core";
 import { TileCard } from "./tile-card";
 
 type ListTileProps = {

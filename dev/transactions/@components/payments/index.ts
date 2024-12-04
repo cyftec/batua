@@ -1,4 +1,5 @@
-import { Component, derived, drstr, m } from "@maya/core";
+import { Component, m } from "@maya/core";
+import { derived, drstr } from "@maya/signal";
 import { CURRENCIES, CurrencyCode, Payment } from "../../../@libs/common";
 import { Link } from "../../../@libs/ui-kit";
 import { PaymentTile } from "./payment-tile";

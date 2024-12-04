@@ -1,4 +1,5 @@
-import { Component, DomEventValue, drstr, m } from "@maya/core";
+import { Component, DomEventValue, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 
 type TextBoxProps = {
   classNames?: string;

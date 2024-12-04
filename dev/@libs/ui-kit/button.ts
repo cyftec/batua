@@ -1,4 +1,5 @@
-import { derived, Component, m, drstr } from "@maya/core";
+import { Component, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 
 type ButtonProps = {
   className?: string;

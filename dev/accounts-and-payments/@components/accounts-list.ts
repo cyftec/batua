@@ -1,4 +1,5 @@
-import { Component, drstr, m } from "@maya/core";
+import { Component, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 import { CURRENCIES, MOCK } from "../../@libs/common";
 import { SectionTitle } from "../../@libs/ui-kit";
 import { AddButtonTile } from "./add-button-tile";

@@ -1,4 +1,5 @@
-import { Component, derived, drstr } from "@maya/core";
+import { Component } from "@maya/core";
+import { derived, drstr } from "@maya/signal";
 import { CURRENCIES, CurrencyCode } from "../../@libs/common";
 import { DropDown } from "../../@libs/ui-kit";
 

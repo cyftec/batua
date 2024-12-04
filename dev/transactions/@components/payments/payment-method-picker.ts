@@ -1,5 +1,6 @@
-import { Component, derived, drstr } from "@maya/core";
-import { PaymentMethod, MOCK } from "../../../@libs/common";
+import { Component } from "@maya/core";
+import { derived, drstr } from "@maya/signal";
+import { MOCK, PaymentMethod } from "../../../@libs/common";
 import { DropDown } from "../../../@libs/ui-kit";
 
 type PaymentMethodPickerProps = {

@@ -1,4 +1,5 @@
-import { Children, Component, drstr, m } from "@maya/core";
+import { Children, Component, m } from "@maya/core";
+import { drstr } from "@maya/signal";
 
 type TileCardProps = {
   classNames?: string;
