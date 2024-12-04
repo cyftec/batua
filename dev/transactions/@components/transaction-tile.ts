@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { derived, dstr } from "@maya/signal";
 
 type TransactionTileProps = {
   className?: string;
@@ -10,10 +10,10 @@ type TransactionTileProps = {
   paymentMethod: string;
 };
 
-export const TransactionTile = Component<TransactionTileProps>(
+export const TransactionTile = component<TransactionTileProps>(
   ({ className, amount, title, date, tags, paymentMethod }) => {
     return m.Div({
-      class: drstr`flex items-start ${className}`,
+      class: dstr`flex items-start ${className}`,
       children: [
         m.Div({
           class: "mnw4",
@@ -24,7 +24,7 @@ export const TransactionTile = Component<TransactionTileProps>(
             }),
             m.Span({
               class: "f7 gray",
-              children: m.Text(drstr`.${() => amount.value.split(".")[1]}`),
+              children: m.Text(dstr`.${() => amount.value.split(".")[1]}`),
             }),
           ],
         }),

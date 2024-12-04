@@ -1,4 +1,4 @@
-import { Component, DomEventValue, m } from "@maya/core";
+import { component, DomEventValue, m } from "@maya/core";
 import { derived } from "@maya/signal";
 
 type NumberBoxProps = {
@@ -8,7 +8,7 @@ type NumberBoxProps = {
   onchange: (value: number) => void;
 };
 
-export const NumberBox = Component<NumberBoxProps>(
+export const NumberBox = component<NumberBoxProps>(
   ({ classNames, placeholder, num, onchange }) => {
     const onTextChange = (e: KeyboardEvent) => {
       const text = (e.target as HTMLInputElement).value;

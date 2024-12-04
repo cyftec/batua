@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { derived, dstr } from "@maya/signal";
 import { CURRENCIES, CurrencyCode, Payment } from "../../../@libs/common";
 import { Link } from "../../../@libs/ui-kit";
 import { PaymentTile } from "./payment-tile";
@@ -12,7 +12,7 @@ type PaymentsProps = {
   onremove: (index: number) => void;
 };
 
-export const Payments = Component<PaymentsProps>(
+export const Payments = component<PaymentsProps>(
   ({ classNames, payments, onchange, onadd, onremove }) => {
     const borderClass = "br3 bw1 ba b--light-gray";
     const multiPayments = derived(() => payments.value.length > 1);
@@ -22,7 +22,7 @@ export const Payments = Component<PaymentsProps>(
     const containerClass = derived(() =>
       multiPayments.value ? borderClass + " pa2" : ""
     );
-    const paymentTileLinkLabel = drstr`${() =>
+    const paymentTileLinkLabel = dstr`${() =>
       multiPayments.value ? "remove" : "add more"} payment`;
     const totalPaymentLabels = derived(() => {
       const sumObj: Record<string, number> = payments.value.reduce((sum, p) => {
@@ -52,7 +52,7 @@ export const Payments = Component<PaymentsProps>(
     };
 
     return m.Div({
-      class: drstr`${containerClass} ${classNames}`,
+      class: dstr`${containerClass} ${classNames}`,
       children: [
         m.Div({
           children: m.For({
@@ -84,7 +84,7 @@ export const Payments = Component<PaymentsProps>(
                     class: "black flex items-center",
                     children: [
                       m.Span({
-                        class: drstr`f5 mr2 silver ${() =>
+                        class: dstr`f5 mr2 silver ${() =>
                           paidLabel.value ||
                           !(paidLabel.value || receivedLabel.value)
                             ? "di"
@@ -92,17 +92,17 @@ export const Payments = Component<PaymentsProps>(
                         children: m.Text("Paid:"),
                       }),
                       m.Span({
-                        class: drstr`f3 mr3 ${() =>
+                        class: dstr`f3 mr3 ${() =>
                           paidLabel.value ? "di" : "dn"}`,
                         children: m.Text(paidLabel),
                       }),
                       m.Span({
-                        class: drstr`f5 mr2 silver ${() =>
+                        class: dstr`f5 mr2 silver ${() =>
                           receivedLabel.value ? "di" : "dn"}`,
                         children: m.Text("Received:"),
                       }),
                       m.Span({
-                        class: drstr`f3 ${() =>
+                        class: dstr`f3 ${() =>
                           receivedLabel.value ? "di" : "dn"}`,
                         children: m.Text(receivedLabel),
                       }),

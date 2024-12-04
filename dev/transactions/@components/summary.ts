@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { Button } from "../../@libs/ui-kit";
 
 type SummaryProps = {
@@ -9,10 +9,10 @@ type SummaryProps = {
   onAddTransaction: () => void;
 };
 
-export const Summary = Component<SummaryProps>(
+export const Summary = component<SummaryProps>(
   ({ className, title, amount, onAddTransaction }) => {
     return m.Div({
-      class: drstr`flex flex-column items-center ${className}`,
+      class: dstr`flex flex-column items-center ${className}`,
       style: "height: 38rem; min-width: 20rem;",
       children: [
         m.Div({

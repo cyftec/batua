@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, drstr, Signal } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { derived, dstr, Signal } from "@maya/signal";
 import { Icon } from "./icon";
 
 type TagProps = {
@@ -12,7 +12,7 @@ type TagProps = {
   onIconClick?: () => void;
 };
 
-export const Tag = Component<TagProps>(
+export const Tag = component<TagProps>(
   ({
     classNames,
     label,
@@ -23,14 +23,14 @@ export const Tag = Component<TagProps>(
     onIconClick,
   }) =>
     m.Span({
-      class: drstr`bg-near-white br2 flex items-center ${classNames}`,
+      class: dstr`bg-near-white br2 flex items-center ${classNames}`,
       children: [
         m.Span({ children: m.Text(label) }),
         m.If({
           condition: derived(() => !!iconName?.value),
           then: () =>
             Icon({
-              className: drstr`pointer silver ${iconClassNames}`,
+              className: dstr`pointer silver ${iconClassNames}`,
               size: derived(() => iconSize?.value || 16),
               onClick: onIconClick,
               iconName: iconName as Signal<string>,

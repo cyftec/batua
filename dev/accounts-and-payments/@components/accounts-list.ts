@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { CURRENCIES, MOCK } from "../../@libs/common";
 import { SectionTitle } from "../../@libs/ui-kit";
 import { AddButtonTile } from "./add-button-tile";
@@ -9,9 +9,9 @@ type AccountsListProps = {
   classNames?: string;
 };
 
-export const AccountsList = Component<AccountsListProps>(({ classNames }) =>
+export const AccountsList = component<AccountsListProps>(({ classNames }) =>
   m.Div({
-    class: drstr`${classNames}`,
+    class: dstr`${classNames}`,
     children: [
       SectionTitle({
         classNames: "mt2 mb4",

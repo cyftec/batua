@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { Icon } from "../../@libs/ui-kit";
 import { TileCard } from "./tile-card";
 
@@ -9,10 +9,10 @@ type AddButtonTileProps = {
   onClick: () => void;
 };
 
-export const AddButtonTile = Component<AddButtonTileProps>(
+export const AddButtonTile = component<AddButtonTileProps>(
   ({ classNames, label, onClick }) =>
     TileCard({
-      classNames: drstr`tc pointer ${classNames}`,
+      classNames: dstr`tc pointer ${classNames}`,
       onClick: onClick,
       children: [
         Icon({

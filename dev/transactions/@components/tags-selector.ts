@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr, signal } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr, source } from "@maya/signal";
 import { Tag, TextBox } from "../../@libs/ui-kit";
 
 type TagsSelectorProps = {
@@ -9,9 +9,9 @@ type TagsSelectorProps = {
   onSelectionChange: (newTags: string[]) => void;
 };
 
-export const TagsSelector = Component<TagsSelectorProps>(
+export const TagsSelector = component<TagsSelectorProps>(
   ({ classNames, placeholder, selectedTags, onSelectionChange }) => {
-    const searchText = signal("");
+    const searchText = source("");
 
     const addTag = (tag: string) => {
       if (!tag) return;
@@ -29,7 +29,7 @@ export const TagsSelector = Component<TagsSelectorProps>(
     };
 
     return m.Div({
-      class: drstr`flex flex-wrap ${classNames}`,
+      class: dstr`flex flex-wrap ${classNames}`,
       children: [
         m.Span({
           class: "flex flex-wrap",

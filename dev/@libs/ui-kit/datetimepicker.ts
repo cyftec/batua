@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { derived, dstr } from "@maya/signal";
 import {
   getDateInputLocaleValue,
   getDiffDaysFromToday,
@@ -12,7 +12,7 @@ type DateTimePickerProps = {
   onchange: (value: Date) => void;
 };
 
-export const DateTimePicker = Component<DateTimePickerProps>(
+export const DateTimePicker = component<DateTimePickerProps>(
   ({ classNames, dateTime, onchange }) => {
     const dayOfWeek = derived(() =>
       WEEKDAYS[dateTime.value.getDay()].substring(0, 3)
@@ -23,7 +23,7 @@ export const DateTimePicker = Component<DateTimePickerProps>(
     const daysDiff = derived(() => getDiffDaysFromToday(dateTime.value));
 
     return m.Div({
-      class: drstr`dark-gray flex items-center justify-between ${classNames}`,
+      class: dstr`dark-gray flex items-center justify-between ${classNames}`,
       children: [
         m.Div({
           class: "ph3 pv2 br3 ba bw1 b--light-gray",
@@ -42,8 +42,8 @@ export const DateTimePicker = Component<DateTimePickerProps>(
           ],
         }),
         m.Span({
-          class: drstr`${() => (daysDiff.value.isFuture ? "red" : "silver")}`,
-          children: m.Text(drstr`${() => daysDiff.value.label}`),
+          class: dstr`${() => (daysDiff.value.isFuture ? "red" : "silver")}`,
+          children: m.Text(dstr`${() => daysDiff.value.label}`),
         }),
       ],
     });

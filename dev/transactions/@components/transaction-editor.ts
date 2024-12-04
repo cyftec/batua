@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drspread, drstr, receive, signal } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dprops, dstr, receive, source } from "@maya/signal";
 import { getDiffDaysFromToday, Payment, Transaction } from "../../@libs/common";
 import { Button, DateTimePicker, Modal, TextBox } from "../../@libs/ui-kit";
 import { Payments } from "./payments";
@@ -12,9 +12,9 @@ type TransactionEditor = {
   onSave: (transaction: Transaction) => void;
 };
 
-export const TransactionEditor = Component<TransactionEditor>(
+export const TransactionEditor = component<TransactionEditor>(
   ({ isOpen, editableTransaction, onCancel, onSave }) => {
-    const error = signal<string | null>(null);
+    const error = source<string | null>(null);
     const initPayment: Payment = {
       amount: 0,
       currencyCode: "INR",
@@ -27,9 +27,9 @@ export const TransactionEditor = Component<TransactionEditor>(
       tags: [],
       payments: [initPayment],
     };
-    const transaction = signal(initTransaction);
+    const transaction = source(initTransaction);
     if (editableTransaction) receive(transaction, editableTransaction);
-    const { title, date, tags, payments } = drspread(transaction);
+    const { title, date, tags, payments } = dprops(transaction);
 
     const resetTransaction = () => (transaction.value = initTransaction);
 
@@ -157,8 +157,8 @@ export const TransactionEditor = Component<TransactionEditor>(
                 },
               }),
               m.Div({
-                class: drstr`red pa3`,
-                children: m.Text(drstr`${() => error.value ?? ""}`),
+                class: dstr`red pa3`,
+                children: m.Text(dstr`${() => error.value ?? ""}`),
               }),
               m.Div({
                 class: "flex items-center w-100 mt2",

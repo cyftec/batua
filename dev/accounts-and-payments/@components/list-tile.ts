@@ -1,4 +1,4 @@
-import { Component, m, Node } from "@maya/core";
+import { component, m, Node } from "@maya/core";
 import { TileCard } from "./tile-card";
 
 type ListTileProps = {
@@ -8,7 +8,7 @@ type ListTileProps = {
   child: Node;
 };
 
-export const ListTile = Component<ListTileProps>(
+export const ListTile = component<ListTileProps>(
   ({ classNames, title, subtitle, child }) =>
     TileCard({
       classNames: classNames,

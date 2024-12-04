@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { Icon } from "./icon";
 
 type LinkData = {
@@ -16,10 +16,10 @@ type NavbarProps = {
   selectedLinkIndex: number;
 };
 
-export const Navbar = Component<NavbarProps>(
+export const Navbar = component<NavbarProps>(
   ({ classNames, rightLink, links, selectedLinkIndex }) => {
     return m.Div({
-      class: drstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 w-20 ${classNames}`,
+      class: dstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 w-20 ${classNames}`,
       children: [
         m.A({
           class: "no-underline green",
@@ -63,13 +63,13 @@ type NavbarLinkProps = {
   isSelected: boolean;
 };
 
-const NavbarLink = Component<NavbarLinkProps>(
+const NavbarLink = component<NavbarLinkProps>(
   ({ classNames, icon, label, href, isSelected }) =>
     m.Div({
-      class: drstr`pointer br4 br--left ${() =>
+      class: dstr`pointer br4 br--left ${() =>
         isSelected.value ? "bg-white" : ""} ${classNames}`,
       children: m.A({
-        class: drstr`no-underline hover-black ${() =>
+        class: dstr`no-underline hover-black ${() =>
           isSelected.value ? "black" : "silver"}`,
         href: href,
         children: m.Div({

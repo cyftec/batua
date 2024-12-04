@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { Icon } from "./icon";
 
 type SectionTitleProps = {
@@ -8,10 +8,10 @@ type SectionTitleProps = {
   label: string;
 };
 
-export const SectionTitle = Component<SectionTitleProps>(
+export const SectionTitle = component<SectionTitleProps>(
   ({ classNames, iconName, label }) =>
     m.H2({
-      class: drstr`flex items-center mid-gray ${classNames}`,
+      class: dstr`flex items-center mid-gray ${classNames}`,
       children: [
         Icon({
           size: 28,

@@ -1,11 +1,11 @@
 import { m } from "@maya/core";
-import { signal } from "@maya/signal";
+import { source } from "@maya/signal";
 import { Page } from "../@libs/ui-kit";
 
 import { Summary, TransactionEditor, TransactionTile } from "./@components";
 
 export default () => {
-  const isTransactionEditorOpen = signal(false);
+  const isTransactionEditorOpen = source(false);
   const toggleTransactionEditorDIalog = () =>
     (isTransactionEditorOpen.value = !isTransactionEditorOpen.value);
 
@@ -26,7 +26,7 @@ export default () => {
         }),
         m.Div({
           children: m.For({
-            items: signal(
+            items: source(
               Array(30).fill({
                 amount: "183.50",
                 title: "Paneer biryani from Swiggy",

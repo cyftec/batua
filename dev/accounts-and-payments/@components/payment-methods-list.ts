@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 import { MOCK } from "../../@libs/common";
 import { SectionTitle } from "../../@libs/ui-kit";
 import { AddButtonTile } from "./add-button-tile";
@@ -9,10 +9,10 @@ type PaymentMethodsListProps = {
   classNames?: string;
 };
 
-export const PaymentMethodsList = Component<PaymentMethodsListProps>(
+export const PaymentMethodsList = component<PaymentMethodsListProps>(
   ({ classNames }) =>
     m.Div({
-      class: drstr`${classNames}`,
+      class: dstr`${classNames}`,
       children: [
         SectionTitle({
           classNames: "mt2 mb4",

@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, drstr } from "@maya/signal";
+import { component, m } from "@maya/core";
+import { derived, dstr } from "@maya/signal";
 import { CURRENCIES, Payment } from "../../../@libs/common";
 import { Link, NumberBox } from "../../../@libs/ui-kit";
 import { CurrencyPicker } from "../currency-picker";
@@ -13,7 +13,7 @@ type PaymentTileProps = {
   onPaymentUpdate: (tileIndex: number, updated: Payment) => void;
 };
 
-export const PaymentTile = Component<PaymentTileProps>(
+export const PaymentTile = component<PaymentTileProps>(
   ({ classNames, payment, linkLabel, onLinkClick, onPaymentUpdate }) => {
     const selectedCurrencyCode = derived(() => payment.value.currencyCode);
     const selectedPaymentMethodCode = derived(
@@ -34,10 +34,10 @@ export const PaymentTile = Component<PaymentTileProps>(
       class: `flex items-center justify-between w-100`,
       children: [
         m.Div({
-          class: drstr`flex items-center justify-between w-60 ${classNames}`,
+          class: dstr`flex items-center justify-between w-60 ${classNames}`,
           children: [
             PaymentMethodPicker({
-              classNames: drstr`truncate mr2 f6`,
+              classNames: dstr`truncate mr2 f6`,
               selectedPaymentMethodCode,
               onchange: (pmCode) =>
                 onPaymentChange("paymentMethodCode", pmCode),

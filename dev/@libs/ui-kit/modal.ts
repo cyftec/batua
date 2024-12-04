@@ -1,5 +1,5 @@
-import { Children, Component, m } from "@maya/core";
-import { drstr } from "@maya/signal";
+import { Children, component, m } from "@maya/core";
+import { dstr } from "@maya/signal";
 
 type ModalProps = {
   classNames?: string;
@@ -8,15 +8,15 @@ type ModalProps = {
   onTapOutside?: () => void;
 };
 
-export const Modal = Component<ModalProps>(
+export const Modal = component<ModalProps>(
   ({ classNames, isOpen, content, onTapOutside }) => {
     return m.Div({
-      class: drstr`bg-gray-70 z-9999 absolute absolute--fill ${() =>
+      class: dstr`bg-gray-70 z-9999 absolute absolute--fill ${() =>
         isOpen?.value ? "db" : "dn"}`,
       onclick: onTapOutside,
       children: [
         m.Div({
-          class: drstr`bg-white pa3 ba br3 b--transparent ${classNames}`,
+          class: dstr`bg-white pa3 ba br3 b--transparent ${classNames}`,
           style: `
             margin: 0;
             position: absolute;
