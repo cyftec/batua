@@ -1,5 +1,5 @@
 import { Component, drstr, m, signal } from "@maya/core";
-import { Icon, TextBox } from "../../@libs/ui-kit";
+import { Icon, Tag, TextBox } from "../../@libs/ui-kit";
 
 type TagsSelectorProps = {
   classNames?: string;
@@ -35,18 +35,13 @@ export const TagsSelector = Component<TagsSelectorProps>(
           children: m.For({
             items: selectedTags,
             map: (tag) =>
-              m.Span({
-                class: "bg-near-white mb2 ph2 pv1 br2 flex items-center mr2",
-                children: [
-                  m.Span({ children: m.Text(tag) }),
-                  Icon({
-                    className: "ml2 pointer silver",
-                    style: "font-size: 16px;",
-                    onClick: () => removeTag(tag),
-                    iconName: "do_not_disturb_on",
-                    title: "Remove tag",
-                  }),
-                ],
+              Tag({
+                classNames: "mb2 ph2 pv1 mr2",
+                label: tag,
+                iconClassNames: "ml2",
+                iconName: "do_not_disturb_on",
+                iconHint: "Remove tag",
+                onIconClick: () => removeTag(tag),
               }),
           }),
         }),

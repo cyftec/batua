@@ -1,0 +1,16 @@
+export const TRANSACTION_CATEGORIES = {
+  PAYMENT_SOURCE: "Payemnt Source",
+  PAYMENT_METHOD: "Payemnt Method",
+  NECESSITY: "Necessity of transaction",
+  COMMUTE: "Commute and Transportation",
+  TRAVEL: "Travel, Trips or Treks",
+  SHOP_OR_MARKET: "Shop or Marketplace",
+  PRODUCT_CATEGORY: "Product Category",
+  PRODUCT_BRAND: "Product Brand",
+  RELATIONSHIP: "Transactions on Relatives or Friends",
+  PLACE: "Location of transaction",
+  TIME: "Time of transaction",
+  EVENT: "Events, groups or situations",
+  UNCATEGORIZED: "Not categorized",
+  MISC: "Miscellaneous category",
+} as const;

@@ -1,13 +1,13 @@
-import { drstr, m, Node, Signal } from "@maya/core";
+import { Component, drstr, m, Node } from "@maya/core";
 
 type ContentProps = {
-  classNames?: Signal<string>;
+  classNames?: string;
   children: Node[];
 };
 
-export const Content = ({ children, classNames }: ContentProps) =>
+export const Content = Component<ContentProps>(({ children, classNames }) =>
   m.Div({
-    class: drstr`confined pv3 ${classNames}`,
-    style: "min-height: 40rem;",
+    class: drstr`${classNames}`,
     children,
-  });
+  })
+);

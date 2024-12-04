@@ -1,5 +1,5 @@
 import { defaultMetaTags, m, MaybeArray, Node, valueIsArray } from "@maya/core";
-import { Content, Header, Navbar } from ".";
+import { Header, Navbar } from ".";
 
 type PageProps = {
   title: string;
@@ -43,23 +43,20 @@ export const Page = ({
             defer: "true",
           }),
           m.Div({
+            class: "flex items-start",
             children: [
-              Header({ title: headerTitle }),
-              Content({
-                children: childrenContent,
-              }),
               Navbar({
                 selectedLinkIndex: selectedTabIndex,
                 links: [
                   {
                     index: 0,
-                    icon: "sort",
+                    icon: "swap_horiz",
                     label: "Transactions",
                     href: "/transactions",
                   },
                   {
                     index: 1,
-                    icon: "insert_chart",
+                    icon: "bar_chart_4_bars",
                     label: "Charts & trends",
                     href: "/charts.html",
                   },
@@ -73,13 +70,13 @@ export const Page = ({
                     index: 3,
                     icon: "sell",
                     label: "Tags & categories",
-                    href: "/tags.html",
+                    href: "/tags",
                   },
                   {
                     index: 4,
-                    icon: "payments",
-                    label: "Payment methods",
-                    href: "/payment-methods.html",
+                    icon: "account_balance_wallet",
+                    label: "Accounts & Payment Methods",
+                    href: "/accounts-and-payments",
                   },
                 ],
                 rightLink: {
@@ -88,6 +85,10 @@ export const Page = ({
                   label: "Settings",
                   href: "/settings.html",
                 },
+              }),
+              m.Div({
+                class: "relative pl5 mw7",
+                children: [Header({ title: headerTitle }), ...childrenContent],
               }),
             ],
           }),

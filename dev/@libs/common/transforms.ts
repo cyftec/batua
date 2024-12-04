@@ -12,11 +12,9 @@ export const getDiffDaysFromToday = (date: Date) => {
   const oneDayInMs = 24 * 60 * 60 * 1000;
   const now = new Date();
   const localMidnight = new Date(
-    now.getTime() -
-      now.getHours() * 60 * 60 * 1000 -
-      now.getMinutes() * 60 * 1000 -
-      now.getSeconds() * 1000 -
-      now.getMilliseconds()
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
   );
   const nowTime = now.getTime();
   const dateTime = date.getTime();

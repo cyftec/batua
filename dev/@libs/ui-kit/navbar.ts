@@ -9,71 +9,81 @@ type LinkData = {
 };
 
 type NavbarProps = {
+  classNames?: string;
   rightLink: LinkData;
   links: LinkData[];
   selectedLinkIndex: number;
 };
 
-type NavbarLink = {
-  className?: string;
+export const Navbar = Component<NavbarProps>(
+  ({ classNames, rightLink, links, selectedLinkIndex }) => {
+    return m.Div({
+      class: drstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 w-20 ${classNames}`,
+      children: [
+        m.A({
+          class: "no-underline green",
+          href: "/",
+          children: m.Div({
+            class: "tc f3 ph4 pv3 ma4 bn br3 bg-white",
+            children: m.Text("batua 1.04"),
+          }),
+        }),
+        m.Div({
+          class: "h-100",
+          children: m.For({
+            items: links,
+            map: (link, i) =>
+              NavbarLink({
+                classNames: "ml3 pa3 mv3",
+                icon: link.icon,
+                label: link.label,
+                href: link.href,
+                isSelected: selectedLinkIndex.value === link.index,
+              }),
+          }),
+        }),
+        NavbarLink({
+          classNames: "ml3 pa3 mb3",
+          icon: rightLink.value.icon,
+          label: rightLink.value.label,
+          href: rightLink.value.href,
+          isSelected: selectedLinkIndex.value === rightLink.value.index,
+        }),
+      ],
+    });
+  }
+);
+
+type NavbarLinkProps = {
+  classNames?: string;
   icon: string;
   label: string;
   href: string;
   isSelected: boolean;
 };
 
-const NavbarLink = Component<NavbarLink>(
-  ({ className, icon, label, href, isSelected }) =>
-    m.A({
-      href: href,
-      class: drstr`no-underline f7 pa3 mnw4 pointer ${() =>
-        isSelected.value ? "bg-white mb1 black" : "silver"} ${className}`,
-      children: m.Div({
-        class: "flex flex-column items-center",
-        children: [
-          Icon({
-            style: "font-size: 28px",
-            iconName: icon,
-          }),
-          m.Div({
-            class: "f7 pt1",
-            children: m.Text(label.value),
-          }),
-        ],
-      }),
-    })
-);
-
-export const Navbar = Component<NavbarProps>(
-  ({ rightLink, links, selectedLinkIndex }) => {
-    return m.Div({
-      class: "sticky left-0 right-0 bottom-0 bg-light-gray",
-      children: [
-        m.Div({
-          class: "confined flex justify-between",
+const NavbarLink = Component<NavbarLinkProps>(
+  ({ classNames, icon, label, href, isSelected }) =>
+    m.Div({
+      class: drstr`pointer br4 br--left ${() =>
+        isSelected.value ? "bg-white" : ""} ${classNames}`,
+      children: m.A({
+        class: drstr`no-underline hover-black ${() =>
+          isSelected.value ? "black" : "silver"}`,
+        href: href,
+        children: m.Div({
+          class: "flex items-center",
           children: [
-            m.Div({
-              class: "flex items-center",
-              children: m.For({
-                items: links,
-                map: (link) =>
-                  NavbarLink({
-                    icon: link.icon,
-                    label: link.label,
-                    href: link.href,
-                    isSelected: selectedLinkIndex.value === link.index,
-                  }),
-              }),
+            Icon({
+              size: 22,
+              iconName: icon,
             }),
-            NavbarLink({
-              icon: rightLink.value.icon,
-              label: rightLink.value.label,
-              href: rightLink.value.href,
-              isSelected: selectedLinkIndex.value === rightLink.value.index,
+            m.Div({
+              class: "f5 pl3",
+              children: m.Text(label.value),
             }),
           ],
         }),
-      ],
-    });
-  }
+      }),
+    })
 );

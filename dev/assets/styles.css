@@ -69,6 +69,7 @@ body {
 
 .w-inherit {width: inherit;}
 .w100px { width: 100px; }
+.w-45 { width: 45%; }
 .mw65 { max-width: 40rem;}
 /* Min Width Percentages */
 .mnw-100 { min-width: 100%; }
@@ -86,6 +87,8 @@ body {
 .mnw-none { min-width: none; }
 /**/
 
+/* .almost-white { color: #f9f9f9; } */
+
 .bg-gray-80 {
     background-color: rgba(128, 128, 128, 0.8);
 }
@@ -93,4 +96,6 @@ body {
 .bg-gray-70 {
     background-color: rgba(128, 128, 128, 0.7);
 }
+
+.bg-almost-white { background-color: #f9f9f9; }
 

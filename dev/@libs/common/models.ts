@@ -1,3 +1,5 @@
+import { TRANSACTION_CATEGORIES } from "./constants";
+
 export type CurrencyCode =
   | "AED"
   | "AFN"
@@ -166,21 +168,6 @@ export type CurrencyCode =
   | "ZMW"
   | "ZWD";
 
-export type PaymentMethodCode =
-  | "CASH"
-  | "BHIM"
-  | "GPAY"
-  | "PHONEPE"
-  | "DEBIT"
-  | "CREDIT";
-
-export type PaymentMethod = {
-  code: PaymentMethodCode;
-  displayName: string;
-  uniqueId?: string;
-  expiry?: Date;
-};
-
 export type CurrencyValue = {
   name: string;
   symbol: string;
@@ -188,15 +175,7 @@ export type CurrencyValue = {
 
 export type Currency = {
   code: CurrencyCode;
-  name: string;
-  symbol: string;
-};
-
-export type Payment = {
-  amount: number;
-  currencyCode: CurrencyCode;
-  paymentMethodCode: PaymentMethodCode;
-};
+} & CurrencyValue;
 
 export type Transaction = {
   modifiedDate: Date;
@@ -204,4 +183,44 @@ export type Transaction = {
   title: string;
   payments: Payment[];
   tags: string[];
+};
+
+export type Payment = {
+  amount: number;
+  currencyCode: CurrencyCode;
+  paymentMethodCode: PaymentMethod["code"];
+};
+
+export type PaymentMethod = {
+  code: string;
+  displayName: string;
+  uniqueId?: string;
+  expiry?: Date;
+  defaultAccountId?: Account["id"];
+  connectedAccountIds: Account["id"][];
+};
+
+export type Account = {
+  id: string;
+  accountId?: string;
+  name: string;
+  balance: number;
+  currency: CurrencyCode;
+};
+
+export type TagCategory = keyof typeof TRANSACTION_CATEGORIES;
+
+export type Tag = {
+  id: string;
+  name: string;
+  type: TagCategory;
+  isDeletable: boolean;
+};
+
+export type Budget = {
+  id: string;
+  title: string;
+  limit: number;
+  spend: number;
+  currency: CurrencyCode;
 };
