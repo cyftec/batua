@@ -1,4 +1,4 @@
-import { component, m } from "@maya/core";
+import { Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type LinkProps = {
@@ -7,10 +7,9 @@ type LinkProps = {
   onClick: () => void;
 };
 
-export const Link = component<LinkProps>(({ className, onClick, label }) =>
+export const Link: Component<LinkProps> = ({ className, onClick, label }) =>
   m.Span({
     class: dstr`underline pointer hover-black f6 ${className}`,
     onclick: onClick,
-    children: m.Text(label),
-  })
-);
+    children: label,
+  });

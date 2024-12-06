@@ -1,4 +1,4 @@
-import { component, m } from "@maya/core";
+import { Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type SelectOption = {
@@ -13,19 +13,21 @@ type DropDownProps = {
   onchange: (optionId: string) => void;
 };
 
-export const DropDown = component<DropDownProps>(
-  ({ classNames, options, onchange }) =>
-    m.Select({
-      class: dstr`pointer ${classNames}`,
-      onchange: (e) => onchange((e.target as HTMLSelectElement).value),
-      children: m.For({
-        items: options,
-        map: (option) =>
-          m.Option({
-            ...(option.isSelected ? { selected: "" } : {}),
-            value: option.id,
-            children: m.Text(option.label),
-          }),
-      }),
-    })
-);
+export const DropDown: Component<DropDownProps> = ({
+  classNames,
+  options,
+  onchange,
+}) =>
+  m.Select({
+    class: dstr`pointer ${classNames}`,
+    onchange: (e) => onchange((e.target as HTMLSelectElement).value),
+    children: m.For({
+      items: options,
+      map: (option) =>
+        m.Option({
+          ...(option.isSelected ? { selected: "" } : {}),
+          value: option.id,
+          children: option.label,
+        }),
+    }),
+  });

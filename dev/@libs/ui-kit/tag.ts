@@ -1,5 +1,5 @@
-import { component, m } from "@maya/core";
-import { derived, dstr, Signal } from "@maya/signal";
+import { Component, m } from "@maya/core";
+import { derived, dstr, Signal, val } from "@maya/signal";
 import { Icon } from "./icon";
 
 type TagProps = {
@@ -7,37 +7,34 @@ type TagProps = {
   label: string;
   iconClassNames?: string;
   iconName?: string;
-  iconSize?: number;
   iconHint?: string;
+  iconSize?: number;
   onIconClick?: () => void;
 };
 
-export const Tag = component<TagProps>(
-  ({
-    classNames,
-    label,
-    iconClassNames,
-    iconName,
-    iconSize,
-    iconHint,
-    onIconClick,
-  }) =>
-    m.Span({
-      class: dstr`bg-near-white br2 flex items-center ${classNames}`,
-      children: [
-        m.Span({ children: m.Text(label) }),
-        m.If({
-          condition: derived(() => !!iconName?.value),
-          then: () =>
-            Icon({
-              className: dstr`pointer silver ${iconClassNames}`,
-              size: derived(() => iconSize?.value || 16),
-              onClick: onIconClick,
-              iconName: iconName as Signal<string>,
-              title: iconHint,
-            }),
-          otherwise: () => m.Span({ children: m.Text("") }),
-        }),
-      ],
-    })
-);
+export const Tag: Component<TagProps> = ({
+  classNames,
+  label,
+  iconClassNames,
+  iconName,
+  iconHint,
+  iconSize,
+  onIconClick,
+}) =>
+  m.Span({
+    class: dstr`bg-near-white br2 flex items-center ${classNames}`,
+    children: [
+      m.Span({ children: label }),
+      m.If({
+        condition: derived(() => !!val(iconName)),
+        then: () =>
+          Icon({
+            className: dstr`pointer silver ${iconClassNames}`,
+            size: derived(() => val(iconSize) || 16),
+            onClick: onIconClick,
+            iconName: iconName as Signal<string>,
+            title: iconHint,
+          }),
+      }),
+    ],
+  });

@@ -18,6 +18,7 @@ export default () =>
           items: MOCK.TAGS.filter((t) => t.type === "NECESSITY"),
           map: (tag) =>
             Tag({
+              iconName: "close",
               classNames: "ph3 pv2 mb3 mr3",
               label: tag.name,
             }),

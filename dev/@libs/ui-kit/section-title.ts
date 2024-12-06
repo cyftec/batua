@@ -1,4 +1,4 @@
-import { component, m } from "@maya/core";
+import { Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 import { Icon } from "./icon";
 
@@ -8,17 +8,19 @@ type SectionTitleProps = {
   label: string;
 };
 
-export const SectionTitle = component<SectionTitleProps>(
-  ({ classNames, iconName, label }) =>
-    m.H2({
-      class: dstr`flex items-center mid-gray ${classNames}`,
-      children: [
-        Icon({
-          size: 28,
-          className: "b mr3",
-          iconName: iconName,
-        }),
-        m.Text(label),
-      ],
-    })
-);
+export const SectionTitle: Component<SectionTitleProps> = ({
+  classNames,
+  iconName,
+  label,
+}) =>
+  m.H2({
+    class: dstr`flex items-center mid-gray ${classNames}`,
+    children: [
+      Icon({
+        size: 28,
+        className: "b mr3",
+        iconName: iconName,
+      }),
+      label,
+    ],
+  });

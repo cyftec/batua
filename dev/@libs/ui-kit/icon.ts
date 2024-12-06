@@ -1,5 +1,5 @@
-import { component, m } from "@maya/core";
-import { dstr } from "@maya/signal";
+import { Component, m } from "@maya/core";
+import { dstr, val } from "@maya/signal";
 
 type IconProps = {
   className?: string;
@@ -9,13 +9,17 @@ type IconProps = {
   title?: string;
 };
 
-export const Icon = component<IconProps>(
-  ({ className, size, onClick, iconName, title }) =>
-    m.Span({
-      class: dstr`material-symbols-rounded ${className}`,
-      style: dstr`font-size: ${() => size?.value || "16"}px`,
-      onclick: onClick,
-      children: m.Text(iconName),
-      title,
-    })
-);
+export const Icon: Component<IconProps> = ({
+  className,
+  size,
+  onClick,
+  iconName,
+  title,
+}) =>
+  m.Span({
+    class: dstr`material-symbols-rounded ${className}`,
+    style: dstr`font-size: ${() => val(size) || "16"}px`,
+    onclick: () => onClick,
+    children: iconName,
+    title: val(title) || "",
+  });

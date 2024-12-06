@@ -7,9 +7,9 @@ export default () =>
     headerTitle: "Home Page",
     content: m.Div({
       children: [
-        m.H3({ children: m.Text("home page stuff") }),
+        m.H3({ children: "home page stuff" }),
         m.Span({
-          children: m.Text(`Go to transactions`),
+          children: "Go to transactions",
         }),
       ],
     }),

@@ -1,21 +1,28 @@
-import { defaultMetaTags, m, MaybeArray, Node, valueIsArray } from "@maya/core";
+import {
+  Children,
+  Component,
+  defaultMetaTags,
+  m,
+  valueIsArray,
+} from "@maya/core";
 import { Header, Navbar } from ".";
+import { val } from "@maya/signal";
 
 type PageProps = {
   title: string;
   headerTitle: string;
   scriptSrcPrefix?: string;
   selectedTabIndex?: number;
-  content: MaybeArray<Node>;
+  content: Children;
 };
 
-export const Page = ({
+export const Page: Component<PageProps> = ({
   title,
   headerTitle,
   scriptSrcPrefix,
-  selectedTabIndex = -1,
+  selectedTabIndex,
   content,
-}: PageProps) => {
+}) => {
   const childrenContent = valueIsArray(content) ? content : [content];
   return m.Html({
     lang: "en",
@@ -23,7 +30,7 @@ export const Page = ({
       m.Head({
         children: [
           ...defaultMetaTags(),
-          m.Title({ children: m.Text(title) }),
+          m.Title({ children: title }),
           m.Link({
             rel: "stylesheet",
             href: "https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css",
@@ -46,7 +53,7 @@ export const Page = ({
             class: "flex items-start",
             children: [
               Navbar({
-                selectedLinkIndex: selectedTabIndex,
+                selectedLinkIndex: val(selectedTabIndex) ?? -1,
                 links: [
                   {
                     index: 0,

@@ -1,14 +1,13 @@
-import { component, m, Node } from "@maya/core";
+import { ChildrenProp, Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type ContentProps = {
   classNames?: string;
-  children: Node[];
+  children: ChildrenProp;
 };
 
-export const Content = component<ContentProps>(({ children, classNames }) =>
+export const Content: Component<ContentProps> = ({ classNames, children }) =>
   m.Div({
     class: dstr`${classNames}`,
     children,
-  })
-);
+  });
