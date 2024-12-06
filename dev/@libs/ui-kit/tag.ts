@@ -24,7 +24,7 @@ export const Tag: Component<TagProps> = ({
   m.Span({
     class: dstr`bg-near-white br2 flex items-center ${classNames}`,
     children: [
-      m.Span({ children: label }),
+      m.Span(label),
       m.If({
         condition: derived(() => !!val(iconName)),
         then: () =>

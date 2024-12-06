@@ -27,21 +27,19 @@ export const Page: Component<PageProps> = ({
   return m.Html({
     lang: "en",
     children: [
-      m.Head({
-        children: [
-          ...defaultMetaTags(),
-          m.Title({ children: title }),
-          m.Link({
-            rel: "stylesheet",
-            href: "https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css",
-          }),
-          m.Link({
-            rel: "stylesheet",
-            href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0",
-          }),
-          m.Link({ rel: "stylesheet", href: "/assets/styles.css" }),
-        ],
-      }),
+      m.Head([
+        ...defaultMetaTags(),
+        m.Title(title),
+        m.Link({
+          rel: "stylesheet",
+          href: "https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css",
+        }),
+        m.Link({
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0",
+        }),
+        m.Link({ rel: "stylesheet", href: "/assets/styles.css" }),
+      ]),
       m.Body({
         class: "mid-gray",
         children: [

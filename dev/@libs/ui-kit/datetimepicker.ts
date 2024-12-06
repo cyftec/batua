@@ -31,9 +31,7 @@ export const DateTimePicker: Component<DateTimePickerProps> = ({
       m.Div({
         class: "ph3 pv2 br3 ba bw1 b--light-gray",
         children: [
-          m.Span({
-            children: dayOfWeek,
-          }),
+          m.Span(dayOfWeek),
           m.Span({ class: "pr3 mr3 br b--light-gray bw1" }),
           m.Input({
             class: "bn pointer",

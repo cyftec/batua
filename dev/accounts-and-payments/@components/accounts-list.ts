@@ -40,9 +40,7 @@ export const AccountsList: Component<AccountsListProps> = ({ classNames }) =>
               child: m.Div({
                 class: "mt3",
                 children: [
-                  m.Span({
-                    children: `${CURRENCIES[account.currency].symbol}`,
-                  }),
+                  m.Span(`${CURRENCIES[account.currency].symbol}`),
                   m.Span({
                     class: "ml1 f3",
                     children: `${account.balance.toLocaleString("en-IN")}`,

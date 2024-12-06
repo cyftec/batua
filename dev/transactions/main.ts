@@ -24,8 +24,8 @@ export default () => {
             isTransactionEditorOpen.value = false;
           },
         }),
-        m.Div({
-          children: m.For({
+        m.Div(
+          m.For({
             items: source(
               Array(30).fill({
                 amount: "183.50",
@@ -54,8 +54,8 @@ export default () => {
                 tags: transaction.tags,
                 paymentMethod: transaction.paymentMethod,
               }),
-          }),
-        }),
+          })
+        ),
         Summary({
           className: "sticky top-3 right-0 bottom-0 bg-washed-yellow",
           title: "October 2024",

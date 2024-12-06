@@ -7,7 +7,5 @@ export default () =>
     headerTitle: "Settings",
     scriptSrcPrefix: "settings.",
     selectedTabIndex: 5,
-    content: m.Span({
-      children: `Sed ut perspiciatis, `,
-    }),
+    content: m.Span(`Sed ut perspiciatis`),
   });

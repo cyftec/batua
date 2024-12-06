@@ -7,7 +7,5 @@ export default () =>
     headerTitle: "Charts & Trends",
     scriptSrcPrefix: "charts.",
     selectedTabIndex: 1,
-    content: m.Span({
-      children: `Sed ut perspiciatis`,
-    }),
+    content: m.Span(`Sed ut perspiciatis`),
   });

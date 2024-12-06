@@ -59,8 +59,8 @@ export const Payments: Component<PaymentsProps> = ({
   return m.Div({
     class: dstr`${containerClass} ${classNames}`,
     children: [
-      m.Div({
-        children: m.For({
+      m.Div(
+        m.For({
           items: derived(() =>
             val(payments).map((p, index) => ({ ...p, index }))
           ),
@@ -75,8 +75,8 @@ export const Payments: Component<PaymentsProps> = ({
                 else onadd();
               },
             }),
-        }),
-      }),
+        })
+      ),
       m.If({
         condition: multiPayments,
         then: () =>

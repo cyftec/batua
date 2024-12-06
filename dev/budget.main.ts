@@ -7,7 +7,5 @@ export default () =>
     headerTitle: "Create budget based on earnings",
     scriptSrcPrefix: "budget.",
     selectedTabIndex: 2,
-    content: m.Span({
-      children: `Sed ut perspiciatis`,
-    }),
+    content: m.Span(`Sed ut perspiciatis`),
   });

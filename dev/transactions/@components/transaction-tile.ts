@@ -55,23 +55,19 @@ export const TransactionTile: Component<TransactionTileProps> = ({
           }),
         ],
       }),
-      m.Div({
-        children: [
-          m.Div({
-            children: paymentMethod,
-          }),
-          m.Div({
-            class: "mt1 f7 silver",
-            children: derived(() =>
-              val(date).toLocaleDateString(undefined, {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
-              })
-            ),
-          }),
-        ],
-      }),
+      m.Div([
+        m.Div(paymentMethod),
+        m.Div({
+          class: "mt1 f7 silver",
+          children: derived(() =>
+            val(date).toLocaleDateString(undefined, {
+              weekday: "short",
+              day: "numeric",
+              month: "short",
+            })
+          ),
+        }),
+      ]),
     ],
   });
 };

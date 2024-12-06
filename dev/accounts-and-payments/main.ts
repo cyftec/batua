@@ -7,14 +7,12 @@ export default () =>
     title: "Batua | Accounts & Assets",
     headerTitle: "Accounts and payment methods",
     selectedTabIndex: 4,
-    content: m.Div({
-      children: [
-        AccountsList({
-          classNames: "pv4",
-        }),
-        PaymentMethodsList({
-          classNames: "pv4",
-        }),
-      ],
-    }),
+    content: m.Div([
+      AccountsList({
+        classNames: "pv4",
+      }),
+      PaymentMethodsList({
+        classNames: "pv4",
+      }),
+    ]),
   });

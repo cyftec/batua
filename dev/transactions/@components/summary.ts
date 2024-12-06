@@ -19,12 +19,8 @@ export const Summary: Component<SummaryProps> = ({
     class: dstr`flex flex-column items-center ${className}`,
     style: "height: 38rem; min-width: 20rem;",
     children: [
-      m.Div({
-        children: title,
-      }),
-      m.Div({
-        children: amount,
-      }),
+      m.Div(title),
+      m.Div(amount),
       Button({
         className: "ph3",
         label: "Add new transaction",
