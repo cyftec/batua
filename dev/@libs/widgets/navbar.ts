@@ -1,6 +1,7 @@
 import { Component, m } from "@maya/core";
 import { dstr, val } from "@maya/signal";
 import { Icon } from "../ui-kit/icon";
+import { path } from "../common";
 
 type LinkData = {
   index: number;
@@ -28,7 +29,7 @@ export const Navbar: Component<NavbarProps> = ({
     children: [
       m.A({
         class: "no-underline green",
-        href: "/",
+        href: path("/"),
         children: m.Div({
           class: "tc f3 ph4 pv3 ma4 bn br3 bg-white",
           children: "batua 1.04",

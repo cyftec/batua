@@ -1,6 +1,7 @@
 import { Children, Component, defaultMetaTags, m } from "@maya/core";
 import { val } from "@maya/signal";
 import { Header, Navbar } from ".";
+import { path } from "../common";
 
 type PageProps = {
   title: string;
@@ -19,6 +20,9 @@ export const Page: Component<PageProps> = ({
   mainContent,
   sideContent,
 }) => {
+  console.log(window.location.host);
+  console.log(window.location.hostname);
+  console.log(window.location.origin);
   console.log(window.location.href);
   console.log(window.location.pathname);
   return m.Html({
@@ -35,7 +39,7 @@ export const Page: Component<PageProps> = ({
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0",
         }),
-        m.Link({ rel: "stylesheet", href: "/assets/styles.css" }),
+        m.Link({ rel: "stylesheet", href: path("/assets/styles.css") }),
       ]),
       m.Body({
         class: "mid-gray",
@@ -55,38 +59,38 @@ export const Page: Component<PageProps> = ({
                     index: 0,
                     icon: "swap_horiz",
                     label: "Transactions",
-                    href: "/transactions",
+                    href: path("/transactions"),
                   },
                   {
                     index: 1,
                     icon: "bar_chart_4_bars",
                     label: "Charts & Trends",
-                    href: "/charts.html",
+                    href: path("/charts.html"),
                   },
                   {
                     index: 2,
                     icon: "savings",
                     label: "Budget & Investments",
-                    href: "/budget.html",
+                    href: path("/budget.html"),
                   },
                   {
                     index: 3,
                     icon: "sell",
                     label: "Tags & Categories",
-                    href: "/tags",
+                    href: path("/tags"),
                   },
                   {
                     index: 4,
                     icon: "account_balance_wallet",
                     label: "Accounts & Payment Methods",
-                    href: "/accounts-and-payments",
+                    href: path("/accounts-and-payments"),
                   },
                 ],
                 rightLink: {
                   index: 5,
                   icon: "settings",
                   label: "Settings",
-                  href: "/settings.html",
+                  href: path("/settings.html"),
                 },
               }),
               m.Div({

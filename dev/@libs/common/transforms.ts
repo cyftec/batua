@@ -1,3 +1,5 @@
+import { PUBLISHED_SITE_ROOT } from "../config";
+
 export const getDiffDaysFromToday = (date: Date) => {
   const DIFFS = {
     FUT: { isFuture: true, label: "ERROR: Future date or time" },
@@ -43,3 +45,8 @@ export const getDateInputLocaleValue = (gmtDate: Date) => {
 
   return localeDateLabel;
 };
+
+export const path = (href: string) =>
+  window.location.hostname === "127.0.0.1"
+    ? href
+    : `${PUBLISHED_SITE_ROOT}${href}`;
