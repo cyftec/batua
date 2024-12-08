@@ -1,5 +1,5 @@
 import { m } from "@maya/core";
-import { Page } from "../@libs/ui-kit";
+import { Page } from "../@libs/widgets";
 import { AccountsList, PaymentMethodsList } from "./@components";
 
 export default () =>
@@ -7,7 +7,7 @@ export default () =>
     title: "Batua | Accounts & Assets",
     headerTitle: "Accounts and payment methods",
     selectedTabIndex: 4,
-    content: m.Div([
+    mainContent: m.Div([
       AccountsList({
         classNames: "pv4",
       }),
@@ -15,4 +15,5 @@ export default () =>
         classNames: "pv4",
       }),
     ]),
+    sideContent: "",
   });

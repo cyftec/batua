@@ -17,7 +17,7 @@ export const Summary: Component<SummaryProps> = ({
 }) => {
   return m.Div({
     class: dstr`flex flex-column items-center ${className}`,
-    style: "height: 38rem; min-width: 20rem;",
+    style: "height: 38rem;",
     children: [
       m.Div(title),
       m.Div(amount),

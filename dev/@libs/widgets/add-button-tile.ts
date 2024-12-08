@@ -1,7 +1,7 @@
 import { Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
-import { Icon } from "../../@libs/ui-kit";
-import { TileCard } from "./tile-card";
+import { Icon } from "../ui-kit";
+import { TileCard } from ".";
 
 type AddButtonTileProps = {
   classNames?: string;

@@ -1,5 +1,5 @@
-import { Children, Component, m } from "@maya/core";
-import { dstr, val } from "@maya/signal";
+import { Children, Component, HtmlNode, m } from "@maya/core";
+import { dstr, effect, val } from "@maya/signal";
 
 type ModalProps = {
   classNames?: string;
@@ -14,24 +14,21 @@ export const Modal: Component<ModalProps> = ({
   content,
   onTapOutside,
 }) => {
-  return m.Div({
-    class: dstr`bg-gray-70 z-9999 absolute absolute--fill ${() =>
-      val(isOpen) ? "db" : "dn"}`,
+  let dialog: HtmlNode<HTMLDialogElement>;
+  effect(() => {
+    if (val(isOpen)) dialog?.showModal();
+    else dialog?.close();
+  });
+
+  return (dialog = m.Dialog({
     onclick: onTapOutside,
+    class: dstr`pa0 br3 b--gray`,
     children: [
       m.Div({
-        class: dstr`bg-white pa3 ba br3 b--transparent ${classNames}`,
-        style: `
-            margin: 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            -ms-transform: translate(-50%, -50%);
-            transform: translate(-50%, -50%);
-          `,
-        onclick: (e) => e.stopPropagation(),
+        class: dstr` ${classNames}`,
+        onclick: (e: Event) => e.stopPropagation(),
         children: content,
       }),
     ],
-  });
+  }) as HtmlNode<HTMLDialogElement>);
 };

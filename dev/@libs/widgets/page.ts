@@ -1,19 +1,14 @@
-import {
-  Children,
-  Component,
-  defaultMetaTags,
-  m,
-  valueIsArray,
-} from "@maya/core";
-import { Header, Navbar } from ".";
+import { Children, Component, defaultMetaTags, m } from "@maya/core";
 import { val } from "@maya/signal";
+import { Header, Navbar } from ".";
 
 type PageProps = {
   title: string;
   headerTitle: string;
   scriptSrcPrefix?: string;
   selectedTabIndex?: number;
-  content: Children;
+  mainContent: Children;
+  sideContent: Children;
 };
 
 export const Page: Component<PageProps> = ({
@@ -21,9 +16,9 @@ export const Page: Component<PageProps> = ({
   headerTitle,
   scriptSrcPrefix,
   selectedTabIndex,
-  content,
+  mainContent,
+  sideContent,
 }) => {
-  const childrenContent = valueIsArray(content) ? content : [content];
   return m.Html({
     lang: "en",
     children: [
@@ -51,6 +46,7 @@ export const Page: Component<PageProps> = ({
             class: "flex items-start",
             children: [
               Navbar({
+                classNames: "fg1",
                 selectedLinkIndex: val(selectedTabIndex) ?? -1,
                 links: [
                   {
@@ -62,19 +58,19 @@ export const Page: Component<PageProps> = ({
                   {
                     index: 1,
                     icon: "bar_chart_4_bars",
-                    label: "Charts & trends",
+                    label: "Charts & Trends",
                     href: "/charts.html",
                   },
                   {
                     index: 2,
                     icon: "savings",
-                    label: "Budget & earnings",
+                    label: "Budget & Investments",
                     href: "/budget.html",
                   },
                   {
                     index: 3,
                     icon: "sell",
-                    label: "Tags & categories",
+                    label: "Tags & Categories",
                     href: "/tags",
                   },
                   {
@@ -92,8 +88,20 @@ export const Page: Component<PageProps> = ({
                 },
               }),
               m.Div({
-                class: "relative pl5 mw7",
-                children: [Header({ title: headerTitle }), ...childrenContent],
+                class: "relative pl5 fg4",
+                children: [
+                  Header({ title: headerTitle }),
+                  m.Div({
+                    class: "flex",
+                    children: [
+                      m.Div({ class: "fg3", children: mainContent }),
+                      m.Div({
+                        class: "fg2 bg-almost-white",
+                        children: sideContent,
+                      }),
+                    ],
+                  }),
+                ],
               }),
             ],
           }),

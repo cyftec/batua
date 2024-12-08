@@ -17,9 +17,10 @@ export const Icon: Component<IconProps> = ({
   title,
 }) =>
   m.Span({
-    class: dstr`material-symbols-rounded ${className}`,
+    class: dstr`material-symbols-rounded ${() =>
+      !!onClick ? "pointer" : ""} ${className}`,
     style: dstr`font-size: ${() => val(size) || "16"}px`,
-    onclick: () => onClick,
+    onclick: onClick,
     children: iconName,
     title: val(title) || "",
   });

@@ -211,10 +211,9 @@ export type Account = {
 export type TagCategory = keyof typeof TRANSACTION_CATEGORIES;
 
 export type Tag = {
-  id: string;
   name: string;
   type: TagCategory;
-  isDeletable: boolean;
+  isEditable: boolean;
 };
 
 export type Budget = {

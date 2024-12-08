@@ -128,11 +128,11 @@ var getArrayMutations = (oldDsitinctItemsArray, newDsitinctItemsArray, idKey) =>
 };
 // ../../maya-ui/core/node_modules/@cyftec/signal/src/core.ts
 var subscriber = null;
-var signal = (value) => {
+var source = (value) => {
   let _value = immut(value);
   const subscriptions = new Set;
   return {
-    type: "signal",
+    type: "source-signal",
     get value() {
       if (subscriber)
         subscriptions.add(subscriber);
@@ -152,35 +152,41 @@ var effect = (fn) => {
   subscriber = null;
 };
 var derived = (signalValueGetter) => {
-  let oldValue = null;
-  const derivedSignal = signal(oldValue);
+  let oldValue;
+  const derivedSource = source(oldValue);
   effect(() => {
     oldValue = signalValueGetter(oldValue);
-    derivedSignal.value = oldValue;
+    derivedSource.value = oldValue;
   });
+  const derivedSignal = {
+    type: "derived-signal",
+    get prevValue() {
+      return oldValue;
+    },
+    get value() {
+      return derivedSource.value;
+    }
+  };
   return derivedSignal;
 };
-var valueIsSignal = (value) => !!(value?.type === "signal");
+var valueIsSignal = (value) => ["source-signal", "derived-signal"].includes(value?.type);
 // ../../maya-ui/core/node_modules/@cyftec/signal/src/utils/transforms.ts
-var drstr = (strings, ...signalExpressions) => derived(() => {
+var val = (value) => valueIsSignal(value) ? value.value : value;
+var dstr = (strings, ...tlExpressions) => derived(() => {
   return strings.reduce((acc, fragment, i) => {
     let expValue;
-    const expression = signalExpressions[i];
-    if (expression === undefined) {
-      expValue = "";
-    } else if (typeof expression === "function") {
-      expValue = expression();
+    const expression = tlExpressions[i];
+    if (typeof expression === "function") {
+      expValue = expression() ?? "";
     } else if (valueIsSignal(expression)) {
-      expValue = expression.value || "";
+      expValue = expression.value ?? "";
     } else {
-      expValue = null;
+      expValue = expression ?? "";
     }
-    if (expValue === null)
-      throw new Error("Expected a signal or a function expression which contains signal values and returns a string");
-    return `${acc}${fragment}${expValue}`;
+    return `${acc}${fragment}${expValue.toString()}`;
   }, "");
 });
-// ../../maya-ui/core/src/utils/constants.ts
+// ../../maya-ui/core/core/utils/constants.ts
 var customEventKeys = ["onunmount"];
 var htmlEventKeys = [
   "onafterprint",
@@ -378,37 +384,16 @@ var htmlTagNames = [
   "video",
   "wbr"
 ];
-// ../../maya-ui/core/src/utils/helpers.ts
+// ../../maya-ui/core/core/utils/helpers.ts
 var valueIsArray = (value) => Array.isArray(value);
 var valueIsHtmlNode = (value) => !isNaN(value?.nodeId) && value?.nodeId > 0;
-var valueIsNode = (value) => typeof value?.nodeId === "number" && isFinite(value?.nodeId);
-var valueIsSignalNode = (value) => valueIsSignal(value) && !isNaN(value.value?.nodeId);
-var valueIsChildrenSignal = (value) => {
-  if (valueIsSignal(value)) {
-    const children = value.value;
-    if (valueIsNode(children))
-      return true;
-    if (valueIsArray(children) && children.every((child) => valueIsNode(child))) {
-      return true;
-    }
-  }
-  return false;
-};
-var valueIsChildren = (value) => {
-  if (valueIsNode(value) || valueIsSignalNode(value))
-    return true;
-  if (valueIsArray(value) && value.every((item) => valueIsNode(item) || valueIsSignalNode(item)))
-    return true;
-  return false;
-};
-var valueIsChildrenProp = (value) => {
-  if (valueIsChildrenSignal(value))
-    return true;
-  if (valueIsChildren(value))
-    return true;
-  return false;
-};
-// ../../maya-ui/core/src/utils/id-generator.ts
+var valueIsChild = (value) => valueIsHtmlNode(value) || typeof value === "string";
+var valueIsSignalChild = (value) => valueIsSignal(value) && valueIsChild(value.value);
+var valueIsMaybeSignalChild = (value) => valueIsChild(value) || valueIsSignalChild(value);
+var valueIsChildrenSignal = (value) => valueIsSignal(value) && (valueIsChild(value.value) || valueIsArray(value.value) && value.value.every((child) => valueIsChild(child)));
+var valueIsChildren = (value) => valueIsMaybeSignalChild(value) || valueIsArray(value) && value.every((item) => valueIsMaybeSignalChild(item));
+var valueIsChildrenProp = (value) => valueIsChildrenSignal(value) || valueIsChildren(value);
+// ../../maya-ui/core/core/utils/id-generator.ts
 var idGenerator = () => {
   let nodeId = 0;
   return {
@@ -417,28 +402,15 @@ var idGenerator = () => {
   };
 };
 var idGen = idGenerator();
-// ../../maya-ui/core/src/dom/core.ts
-var attributeIsChildren = (propKey, propValue, tagName) => {
-  if (propKey === "children") {
-    if (valueIsChildrenProp(propValue))
-      return true;
-    throw new Error(`Invalid children prop for node with tagName: ${tagName}\n\n ${JSON.stringify(propValue)}`);
-  }
-  return false;
-};
-var attributeIsEvent = (propKey, propValue, tagName) => {
-  if (eventKeys.includes(propKey)) {
-    if (typeof propValue === "function")
-      return true;
-    throw new Error(`Invalid event for node with tagName: ${tagName}`);
-  }
-  return false;
-};
-var attributeIsHtmlEvent = (propKey, propValue, tagName) => htmlEventKeys.includes(propKey) && attributeIsEvent(propKey, propValue, tagName);
-var attributeIsCustomEvent = (propKey, propValue, tagName) => customEventKeys.includes(propKey) && attributeIsEvent(propKey, propValue, tagName);
+// ../../maya-ui/core/core/dom/core.ts
+var attributeIsUndefinedEvent = (propKey, propValue) => eventKeys.includes(propKey) && propValue === undefined;
+var attributeIsHtmlEvent = (propKey, propValue) => htmlEventKeys.includes(propKey) && typeof propValue === "function";
+var attributeIsCustomEvent = (propKey, propValue) => customEventKeys.includes(propKey) && typeof propValue === "function";
+var attributeIsEvent = (propKey, propValue) => attributeIsUndefinedEvent(propKey, propValue) || attributeIsHtmlEvent(propKey, propValue) || attributeIsCustomEvent(propKey, propValue);
 var handleEventProps = (htmlNode, events) => {
   Object.entries(events).forEach(([eventName, listenerFn]) => {
-    if (attributeIsHtmlEvent(eventName, listenerFn, htmlNode.tagName)) {
+    if (attributeIsUndefinedEvent(eventName, listenerFn)) {
+    } else if (attributeIsHtmlEvent(eventName, listenerFn)) {
       const eventKey = eventName.slice(2);
       htmlNode.addEventListener(eventKey, (e) => {
         if (eventKey === "keypress") {
@@ -446,8 +418,9 @@ var handleEventProps = (htmlNode, events) => {
         }
         listenerFn(e);
       });
-    } else if (attributeIsCustomEvent(eventName, listenerFn, htmlNode.tagName) && eventName === "onunmount") {
-      htmlNode.unmountListener = listenerFn;
+    } else if (attributeIsCustomEvent(eventName, listenerFn)) {
+      if (eventName === "onunmount")
+        htmlNode.unmountListener = listenerFn;
     } else {
       console.error(`Invalid event key: ${eventName} for node with tagName: ${htmlNode.tagName}`);
     }
@@ -455,14 +428,23 @@ var handleEventProps = (htmlNode, events) => {
 };
 var handleAttributeProps = (htmlNode, attributes) => {
   const attribSignals = {};
-  const getAttrValueString = (attrValue) => valueIsSignal(attrValue) ? attrValue.value : attrValue;
-  const setAttribute = (htmlNode2, attrKey, attrValue) => {
-    if (attrKey === "value") {
-      htmlNode2.value = getAttrValueString(attrValue);
+  const getAttrValue = (attributeValue) => {
+    const attrValue = valueIsSignal(attributeValue) ? attributeValue.value : attributeValue;
+    return attrValue ?? "";
+  };
+  const setAttribute = (htmlNode2, attrKey, attributeValue) => {
+    const attrValue = getAttrValue(attributeValue);
+    if (typeof attrValue === "boolean") {
+      if (attrValue)
+        htmlNode2.setAttribute(attrKey, "");
+      else
+        htmlNode2.removeAttribute(attrKey);
+    } else if (attrKey === "value") {
+      htmlNode2.value = attrValue;
     } else if (attrKey === "classname") {
-      htmlNode2.setAttribute("class", getAttrValueString(attrValue));
+      htmlNode2.setAttribute("class", attrValue);
     } else {
-      htmlNode2.setAttribute(attrKey, getAttrValueString(attrValue));
+      htmlNode2.setAttribute(attrKey, attrValue);
     }
   };
   Object.entries(attributes).forEach((attrib) => {
@@ -481,18 +463,30 @@ var handleAttributeProps = (htmlNode, attributes) => {
   };
   effect(attrSignalsEffect);
 };
-var getDomNode = (node) => valueIsNode(node) ? node : valueIsSignalNode(node) ? node.value : node;
-var handleChildrenProps = (parentNode, children) => {
-  if (!children)
+var getNodeFromChild = (child) => {
+  if (valueIsSignalChild(child)) {
+    const nonSignalChild = child.value;
+    return getNodeFromChild(nonSignalChild);
+  }
+  if (valueIsHtmlNode(child)) {
+    return child;
+  }
+  if (typeof child !== "string") {
+    throw new Error(`Invalid child. Type of child: ${typeof child}`);
+  }
+  return document.createTextNode(child);
+};
+var handleChildrenProp = (parentNode, childrenProp) => {
+  if (!childrenProp)
     return;
-  if (valueIsChildrenSignal(children)) {
+  if (valueIsChildrenSignal(childrenProp)) {
     effect(() => {
-      const childrenSignal = children;
+      const childrenSignal = childrenProp;
       const childrenSignalValue = childrenSignal.value;
-      const childNodes = valueIsArray(childrenSignalValue) ? childrenSignalValue : [childrenSignalValue];
-      childNodes.forEach((node, index) => {
+      const children = valueIsArray(childrenSignalValue) ? childrenSignalValue : [childrenSignalValue];
+      children.forEach((child, index) => {
         const prevChildNode = parentNode.childNodes[index];
-        const newChildNode = node;
+        const newChildNode = getNodeFromChild(child);
         if (prevChildNode && newChildNode) {
           parentNode.replaceChild(newChildNode, prevChildNode);
         } else if (newChildNode) {
@@ -501,36 +495,39 @@ var handleChildrenProps = (parentNode, children) => {
           console.error(`No child found for node with tagName: ${parentNode.tagName}`);
         }
       });
-      for (let i = childNodes.length;i < parentNode.childNodes.length; i++) {
-        const childNode = parentNode.childNodes[i];
+      const newChildrenCount = children.length;
+      while (newChildrenCount < parentNode.childNodes.length) {
+        const childNode = parentNode.childNodes[newChildrenCount];
         if (childNode)
           parentNode.removeChild(childNode);
       }
     });
   }
-  if (valueIsChildren(children)) {
-    const childNodes = children;
-    const fixedSignalNodes = [];
-    const sanitisedChildren = valueIsArray(childNodes) ? childNodes : [childNodes];
-    sanitisedChildren.forEach((maybeSignalChild, index) => {
-      if (valueIsSignalNode(maybeSignalChild)) {
-        fixedSignalNodes.push({
+  if (valueIsChildren(childrenProp)) {
+    const children = childrenProp;
+    const signalledChildren = [];
+    const sureArrayChildren = valueIsArray(children) ? children : [children];
+    sureArrayChildren.forEach((maybeSignalChild, index) => {
+      if (valueIsSignalChild(maybeSignalChild)) {
+        signalledChildren.push({
           index,
-          signalNode: maybeSignalChild
+          childSignal: maybeSignalChild
         });
+        if (!window.isDomAccessPhase)
+          parentNode.appendChild(getNodeFromChild(maybeSignalChild.value));
         return;
       }
       if (window.isDomAccessPhase)
         return;
-      const childNode = getDomNode(maybeSignalChild);
+      const childNode = getNodeFromChild(maybeSignalChild);
       parentNode.appendChild(childNode);
     });
-    if (fixedSignalNodes.length) {
-      fixedSignalNodes.forEach(({ index, signalNode }) => {
+    if (signalledChildren.length) {
+      signalledChildren.forEach(({ index, childSignal }) => {
         const updateSignalledNodes = () => {
-          const newChildNode = signalNode.value;
-          if (!newChildNode)
+          if (!childSignal.value)
             return;
+          const newChildNode = getNodeFromChild(childSignal.value);
           const prevChildNode = parentNode.childNodes[index];
           if (prevChildNode && newChildNode) {
             parentNode.replaceChild(newChildNode, prevChildNode);
@@ -546,33 +543,37 @@ var handleChildrenProps = (parentNode, children) => {
   }
 };
 var getNodesEventsAndAttributes = (props, tagName) => {
-  let children = undefined;
+  let childrenProp = undefined;
   const events = {};
   const attributes = {};
   Object.entries(props).forEach(([propKey, propValue]) => {
-    if (attributeIsChildren(propKey, propValue, tagName)) {
-      children = propValue;
-    } else if (attributeIsEvent(propKey, propValue, tagName)) {
+    if (propKey === "children") {
+      if (valueIsChildrenProp(propValue))
+        childrenProp = propValue;
+      else
+        throw new Error(`Invalid children prop for node with tagName: ${tagName}\n\n ${JSON.stringify(propValue)}`);
+    } else if (attributeIsEvent(propKey, propValue)) {
       events[propKey] = propValue;
     } else {
       attributes[propKey] = propValue;
     }
   });
-  return { children, events, attributes };
+  return { childrenProp, events, attributes };
 };
 var createHtmlNode = (tagName, props) => {
   const nodeId = idGen.getNewId();
   const htmlNode = window.isDomAccessPhase ? document.querySelector(`[data-node-id="${nodeId}"]`) : document.createElement(tagName);
   htmlNode.nodeId = nodeId;
   htmlNode.unmountListener = undefined;
-  props["data-node-id"] = htmlNode.nodeId.toString();
-  const { children, events, attributes } = getNodesEventsAndAttributes(props, htmlNode.tagName);
+  const htmlNodeProps = valueIsChildrenProp(props) ? { children: props } : props;
+  htmlNodeProps["data-node-id"] = htmlNode.nodeId.toString();
+  const { childrenProp, events, attributes } = getNodesEventsAndAttributes(htmlNodeProps, htmlNode.tagName);
   handleEventProps(htmlNode, events);
   handleAttributeProps(htmlNode, attributes);
-  handleChildrenProps(htmlNode, children);
+  handleChildrenProp(htmlNode, childrenProp);
   return htmlNode;
 };
-// ../../maya-ui/core/src/dom/mutations.ts
+// ../../maya-ui/core/core/dom/mutations.ts
 var mountRecord = {};
 var unmountRecord = {};
 var mountUnmountObserver = new MutationObserver((mutations) => {
@@ -619,27 +620,39 @@ var execSubtreeUnmountListeners = (node, elUnmountListener) => {
   if (unmountRecord[node.nodeId])
     delete unmountRecord[node.nodeId];
 };
-// ../../maya-ui/core/src/building-blocks/nodes/custom-nodes/for.ts
+// ../../maya-ui/core/core/building-blocks/nodes/custom-nodes/for.ts
 var getSignalledObject = (item, i, map) => {
-  const indexSignal = signal(i);
-  const itemSignal = signal(item);
+  const indexSignal = source(i);
+  const itemSignal = source(item);
   return {
     indexSignal,
     itemSignal,
-    mappedNode: map(itemSignal, indexSignal)
+    mappedChild: map(itemSignal, indexSignal)
   };
+};
+var getChildrenAfterInjection = (children, n, nthChild) => {
+  if (n !== undefined && nthChild) {
+    const injectingIndex = n > children.length ? children.length : n;
+    children.splice(injectingIndex, 0, nthChild());
+  }
+  return children;
 };
 var customeNodeFor = ({
   items,
   itemIdKey,
   map,
-  mutableMap
+  mutableMap,
+  n,
+  nthChild
 }) => {
-  const list = valueIsSignal(items) ? items : signal(items);
+  if (nthChild && n === undefined || n !== undefined && !nthChild) {
+    throw new Error("Either both 'n' and 'nthChild' be passed or none of them.");
+  }
+  const list = valueIsSignal(items) ? items : source(items);
   if (map) {
     if (itemIdKey || mutableMap)
       throw new Error("if 'map' is provided, 'itemIdKey' and 'mutableMap' is uncessary.");
-    return derived(() => list.value.map(map));
+    return derived(() => getChildrenAfterInjection(list.value.map(map), n, nthChild));
   }
   const itemsValue = list.value;
   if (!mutableMap)
@@ -652,7 +665,7 @@ var customeNodeFor = ({
     return list.value;
   });
   const signalledItemsMap = derived((oldMap) => {
-    if (oldMap === null || !oldList) {
+    if (!oldMap || !oldList) {
       const initialItems = newList.value;
       return initialItems.map((item, i) => getSignalledObject(item, i, mutableMap));
     }
@@ -673,88 +686,27 @@ var customeNodeFor = ({
       return getSignalledObject(mut.value, i, mutableMap);
     });
   });
-  const nodesSignal = derived(() => {
-    return signalledItemsMap.value.map((ob) => ob.mappedNode);
-  });
+  const nodesSignal = derived(() => getChildrenAfterInjection(signalledItemsMap.value.map((ob) => ob.mappedChild), n, nthChild));
   return nodesSignal;
 };
-// ../../maya-ui/core/src/building-blocks/nodes/custom-nodes/if.ts
+// ../../maya-ui/core/core/building-blocks/nodes/custom-nodes/if.ts
 var customeNodeIf = ({ condition, then, otherwise }) => {
-  const dn = "display: none;";
-  const dib = "display: inline-block;";
-  const isSignal = valueIsSignal(condition);
-  const isTruthy = derived(() => isSignal ? condition.value : condition);
-  const thenStyle = derived(() => isTruthy.value ? dib : dn);
-  const owStyle = derived(() => isTruthy.value ? dn : dib);
-  return [
-    m.Div({
-      style: thenStyle,
-      children: then
-    }),
-    m.Div({
-      style: owStyle,
-      children: otherwise
-    })
-  ];
+  const isTruthy = derived(() => !!(valueIsSignal(condition) ? condition.value : condition));
+  return derived(() => isTruthy.value ? then() : otherwise ? otherwise() : m.Span({ style: "display: none;" }));
 };
-// ../../maya-ui/core/src/building-blocks/nodes/custom-nodes/switch.ts
+// ../../maya-ui/core/core/building-blocks/nodes/custom-nodes/switch.ts
 var customeNodeSwitch = ({
   subject,
   defaultCase,
   cases
 }) => {
-  const dn = "display: none;";
-  const dib = "display: inline-block;";
-  const isSignal = valueIsSignal(subject);
-  const switchCase = derived(() => (isSignal ? subject.value : subject).toString());
-  const caseEntries = Object.entries(cases);
-  const caseKeys = caseEntries.map(([key, _]) => key);
-  const isDefaultCase = derived(() => defaultCase && !caseKeys.includes(switchCase.value));
-  const defaultCaseStyle = derived(() => isDefaultCase.value ? dib : dn);
-  const matchStyle = (match) => derived(() => switchCase.value === match ? dib : dn);
-  return [
-    ...m.If({
-      condition: isDefaultCase,
-      then: m.Span({
-        style: defaultCaseStyle,
-        children: defaultCase
-      }),
-      otherwise: m.Span({ class: dn })
-    }),
-    ...caseEntries.map(([match, node]) => {
-      return m.Div({
-        style: matchStyle(match),
-        children: node
-      });
-    })
-  ];
+  const switchCase = derived(() => valueIsSignal(subject) ? subject.value : subject);
+  return derived(() => {
+    const caseKey = switchCase.value;
+    return cases[caseKey] ? cases[caseKey]() : defaultCase ? defaultCase() : m.Span({ style: "display: none;" });
+  });
 };
-// ../../maya-ui/core/src/building-blocks/nodes/custom-nodes/text.ts
-var customeNodeText = (text, ...exprs) => {
-  const getTextNode = (textValue) => {
-    const textNode = document.createTextNode(textValue);
-    textNode.nodeId = 0;
-    textNode.unmountListener = undefined;
-    return textNode;
-  };
-  if (valueIsSignal(text)) {
-    return derived(() => getTextNode(text.value));
-  } else if (Array.isArray(text) && exprs.length) {
-    return customeNodeText(drstr(text, ...exprs));
-  } else {
-    return getTextNode(text);
-  }
-};
-// ../../maya-ui/core/src/building-blocks/nodes/html-nodes.ts
-function Component(comp) {
-  return function(props) {
-    const allProps = Object.entries(props).reduce((map, [key, value]) => {
-      map[key] = valueIsSignal(value) || typeof value === "function" ? value : derived(() => value);
-      return map;
-    }, {});
-    return comp(allProps);
-  };
-}
+// ../../maya-ui/core/core/building-blocks/nodes/html-nodes.ts
 var htmlNodesMap = htmlTagNames.reduce((map, htmlTagName) => {
   const nodeTagName = htmlTagName.split("").map((char, index) => !index ? char.toUpperCase() : char).join("");
   map[nodeTagName] = (props) => createHtmlNode(htmlTagName, props);
@@ -762,12 +714,11 @@ var htmlNodesMap = htmlTagNames.reduce((map, htmlTagName) => {
 }, {});
 var m = {
   ...htmlNodesMap,
-  Text: customeNodeText,
   For: customeNodeFor,
   If: customeNodeIf,
   Switch: customeNodeSwitch
 };
-// ../../maya-ui/core/src/building-blocks/components.ts
+// ../../maya-ui/core/core/building-blocks/components.ts
 var defaultMetaTags = () => [
   m.Meta({ charset: "UTF-8" }),
   m.Meta({
@@ -779,105 +730,471 @@ var defaultMetaTags = () => [
     content: "width=device-width, initial-scale=1.0"
   })
 ];
-// ../dev/@components/button.ts
-var Button = Component(({ className, onTap, label }) => m.Button({
-  class: derived(() => `pv2 ph3 br-pill ba bw1 b--light-silver b--hover-black pointer bg-white black ${className}`),
+// ../dev/@libs/ui-kit/button.ts
+var Button = ({ className, onTap, label }) => m.Button({
+  class: dstr`pv2 ph3 br-pill ba bw1 b--light-silver b--hover-black pointer bg-white black ${className}`,
   onclick: onTap,
-  children: m.Text(label.value)
-}));
-// ../dev/@components/content.ts
-var Content = ({ children, classNames }) => m.Div({
-  class: drstr`confined pv3 ${classNames}`,
-  style: "min-height: 40rem;",
-  children
+  children: label
 });
-// ../dev/@components/header.ts
-var Header = Component(({ title }) => m.Div({
-  class: "sticky left-0 top-0 right-0 pa3 bg-white",
-  children: [
-    m.Div({
-      class: "confined ma0 f3 b",
-      children: m.Text(title)
-    })
+// ../dev/@libs/common/constants/mock-data.ts
+var MOCK = {
+  ACCOUNTS: [
+    {
+      id: "CASH",
+      name: "Cash in Wallet",
+      balance: 3587,
+      currency: "INR"
+    },
+    {
+      id: "ICICI_SAVINGS",
+      accountId: "022901511014",
+      name: "ICICI Savings Account",
+      balance: 118495,
+      currency: "INR"
+    },
+    {
+      id: "HDFC_SAVINGS",
+      accountId: "3600012345689",
+      name: "HDFC Savings Account",
+      balance: 835723,
+      currency: "INR"
+    },
+    {
+      id: "AXIS_SAVINGS",
+      accountId: "549912345689",
+      name: "Axis Savings Account",
+      balance: 9423,
+      currency: "INR"
+    },
+    {
+      id: "AXIS_CREDIT",
+      accountId: "549922228888",
+      name: "Axis Credit Account",
+      balance: 90000,
+      currency: "INR"
+    },
+    {
+      id: "SODEXO",
+      accountId: "chnkrydv@sodexo.com",
+      name: "Sodexo",
+      balance: 2200,
+      currency: "INR"
+    }
+  ],
+  PAYMENT_METHODS: [
+    {
+      code: "COINS_NOTES",
+      displayName: "Coins & Notes",
+      defaultAccountId: "CASH",
+      connectedAccountIds: ["CASH"]
+    },
+    {
+      code: "GPAY",
+      displayName: "Google Pay",
+      uniqueId: "9852430671@okaxis",
+      defaultAccountId: "ICICI_SAVINGS",
+      connectedAccountIds: ["ICICI_SAVINGS"]
+    },
+    {
+      code: "PHONEPE",
+      displayName: "PhonePe",
+      uniqueId: "9852430671@ybl",
+      defaultAccountId: "ICICI_SAVINGS",
+      connectedAccountIds: ["ICICI_SAVINGS"]
+    },
+    {
+      code: "PAYTM",
+      displayName: "Paytm",
+      uniqueId: "9852430671@paytm",
+      defaultAccountId: "ICICI_SAVINGS",
+      connectedAccountIds: ["ICICI_SAVINGS", "AXIS_SAVINGS"]
+    },
+    {
+      code: "ICICI_DEBIT",
+      displayName: "ICICI Debit Card",
+      uniqueId: "4300111122223333",
+      expiry: new Date(2028, 10),
+      defaultAccountId: "ICICI_SAVINGS",
+      connectedAccountIds: ["ICICI_SAVINGS"]
+    },
+    {
+      code: "AXIS_CREDIT",
+      displayName: "AXIS Credit Card",
+      uniqueId: "4300111122223333",
+      expiry: new Date(2026, 3),
+      defaultAccountId: "AXIS_CREDIT",
+      connectedAccountIds: ["AXIS_CREDIT"]
+    },
+    {
+      code: "ICICI_NET_BANKING",
+      displayName: "ICICI Net Banking",
+      defaultAccountId: "ICICI_SAVINGS",
+      connectedAccountIds: ["ICICI_SAVINGS"]
+    },
+    {
+      code: "HDFC_NET_BANKING",
+      displayName: "HDFC Net Banking",
+      defaultAccountId: "HDFC_SAVINGS",
+      connectedAccountIds: ["HDFC_SAVINGS"]
+    },
+    {
+      code: "SODEXO_COUPONS",
+      displayName: "Sodexo Coupons",
+      uniqueId: "chnkrydv@sodexo.com",
+      expiry: new Date(2025, 0, 31),
+      defaultAccountId: "SODEXO",
+      connectedAccountIds: ["SODEXO"]
+    }
+  ],
+  TAGS: [
+    {
+      name: "cash",
+      type: "PAYMENT_SOURCE",
+      isEditable: false
+    },
+    {
+      name: "icicibank",
+      type: "PAYMENT_SOURCE",
+      isEditable: false
+    },
+    {
+      name: "hdfcbank",
+      type: "PAYMENT_SOURCE",
+      isEditable: false
+    },
+    {
+      name: "axisbank",
+      type: "PAYMENT_SOURCE",
+      isEditable: false
+    },
+    {
+      name: "sodexo",
+      type: "PAYMENT_SOURCE",
+      isEditable: false
+    },
+    {
+      name: "coinsnnotes",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "gpay",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "phonepe",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "paytm",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "icicidebitcard",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "axiscreditcard",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "icicinetbanking",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "hdfcnetbanking",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "sodexocoupons",
+      type: "PAYMENT_METHOD",
+      isEditable: false
+    },
+    {
+      name: "essential",
+      type: "NECESSITY",
+      isEditable: false
+    },
+    {
+      name: "maybeluxary",
+      type: "NECESSITY",
+      isEditable: false
+    },
+    {
+      name: "luxary",
+      type: "NECESSITY",
+      isEditable: false
+    },
+    {
+      name: "uber",
+      type: "COMMUTE",
+      isEditable: true
+    },
+    {
+      name: "airbnb",
+      type: "TRAVEL",
+      isEditable: true
+    },
+    {
+      name: "bookingdotcom",
+      type: "TRAVEL",
+      isEditable: true
+    },
+    {
+      name: "decathlon",
+      type: "SHOP_OR_MARKET",
+      isEditable: true
+    },
+    {
+      name: "amazon",
+      type: "SHOP_OR_MARKET",
+      isEditable: true
+    },
+    {
+      name: "ikea",
+      type: "SHOP_OR_MARKET",
+      isEditable: true
+    },
+    {
+      name: "grocery",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "apparel",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "gadgets",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "furniture",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "grooming",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "gifting",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "jewellery",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "stationery",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "books",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "gardening",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "sportsnfitness",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "treatment",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "vehicle",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "outing",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "softwareapp",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "appliances",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "education",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "petsupplies",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "diningout",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "homenkitchen",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "luggagenbags",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "toysngames",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "accessories",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    },
+    {
+      name: "moviesnshows",
+      type: "PRODUCT_CATEGORY",
+      isEditable: true
+    }
   ]
-}));
-// ../dev/@components/navbar.ts
-var NavbarLink = Component(({ className, icon, label, href, isSelected }) => m.A({
-  href,
-  class: drstr`no-underline f7 pa3 mnw4 pointer ${() => isSelected.value ? "bg-white mb1 black" : "silver"} ${className}`,
-  children: m.Div({
-    class: "flex flex-column items-center",
+};
+// ../dev/@libs/ui-kit/icon.ts
+var Icon = ({
+  className,
+  size,
+  onClick,
+  iconName,
+  title
+}) => m.Span({
+  class: dstr`material-symbols-rounded ${() => onClick ? "pointer" : ""} ${className}`,
+  style: dstr`font-size: ${() => val(size) || "16"}px`,
+  onclick: onClick,
+  children: iconName,
+  title: val(title) || ""
+});
+// ../dev/@libs/widgets/header.ts
+var Header = ({ title }) => m.Div({
+  class: "sticky left-0 top-0 right-0 pv4 f1 fw1 black bg-white",
+  children: title
+});
+// ../dev/@libs/widgets/navbar.ts
+var Navbar = ({
+  classNames,
+  rightLink,
+  links,
+  selectedLinkIndex
+}) => {
+  return m.Div({
+    class: dstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 ${classNames}`,
     children: [
-      m.Span({
-        class: "material-symbols-rounded",
-        style: "font-size: 28px",
-        children: m.Text(icon.value)
+      m.A({
+        class: "no-underline green",
+        href: "/",
+        children: m.Div({
+          class: "tc f3 ph4 pv3 ma4 bn br3 bg-white",
+          children: "batua 1.04"
+        })
       }),
       m.Div({
-        class: "f7 pt1",
-        children: m.Text(label.value)
-      })
-    ]
-  })
-}));
-var Navbar = Component(({ rightLink, links, selectedLinkIndex }) => {
-  console.log(selectedLinkIndex.value);
-  return m.Div({
-    class: "sticky left-0 right-0 bottom-0 bg-light-gray",
-    children: [
-      m.Div({
-        class: "confined flex justify-between",
-        children: [
-          m.Div({
-            class: "flex items-center",
-            children: m.For({
-              items: links,
-              map: (link) => NavbarLink({
-                icon: link.icon,
-                label: link.label,
-                href: link.href,
-                isSelected: selectedLinkIndex.value === link.index
-              })
-            })
-          }),
-          NavbarLink({
-            icon: rightLink.value.icon,
-            label: rightLink.value.label,
-            href: rightLink.value.href,
-            isSelected: selectedLinkIndex.value === rightLink.value.index
+        class: "h-100",
+        children: m.For({
+          items: links,
+          map: (link2, i) => NavbarLink({
+            classNames: "ml3 pa3 mv3",
+            icon: link2.icon,
+            label: link2.label,
+            href: link2.href,
+            isSelected: val(selectedLinkIndex) === link2.index
           })
-        ]
+        })
+      }),
+      NavbarLink({
+        classNames: "ml3 pa3 mb3",
+        icon: val(rightLink).icon,
+        label: val(rightLink).label,
+        href: val(rightLink).href,
+        isSelected: val(selectedLinkIndex) === val(rightLink).index
       })
     ]
   });
+};
+var NavbarLink = ({
+  classNames,
+  icon: icon4,
+  label,
+  href,
+  isSelected
+}) => m.Div({
+  class: dstr`pointer br4 br--left ${() => val(isSelected) ? "bg-white" : ""} ${classNames}`,
+  children: m.A({
+    class: dstr`no-underline hover-black ${() => val(isSelected) ? "black" : "silver"}`,
+    href,
+    children: m.Div({
+      class: "flex items-center",
+      children: [
+        Icon({
+          size: 22,
+          iconName: icon4
+        }),
+        m.Div({
+          class: "f5 pl3",
+          children: label
+        })
+      ]
+    })
+  })
 });
-// ../dev/@components/page.ts
+// ../dev/@libs/widgets/page.ts
 var Page = ({
   title,
   headerTitle,
   scriptSrcPrefix,
-  selectedTabIndex = -1,
-  content
+  selectedTabIndex,
+  mainContent,
+  sideContent
 }) => {
-  const childrenContent = valueIsArray(content) ? content : [content];
   return m.Html({
     lang: "en",
     children: [
-      m.Head({
-        children: [
-          ...defaultMetaTags(),
-          m.Title({ children: m.Text(title) }),
-          m.Link({
-            rel: "stylesheet",
-            href: "https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"
-          }),
-          m.Link({
-            rel: "stylesheet",
-            href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
-          }),
-          m.Link({ rel: "stylesheet", href: "/assets/styles.css" })
-        ]
-      }),
+      m.Head([
+        ...defaultMetaTags(),
+        m.Title(title),
+        m.Link({
+          rel: "stylesheet",
+          href: "https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css"
+        }),
+        m.Link({
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+        }),
+        m.Link({ rel: "stylesheet", href: "/assets/styles.css" })
+      ]),
       m.Body({
         class: "mid-gray",
         children: [
@@ -886,43 +1203,41 @@ var Page = ({
             defer: "true"
           }),
           m.Div({
+            class: "flex items-start",
             children: [
-              Header({ title: headerTitle }),
-              Content({
-                children: childrenContent
-              }),
               Navbar({
-                selectedLinkIndex: selectedTabIndex,
+                classNames: "fg1",
+                selectedLinkIndex: val(selectedTabIndex) ?? -1,
                 links: [
                   {
                     index: 0,
-                    icon: "sort",
-                    label: "Expenses",
-                    href: "/expenses"
+                    icon: "swap_horiz",
+                    label: "Transactions",
+                    href: "/transactions"
                   },
                   {
                     index: 1,
-                    icon: "insert_chart",
-                    label: "Charts & trends",
+                    icon: "bar_chart_4_bars",
+                    label: "Charts & Trends",
                     href: "/charts.html"
                   },
                   {
                     index: 2,
                     icon: "savings",
-                    label: "Budget & earnings",
+                    label: "Budget & Investments",
                     href: "/budget.html"
                   },
                   {
                     index: 3,
                     icon: "sell",
-                    label: "Tags & categories",
-                    href: "/tags.html"
+                    label: "Tags & Categories",
+                    href: "/tags"
                   },
                   {
                     index: 4,
-                    icon: "payments",
-                    label: "Payment methods",
-                    href: "/payment-methods.html"
+                    icon: "account_balance_wallet",
+                    label: "Accounts & Payment Methods",
+                    href: "/accounts-and-payments"
                   }
                 ],
                 rightLink: {
@@ -931,6 +1246,22 @@ var Page = ({
                   label: "Settings",
                   href: "/settings.html"
                 }
+              }),
+              m.Div({
+                class: "relative pl5 fg4",
+                children: [
+                  Header({ title: headerTitle }),
+                  m.Div({
+                    class: "flex",
+                    children: [
+                      m.Div({ class: "fg3", children: mainContent }),
+                      m.Div({
+                        class: "fg2 bg-almost-white",
+                        children: sideContent
+                      })
+                    ]
+                  })
+                ]
               })
             ]
           })
@@ -943,14 +1274,14 @@ var Page = ({
 var main_default = () => Page({
   title: "Batua - Money Tracker App",
   headerTitle: "Home Page",
-  content: m.Div({
-    children: [
-      m.H3({ children: m.Text("home page stuff") }),
-      m.Span({
-        children: m.Text(`Go to expenses`)
-      })
-    ]
-  })
+  mainContent: m.Div([
+    m.H3("home page stuff"),
+    Button({
+      label: "Go to transactions",
+      onTap: () => location.href = "/transactions"
+    })
+  ]),
+  sideContent: ""
 });
 
 

@@ -1,6 +1,6 @@
 import { Component, m } from "@maya/core";
 import { dstr, val } from "@maya/signal";
-import { Icon } from "./icon";
+import { Icon } from "../ui-kit/icon";
 
 type LinkData = {
   index: number;
@@ -23,7 +23,8 @@ export const Navbar: Component<NavbarProps> = ({
   selectedLinkIndex,
 }) => {
   return m.Div({
-    class: dstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 w-20 ${classNames}`,
+    class: dstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 ${classNames}`,
+    // style: "flex-grow: 1; flex-basis: 0;",
     children: [
       m.A({
         class: "no-underline green",

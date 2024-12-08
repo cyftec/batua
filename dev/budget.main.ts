@@ -1,5 +1,5 @@
 import { m } from "@maya/core";
-import { Page } from "./@libs/ui-kit";
+import { Page } from "./@libs/widgets";
 
 export default () =>
   Page({
@@ -7,5 +7,6 @@ export default () =>
     headerTitle: "Create budget based on earnings",
     scriptSrcPrefix: "budget.",
     selectedTabIndex: 2,
-    content: m.Span(`Sed ut perspiciatis`),
+    mainContent: m.Span(`Sed ut perspiciatis`),
+    sideContent: "",
   });

@@ -730,6 +730,673 @@ var defaultMetaTags = () => [
     content: "width=device-width, initial-scale=1.0"
   })
 ];
+// ../dev/@libs/common/constants/currencies.ts
+var CURRENCIES = {
+  AED: {
+    name: "United Arab Emirates Dirham",
+    symbol: "\u062F.\u0625"
+  },
+  AFN: {
+    name: "Afghan Afghani",
+    symbol: "\u060B"
+  },
+  ALL: {
+    name: "Albania Lek",
+    symbol: "Lek"
+  },
+  AMD: {
+    name: "Armenian Dram",
+    symbol: "\u058F"
+  },
+  ANG: {
+    name: "Netherlands Antilles Guilder",
+    symbol: "\u0192"
+  },
+  ARS: {
+    name: "Argentina Peso",
+    symbol: "$"
+  },
+  AUD: {
+    name: "Australia Dollar",
+    symbol: "AU$"
+  },
+  AWG: {
+    name: "Aruba Guilder",
+    symbol: "\u0192"
+  },
+  AZN: {
+    name: "Azerbaijan Manat",
+    symbol: "\u20BC"
+  },
+  BAM: {
+    name: "Convertible Mark",
+    symbol: "KM"
+  },
+  BBD: {
+    name: "Barbados Dollar",
+    symbol: "Bds$"
+  },
+  BDT: {
+    name: "Bangladeshi Taka",
+    symbol: "\u09F3"
+  },
+  BGN: {
+    name: "Bulgaria Lev",
+    symbol: "\u043B\u0432"
+  },
+  BHD: {
+    name: "Bahraini Dinar",
+    symbol: "\u062F.\u0628."
+  },
+  BIF: {
+    name: "Burundian Franc",
+    symbol: "FBu"
+  },
+  BMD: {
+    name: "Bermuda Dollar",
+    symbol: "BD$"
+  },
+  BND: {
+    name: "Brunei Darussalam Dollar",
+    symbol: "B$"
+  },
+  BOB: {
+    name: "Bolivia Bol\xEDviano",
+    symbol: "$b"
+  },
+  BRL: {
+    name: "Brazil Real",
+    symbol: "R$"
+  },
+  BSD: {
+    name: "Bahamas Dollar",
+    symbol: "B$"
+  },
+  BTN: {
+    name: "Bhutanese Ngultrum",
+    symbol: "Nu"
+  },
+  BWP: {
+    name: "Botswana Pula",
+    symbol: "P"
+  },
+  BYN: {
+    name: "Belarus Ruble",
+    symbol: "Br"
+  },
+  BZD: {
+    name: "Belize Dollar",
+    symbol: "BZ$"
+  },
+  CAD: {
+    name: "Canadian Dollar",
+    symbol: "C$"
+  },
+  CDF: {
+    name: "Congolese Franc",
+    symbol: "FC"
+  },
+  CHF: {
+    name: "Swiss Franc",
+    symbol: "Fr"
+  },
+  CLP: {
+    name: "Chile Peso",
+    symbol: "CLP$"
+  },
+  CNY: {
+    name: "China Yuan Renminbi",
+    symbol: "\xA5"
+  },
+  COP: {
+    name: "Colombia Peso",
+    symbol: "COL$"
+  },
+  CRC: {
+    name: "Costa Rica Colon",
+    symbol: "\u20A1"
+  },
+  CUP: {
+    name: "Cuba Peso",
+    symbol: "\u20B1"
+  },
+  CVE: {
+    name: "Cape Verdean escudo",
+    symbol: "CVE"
+  },
+  CYP: {
+    name: "Cypriot Pound",
+    symbol: "\xA3"
+  },
+  CZK: {
+    name: "Czech Republic Koruna",
+    symbol: "K\u010D"
+  },
+  DJF: {
+    name: "Djiboutian Franc",
+    symbol: "Fdj"
+  },
+  DKK: {
+    name: "Denmark Krone",
+    symbol: "kr"
+  },
+  DOP: {
+    name: "Dominican Republic Peso",
+    symbol: "RD$"
+  },
+  DZD: {
+    name: "Algerian Dinar",
+    symbol: "\u062F\u062C"
+  },
+  EEK: {
+    name: "Estonian Kroon",
+    symbol: "kr"
+  },
+  EGP: {
+    name: "Egypt Pound",
+    symbol: "\xA3"
+  },
+  ERN: {
+    name: "Eritrean Nakfa",
+    symbol: "Nkf"
+  },
+  ETB: {
+    name: "Ethiopian Birr",
+    symbol: "\u1265\u122D"
+  },
+  EUR: {
+    name: "Euro",
+    symbol: "\u20AC"
+  },
+  FIM: {
+    name: "Finnish Markka",
+    symbol: "MK"
+  },
+  FJD: {
+    name: "Fiji Dollar",
+    symbol: "FJ$"
+  },
+  FKP: {
+    name: "Malvinas Pound",
+    symbol: "\xA3"
+  },
+  Fr: {
+    name: "Franc",
+    symbol: "Fr"
+  },
+  GBP: {
+    name: "United Kingdom Pound",
+    symbol: "\xA3"
+  },
+  GEL: {
+    name: "Georgian Lari",
+    symbol: "\u10DA"
+  },
+  GGP: {
+    name: "Guernsey Pound",
+    symbol: "\xA3"
+  },
+  GHS: {
+    name: "Ghana Cedi",
+    symbol: "\xA2"
+  },
+  GIP: {
+    name: "Gibraltar Pound",
+    symbol: "\xA3"
+  },
+  GMD: {
+    name: "Gambian Dalasi",
+    symbol: "D"
+  },
+  GNF: {
+    name: "Guinean franc",
+    symbol: "GFr"
+  },
+  GTQ: {
+    name: "Guatemala Quetzal",
+    symbol: "Q"
+  },
+  GYD: {
+    name: "Guyana Dollar",
+    symbol: "GY$"
+  },
+  HKD: {
+    name: "Hong Kong Dollar",
+    symbol: "HK$"
+  },
+  HNL: {
+    name: "Honduras Lempira",
+    symbol: "L"
+  },
+  HRK: {
+    name: "Croatia Kuna",
+    symbol: "kn"
+  },
+  HTG: {
+    name: "Haitian Gourde",
+    symbol: "G"
+  },
+  HUF: {
+    name: "Hungary Forint",
+    symbol: "Ft"
+  },
+  IDR: {
+    name: "Indonesia Rupiah",
+    symbol: "Rp"
+  },
+  IEP: {
+    name: "Irish Pound",
+    symbol: "IR\xA3"
+  },
+  ILS: {
+    name: "Israel Shekel",
+    symbol: "\u20AA"
+  },
+  IMP: {
+    name: "Isle of Man Pound",
+    symbol: "\xA3"
+  },
+  INR: {
+    name: "India Rupee",
+    symbol: "\u20B9"
+  },
+  IQD: {
+    name: "Iraqi Dinar",
+    symbol: "\u0639.\u062F"
+  },
+  IRR: {
+    name: "Iran Rial",
+    symbol: "\uFDFC"
+  },
+  ISK: {
+    name: "Iceland Krona",
+    symbol: "KR"
+  },
+  JEP: {
+    name: "Jersey Pound",
+    symbol: "\xA3"
+  },
+  JMD: {
+    name: "Jamaica Dollar",
+    symbol: "J$"
+  },
+  JOD: {
+    name: "Jordanian Dinar",
+    symbol: "\u062F.\u0627"
+  },
+  JPY: {
+    name: "Japan Yen",
+    symbol: "\xA5"
+  },
+  KES: {
+    name: "Kenyan Shilling",
+    symbol: "KSh"
+  },
+  KGS: {
+    name: "Kyrgyzstan Som",
+    symbol: "\u043B\u0432"
+  },
+  KHR: {
+    name: "Cambodia Riel",
+    symbol: "\u17DB"
+  },
+  KMF: {
+    name: "Comorian Franc",
+    symbol: "CF"
+  },
+  KPW: {
+    name: "North Korean Won",
+    symbol: "\u20A9"
+  },
+  KRW: {
+    name: "South Korean Won",
+    symbol: "\u20A9"
+  },
+  KWD: {
+    name: "Kuwaiti Dinar",
+    symbol: "\u062F.\u0643"
+  },
+  KYD: {
+    name: "Cayman Islands Dollar",
+    symbol: "CI$"
+  },
+  KZ: {
+    name: "Angolan Kwanza",
+    symbol: "Kz"
+  },
+  KZT: {
+    name: "Kazakhstan Tenge",
+    symbol: "\u043B\u0432"
+  },
+  LAK: {
+    name: "Laos Kip",
+    symbol: "\u20AD"
+  },
+  LBP: {
+    name: "Lebanon Pound",
+    symbol: "\xA3"
+  },
+  LKR: {
+    name: "Sri Lanka Rupee",
+    symbol: "\u20A8"
+  },
+  LRD: {
+    name: "Liberia Dollar",
+    symbol: "L$"
+  },
+  LTL: {
+    name: "Lithuanian Litas",
+    symbol: "Lt"
+  },
+  LUF: {
+    name: "Luxembourg Franc",
+    symbol: "F"
+  },
+  LVL: {
+    name: "Latvian Lats",
+    symbol: "Ls"
+  },
+  LYD: {
+    name: "Libyan Dinar",
+    symbol: "\u0644.\u062F"
+  },
+  MDL: {
+    name: "Moldovan Leu",
+    symbol: "L"
+  },
+  MDN: {
+    name: "Moroccan Dirham",
+    symbol: "\u062F.\u0645."
+  },
+  MGF: {
+    name: "Madagascar Franc",
+    symbol: "MF"
+  },
+  MKD: {
+    name: "Macedonian Denar",
+    symbol: "\u0434\u0435\u043D"
+  },
+  MMK: {
+    name: "Burmese Kyat",
+    symbol: "K"
+  },
+  MNT: {
+    name: "Mongolian T\xF6gr\xF6g",
+    symbol: "\u20AE"
+  },
+  MOP: {
+    name: "Macanese Pataca",
+    symbol: "MOP$"
+  },
+  MRU: {
+    name: "Mauritanian ouguiya",
+    symbol: "UM"
+  },
+  MTL: {
+    name: "Maltese Lira",
+    symbol: "Lm"
+  },
+  MUR: {
+    name: "Mauritius Rupee",
+    symbol: "\u20A8"
+  },
+  MVR: {
+    name: "Maldivian Rufiyaa",
+    symbol: "Rf"
+  },
+  MWK: {
+    name: "Malawian kwacha",
+    symbol: "K"
+  },
+  MXN: {
+    name: "Mexico Peso",
+    symbol: "Mex$"
+  },
+  MYR: {
+    name: "Malaysia Ringgit",
+    symbol: "RM"
+  },
+  MZN: {
+    name: "Mozambique Metical",
+    symbol: "MT"
+  },
+  NAD: {
+    name: "Namibia Dollar",
+    symbol: "N$"
+  },
+  NGN: {
+    name: "Nigeria Naira",
+    symbol: "\u20A6"
+  },
+  NIO: {
+    name: "Nicaragua Cordoba",
+    symbol: "C$"
+  },
+  NOK: {
+    name: "Norway Krone",
+    symbol: "kr"
+  },
+  NPR: {
+    name: "Nepal Rupee",
+    symbol: "\u20A8"
+  },
+  NZD: {
+    name: "New Zealand Dollar",
+    symbol: "NZ$"
+  },
+  OMR: {
+    name: "Oman Rial",
+    symbol: "\uFDFC"
+  },
+  PAB: {
+    name: "Panama Balboa",
+    symbol: "B/."
+  },
+  PEN: {
+    name: "Peru Sol",
+    symbol: "S/."
+  },
+  PGK: {
+    name: "Papua New Guinean Kina",
+    symbol: "K"
+  },
+  PHP: {
+    name: "Philippines Peso",
+    symbol: "\u20B1"
+  },
+  PKR: {
+    name: "Pakistan Rupee",
+    symbol: "\u20A8"
+  },
+  PLN: {
+    name: "Poland Zloty",
+    symbol: "z\u0142"
+  },
+  PYG: {
+    name: "Paraguay Guarani",
+    symbol: "Gs"
+  },
+  QAR: {
+    name: "Qatar Riyal",
+    symbol: "\uFDFC"
+  },
+  RON: {
+    name: "Romania Leu",
+    symbol: "lei"
+  },
+  RSD: {
+    name: "Serbia Dinar",
+    symbol: "\u0414\u0438\u043D."
+  },
+  RUB: {
+    name: "Russia Ruble",
+    symbol: "\u20BD"
+  },
+  RWF: {
+    name: "Rwandan Franc",
+    symbol: "R\u20A3"
+  },
+  SAR: {
+    name: "Saudi Arabia Riyal",
+    symbol: "\uFDFC"
+  },
+  SBD: {
+    name: "Solomon Islands Dollar",
+    symbol: "Si$"
+  },
+  SCR: {
+    name: "Seychelles Rupee",
+    symbol: "\u20A8"
+  },
+  SDG: {
+    name: "Sudanese Pound",
+    symbol: "\u062C.\u0633."
+  },
+  SEK: {
+    name: "Sweden Krona",
+    symbol: "kr"
+  },
+  SGD: {
+    name: "Singapore Dollar",
+    symbol: "S$"
+  },
+  SHP: {
+    name: "Saint Helena Pound",
+    symbol: "\xA3"
+  },
+  SKK: {
+    name: "Slovak Koruna",
+    symbol: "Sk"
+  },
+  SLL: {
+    name: "Sierra Leonean leone",
+    symbol: "Le"
+  },
+  SOS: {
+    name: "Somalia Shilling",
+    symbol: "S"
+  },
+  SRD: {
+    name: "Suriname Dollar",
+    symbol: "Sr$"
+  },
+  SSP: {
+    name: "South Sudanese Pound",
+    symbol: "SS\xA3"
+  },
+  STD: {
+    name: "S\xE3o Tom\xE9 & Pr\xEDncipe Dobra",
+    symbol: "Db"
+  },
+  SVC: {
+    name: "El Salvador Colon",
+    symbol: "\u20A1"
+  },
+  SYP: {
+    name: "Syria Pound",
+    symbol: "\xA3"
+  },
+  SZL: {
+    name: "Swazi Lilangeni",
+    symbol: "L"
+  },
+  THB: {
+    name: "Thailand Baht",
+    symbol: "\u0E3F"
+  },
+  TJS: {
+    name: "Tajikistani Somoni",
+    symbol: "SM"
+  },
+  TMT: {
+    name: "Turkmenistan Manat",
+    symbol: "T"
+  },
+  TND: {
+    name: "Tunisian Dinar",
+    symbol: "\u062F.\u062A"
+  },
+  TRY: {
+    name: "Turkey Lira",
+    symbol: "\u20BA"
+  },
+  TTD: {
+    name: "Trinidad & Tobago Dollar",
+    symbol: "TT$"
+  },
+  TVD: {
+    name: "Tuvalu Dollar",
+    symbol: "TV$"
+  },
+  TWD: {
+    name: "Taiwan New Dollar",
+    symbol: "NT$"
+  },
+  TZS: {
+    name: "Tanzanian shilling",
+    symbol: "TSh"
+  },
+  UAH: {
+    name: "Ukraine Hryvnia",
+    symbol: "\u20B4"
+  },
+  UGX: {
+    name: "Ugandan Shilling",
+    symbol: "USh"
+  },
+  USD: {
+    name: "United States Dollar",
+    symbol: "$"
+  },
+  UYU: {
+    name: "Uruguay Peso",
+    symbol: "$U"
+  },
+  UZS: {
+    name: "Uzbekistan Som",
+    symbol: "\u043B\u0432"
+  },
+  VEF: {
+    name: "Venezuela Bol\xEDvar",
+    symbol: "Bs"
+  },
+  VND: {
+    name: "Vietnam Dong",
+    symbol: "\u20AB"
+  },
+  WST: {
+    name: "Samoan T\u0101l\u0101",
+    symbol: "WS$"
+  },
+  XAF: {
+    name: "Central African CFA franc",
+    symbol: "FCFA"
+  },
+  XCD: {
+    name: "Eastern Caribbean Dollar",
+    symbol: "EC$"
+  },
+  XOF: {
+    name: "West African CFA franc",
+    symbol: "CFA"
+  },
+  YER: {
+    name: "Yemen Rial",
+    symbol: "\uFDFC"
+  },
+  ZAR: {
+    name: "South Africa Rand",
+    symbol: "R"
+  },
+  ZMW: {
+    name: "Zambian Kwacha",
+    symbol: "K"
+  },
+  ZWD: {
+    name: "Zimbabwe Dollar",
+    symbol: "Z$"
+  }
+};
 // ../dev/@libs/common/constants/mock-data.ts
 var MOCK = {
   ACCOUNTS: [
@@ -1092,10 +1759,97 @@ var Icon = ({
   children: iconName,
   title: val(title) || ""
 });
+// ../dev/@libs/ui-kit/tag.ts
+var Tag = ({
+  classNames,
+  label,
+  iconClassNames,
+  iconName,
+  iconHint,
+  iconSize,
+  onIconClick
+}) => m.Span({
+  class: dstr`bg-near-white br2 flex items-center ${classNames}`,
+  children: [
+    m.Span(label),
+    m.If({
+      condition: derived(() => !!val(iconName)),
+      then: () => Icon({
+        className: dstr`pointer silver ${iconClassNames}`,
+        size: derived(() => val(iconSize) || 16),
+        onClick: onIconClick,
+        iconName,
+        title: iconHint
+      })
+    })
+  ]
+});
+// ../dev/@libs/widgets/add-button-tile.ts
+var AddButtonTile = ({
+  classNames,
+  label,
+  onClick
+}) => TileCard({
+  classNames: dstr`tc pointer ${classNames}`,
+  onClick,
+  children: [
+    Icon({
+      className: "mb2",
+      size: 42,
+      iconName: "add"
+    }),
+    m.Div({
+      class: "light-silver f6",
+      children: label
+    })
+  ]
+});
 // ../dev/@libs/widgets/header.ts
 var Header = ({ title }) => m.Div({
   class: "sticky left-0 top-0 right-0 pv4 f1 fw1 black bg-white",
   children: title
+});
+// ../dev/@libs/widgets/tile-card.ts
+var TileCard = ({
+  classNames,
+  onClick,
+  children
+}) => m.Div({
+  class: dstr`br4 ph3 pt3 pb0 ${classNames}`,
+  onclick: onClick,
+  children
+});
+
+// ../dev/@libs/widgets/list-tile.ts
+var ListTile = ({
+  classNames,
+  titleIconName,
+  title,
+  subtitle,
+  child
+}) => TileCard({
+  classNames,
+  children: [
+    m.Div({
+      class: "black b mb1 flex items-center",
+      children: [
+        m.If({
+          condition: derived(() => val(titleIconName)),
+          then: () => Icon({
+            size: 20,
+            className: "b mr2",
+            iconName: titleIconName
+          })
+        }),
+        title
+      ]
+    }),
+    m.Div({
+      class: "light-silver h1 f6",
+      children: subtitle
+    }),
+    child
+  ]
 });
 // ../dev/@libs/widgets/navbar.ts
 var Navbar = ({
@@ -1264,13 +2018,121 @@ var Page = ({
     ]
   });
 };
-// ../dev/settings.main.ts
-var settings_main_default = () => Page({
-  title: "Batua | Settings",
-  headerTitle: "Settings",
-  scriptSrcPrefix: "settings.",
-  selectedTabIndex: 5,
-  mainContent: m.Span(`Sed ut perspiciatis`),
+// ../dev/@libs/widgets/section-title.ts
+var SectionTitle = ({
+  classNames,
+  iconName,
+  label
+}) => m.H2({
+  class: dstr`flex items-center mid-gray ${classNames}`,
+  children: [
+    m.If({
+      condition: derived(() => !!val(iconName)),
+      then: () => Icon({
+        size: 28,
+        className: "b mr3",
+        iconName
+      })
+    }),
+    label
+  ]
+});
+// ../dev/accounts-and-payments/@components/accounts-list.ts
+var AccountsList = ({ classNames }) => m.Div({
+  class: dstr`${classNames}`,
+  children: [
+    SectionTitle({
+      classNames: "mt2 mb4",
+      iconName: "account_balance",
+      label: "Bank Accounts and Other Money Sources"
+    }),
+    m.Div({
+      class: "flex flex-wrap nl4",
+      children: m.For({
+        items: MOCK.ACCOUNTS,
+        n: 1000,
+        nthChild: () => {
+          return AddButtonTile({
+            classNames: "ba bw1 b--near-white ml4 mb4 pt4 h4 w-43",
+            label: "Add new account",
+            onClick: () => console.log("Add new account")
+          });
+        },
+        map: (account) => ListTile({
+          classNames: "ba bw1 b--near-white ml4 mb4 h4 w-43",
+          title: account.name,
+          subtitle: `${account.accountId ? `${account.accountId} ` : ""}(${account.currency})`,
+          child: m.Div({
+            class: "mt3",
+            children: [
+              m.Span(`${CURRENCIES[account.currency].symbol}`),
+              m.Span({
+                class: "ml1 f3",
+                children: `${account.balance.toLocaleString("en-IN")}`
+              })
+            ]
+          })
+        })
+      })
+    })
+  ]
+});
+// ../dev/accounts-and-payments/@components/payment-methods-list.ts
+var PaymentMethodsList = ({
+  classNames
+}) => m.Div({
+  class: dstr`${classNames}`,
+  children: [
+    SectionTitle({
+      classNames: "mt2 mb4",
+      iconName: "account_balance_wallet",
+      label: "Payment Methods and Wallet Apps"
+    }),
+    m.Div({
+      class: "flex flex-wrap nl4",
+      children: m.For({
+        items: MOCK.PAYMENT_METHODS,
+        n: 1000,
+        nthChild: () => {
+          return AddButtonTile({
+            classNames: "ba bw1 b--near-white ml4 mb4 pt4 h5 w-43",
+            label: "Add new payment method",
+            onClick: () => console.log("Add new payment method")
+          });
+        },
+        map: (pm) => ListTile({
+          classNames: "ba bw1 b--near-white ml4 mb4 h5 w-43",
+          title: pm.displayName,
+          subtitle: `${pm.uniqueId ? `${pm.uniqueId} ` : " "}${pm.expiry ? " \u2022 " + pm.expiry.toLocaleDateString() : " "}`,
+          child: m.Div({
+            class: "mt3 flex flex-wrap",
+            children: m.For({
+              items: pm.connectedAccountIds,
+              map: (accId) => {
+                const label = MOCK.ACCOUNTS.find((a) => a.id === accId)?.name || "";
+                console.log(label);
+                return Tag({ classNames: "ph3 pv2 mr2 mb2", label });
+              }
+            })
+          })
+        })
+      })
+    })
+  ]
+});
+// ../dev/accounts-and-payments/main.ts
+var main_default = () => Page({
+  title: "Batua | Accounts & Assets",
+  headerTitle: "Accounts and payment methods",
+  selectedTabIndex: 4,
+  mainContent: m.Div([
+    AccountsList({
+      classNames: "pv4"
+    }),
+    PaymentMethodsList({
+      classNames: "pv4"
+    })
+  ]),
   sideContent: ""
 });
 
@@ -1284,7 +2146,7 @@ var runScript = () => {
     if (window)
       window.isDomAccessPhase = true;
     idGen.resetIdCounter();
-    settings_main_default();
+    main_default();
     idGen.resetIdCounter();
     if (window)
       window.isDomAccessPhase = false;

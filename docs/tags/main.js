@@ -730,6 +730,12 @@ var defaultMetaTags = () => [
     content: "width=device-width, initial-scale=1.0"
   })
 ];
+// ../dev/@libs/ui-kit/button.ts
+var Button = ({ className, onTap, label }) => m.Button({
+  class: dstr`pv2 ph3 br-pill ba bw1 b--light-silver b--hover-black pointer bg-white black ${className}`,
+  onclick: onTap,
+  children: label
+});
 // ../dev/@libs/common/constants/mock-data.ts
 var MOCK = {
   ACCOUNTS: [
@@ -1078,6 +1084,81 @@ var MOCK = {
     }
   ]
 };
+// ../dev/@libs/common/constants/transaction-categories.ts
+var TRANSACTION_CATEGORIES = {
+  NECESSITY: { icon: "warning", label: "Necessity of transaction" },
+  PAYMENT_SOURCE: { icon: "account_balance", label: "Payemnt Source" },
+  PAYMENT_METHOD: { icon: "credit_card", label: "Payemnt Method" },
+  COMMUTE: { icon: "commute", label: "Commute and Transportation" },
+  TRAVEL: { icon: "luggage", label: "Travel, Trips or Treks" },
+  SHOP_OR_MARKET: { icon: "storefront", label: "Shop or Marketplace" },
+  PRODUCT_CATEGORY: {
+    icon: "production_quantity_limits",
+    label: "Product Category"
+  },
+  PRODUCT_BRAND: { icon: "brand_family", label: "Product Brand" },
+  RELATIONSHIP: { icon: "family_restroom", label: "Relatives or Friends" },
+  PLACE: { icon: "location_on", label: "Location of transaction" },
+  TIME: { icon: "routine", label: "Time of transaction" },
+  EVENT: { icon: "celebration", label: "Events, groups or situations" },
+  UNCATEGORIZED: { icon: "dangerous", label: "Not categorized" },
+  MISC: { icon: "category", label: "Miscellaneous category" }
+};
+// ../dev/@libs/ui-kit/dialog.ts
+var Dialog = ({
+  header,
+  isOpen,
+  onPrev,
+  onNext,
+  onTapOutside,
+  child
+}) => {
+  return Modal({
+    classNames: "pa4",
+    isOpen,
+    onTapOutside,
+    content: m.Div([
+      m.H2({
+        class: "ma0 pb4",
+        children: header
+      }),
+      child,
+      m.Div({
+        class: "flex items-center w-100 pt4",
+        children: [
+          Button({
+            className: "w-inherit",
+            label: "Cancel",
+            onTap: onPrev
+          }),
+          m.Span({ class: "pa3" }),
+          Button({
+            className: "w-inherit",
+            label: "Save",
+            onTap: onNext
+          })
+        ]
+      })
+    ])
+  });
+};
+// ../dev/@libs/ui-kit/dropdown.ts
+var DropDown = ({
+  classNames,
+  options,
+  onchange
+}) => m.Select({
+  class: dstr`pointer ${classNames}`,
+  onchange: (e) => onchange(e.target.value),
+  children: m.For({
+    items: options,
+    map: (option) => m.Option({
+      ...option.isSelected ? { selected: "" } : {},
+      value: option.id,
+      children: option.label
+    })
+  })
+});
 // ../dev/@libs/ui-kit/icon.ts
 var Icon = ({
   className,
@@ -1092,10 +1173,103 @@ var Icon = ({
   children: iconName,
   title: val(title) || ""
 });
+// ../dev/@libs/ui-kit/modal.ts
+var Modal = ({
+  classNames,
+  isOpen,
+  content,
+  onTapOutside
+}) => {
+  let dialog;
+  effect(() => {
+    if (val(isOpen))
+      dialog?.showModal();
+    else
+      dialog?.close();
+  });
+  return dialog = m.Dialog({
+    onclick: onTapOutside,
+    class: dstr`pa0 br3 b--gray`,
+    children: [
+      m.Div({
+        class: dstr` ${classNames}`,
+        onclick: (e) => e.stopPropagation(),
+        children: content
+      })
+    ]
+  });
+};
+// ../dev/@libs/ui-kit/tag.ts
+var Tag = ({
+  classNames,
+  label,
+  iconClassNames,
+  iconName,
+  iconHint,
+  iconSize,
+  onIconClick
+}) => m.Span({
+  class: dstr`bg-near-white br2 flex items-center ${classNames}`,
+  children: [
+    m.Span(label),
+    m.If({
+      condition: derived(() => !!val(iconName)),
+      then: () => Icon({
+        className: dstr`pointer silver ${iconClassNames}`,
+        size: derived(() => val(iconSize) || 16),
+        onClick: onIconClick,
+        iconName,
+        title: iconHint
+      })
+    })
+  ]
+});
 // ../dev/@libs/widgets/header.ts
 var Header = ({ title }) => m.Div({
   class: "sticky left-0 top-0 right-0 pv4 f1 fw1 black bg-white",
   children: title
+});
+// ../dev/@libs/widgets/tile-card.ts
+var TileCard = ({
+  classNames,
+  onClick,
+  children
+}) => m.Div({
+  class: dstr`br4 ph3 pt3 pb0 ${classNames}`,
+  onclick: onClick,
+  children
+});
+
+// ../dev/@libs/widgets/list-tile.ts
+var ListTile = ({
+  classNames,
+  titleIconName,
+  title,
+  subtitle,
+  child
+}) => TileCard({
+  classNames,
+  children: [
+    m.Div({
+      class: "black b mb1 flex items-center",
+      children: [
+        m.If({
+          condition: derived(() => val(titleIconName)),
+          then: () => Icon({
+            size: 20,
+            className: "b mr2",
+            iconName: titleIconName
+          })
+        }),
+        title
+      ]
+    }),
+    m.Div({
+      class: "light-silver h1 f6",
+      children: subtitle
+    }),
+    child
+  ]
 });
 // ../dev/@libs/widgets/navbar.ts
 var Navbar = ({
@@ -1264,13 +1438,156 @@ var Page = ({
     ]
   });
 };
-// ../dev/settings.main.ts
-var settings_main_default = () => Page({
-  title: "Batua | Settings",
-  headerTitle: "Settings",
-  scriptSrcPrefix: "settings.",
-  selectedTabIndex: 5,
-  mainContent: m.Span(`Sed ut perspiciatis`),
+// ../dev/@libs/widgets/section-title.ts
+var SectionTitle = ({
+  classNames,
+  iconName,
+  label
+}) => m.H2({
+  class: dstr`flex items-center mid-gray ${classNames}`,
+  children: [
+    m.If({
+      condition: derived(() => !!val(iconName)),
+      then: () => Icon({
+        size: 28,
+        className: "b mr3",
+        iconName
+      })
+    }),
+    label
+  ]
+});
+// ../dev/tags/@components/editable-tag.ts
+var EditableTag = ({ tag: tag2 }) => {
+  const isEditorDialogOpen = source(false);
+  const cancelEditing = () => {
+    isEditorDialogOpen.value = false;
+  };
+  return m.Span([
+    Dialog({
+      isOpen: isEditorDialogOpen,
+      header: dstr`Edit tag '${val(tag2).name}'`,
+      prevLabel: "Cancel",
+      nextLabel: "Save",
+      onTapOutside: cancelEditing,
+      onPrev: cancelEditing,
+      onNext: cancelEditing,
+      child: m.Div({
+        class: "mnw5",
+        children: [
+          m.Div({
+            class: "flex items-center justify-between mb3",
+            children: [
+              Tag({ classNames: "ph3 pv2 mr4", label: val(tag2).name }),
+              m.Span([
+                Icon({
+                  className: "ml3 pa2 ba b--light-gray br-100",
+                  iconName: "edit",
+                  size: 22,
+                  onClick: () => {
+                  }
+                }),
+                Icon({
+                  className: "ml3 pa2 ba b--light-gray br-100 red",
+                  iconName: "delete",
+                  size: 22,
+                  onClick: () => {
+                  }
+                })
+              ])
+            ]
+          }),
+          m.Span({
+            children: [
+              DropDown({
+                classNames: "mr3 pa2 br2 bn bg-near-white",
+                options: Object.entries(TRANSACTION_CATEGORIES).map(([key, cat]) => {
+                  return {
+                    id: key,
+                    label: cat.label,
+                    isSelected: key === tag2.type
+                  };
+                }),
+                onchange: function(optionId) {
+                }
+              }),
+              "Change category"
+            ]
+          })
+        ]
+      })
+    }),
+    Tag({
+      classNames: "ph3 pv2 mb3 mr3",
+      label: val(tag2).name,
+      iconClassNames: "ml2",
+      iconName: "edit",
+      iconHint: "Edit tag",
+      iconSize: 20,
+      onIconClick: () => {
+        console.log("opening modal");
+        isEditorDialogOpen.value = true;
+      }
+    })
+  ]);
+};
+
+// ../dev/tags/@components/tags-section.ts
+var TagsSection = ({
+  title,
+  categories
+}) => {
+  return m.Div({
+    children: [
+      SectionTitle({
+        classNames: "mb3 pb2",
+        label: title
+      }),
+      m.Div({
+        class: "nl4 flex flex-wrap",
+        children: m.For({
+          items: categories,
+          map: (category) => ListTile({
+            classNames: "ba bw1 b--near-white ml4 mb4",
+            titleIconName: TRANSACTION_CATEGORIES[category].icon,
+            title: TRANSACTION_CATEGORIES[category].label,
+            subtitle: "",
+            child: m.Div({
+              class: "flex flex-wrap",
+              children: m.For({
+                items: MOCK.TAGS.filter((t) => t.type === category),
+                map: (tag2) => m.Span(m.If({
+                  condition: tag2.isEditable,
+                  then: () => EditableTag({ tag: tag2 }),
+                  otherwise: () => Tag({
+                    classNames: "ph3 pv2 mb3 mr3",
+                    label: tag2.name
+                  })
+                }))
+              })
+            })
+          })
+        })
+      })
+    ]
+  });
+};
+
+// ../dev/tags/main.ts
+var main_default = () => Page({
+  title: "Batua | Tags & Categories",
+  headerTitle: "Categorise your transactions using tags",
+  selectedTabIndex: 3,
+  mainContent: [
+    TagsSection({
+      title: "Fixed tags generated by system",
+      categories: ["NECESSITY", "PAYMENT_SOURCE", "PAYMENT_METHOD"]
+    }),
+    TagsSection({
+      title: "Editable tags added by you and pre-existing ones",
+      categories: ["COMMUTE", "TRAVEL", "SHOP_OR_MARKET", "PRODUCT_CATEGORY"]
+    })
+  ],
   sideContent: ""
 });
 
@@ -1284,7 +1601,7 @@ var runScript = () => {
     if (window)
       window.isDomAccessPhase = true;
     idGen.resetIdCounter();
-    settings_main_default();
+    main_default();
     idGen.resetIdCounter();
     if (window)
       window.isDomAccessPhase = false;

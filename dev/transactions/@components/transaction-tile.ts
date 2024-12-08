@@ -22,7 +22,7 @@ export const TransactionTile: Component<TransactionTileProps> = ({
     class: dstr`flex items-start ${className}`,
     children: [
       m.Div({
-        class: "mnw4",
+        class: "mnw4 fw2 black",
         children: [
           m.Span({
             class: "f2 gray",
@@ -36,7 +36,7 @@ export const TransactionTile: Component<TransactionTileProps> = ({
       }),
       m.Div({
         class: "mr3",
-        style: "max-width: 24rem;",
+        style: "max-width: 20rem;",
         children: [
           m.Div({
             class: "truncate mnw5 mr3 mb1 f4",
@@ -55,19 +55,22 @@ export const TransactionTile: Component<TransactionTileProps> = ({
           }),
         ],
       }),
-      m.Div([
-        m.Div(paymentMethod),
-        m.Div({
-          class: "mt1 f7 silver",
-          children: derived(() =>
-            val(date).toLocaleDateString(undefined, {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            })
-          ),
-        }),
-      ]),
+      m.Div({
+        class: "mnw3",
+        children: [
+          m.Div(paymentMethod),
+          m.Div({
+            class: "mt1 f7 silver",
+            children: derived(() =>
+              val(date).toLocaleDateString(undefined, {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })
+            ),
+          }),
+        ],
+      }),
     ],
   });
 };

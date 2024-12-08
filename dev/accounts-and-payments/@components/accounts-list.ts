@@ -1,9 +1,7 @@
 import { Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 import { CURRENCIES, MOCK } from "../../@libs/common";
-import { SectionTitle } from "../../@libs/ui-kit";
-import { AddButtonTile } from "./add-button-tile";
-import { ListTile } from "./list-tile";
+import { SectionTitle, AddButtonTile, ListTile } from "../../@libs/widgets";
 
 type AccountsListProps = {
   classNames?: string;
@@ -19,20 +17,20 @@ export const AccountsList: Component<AccountsListProps> = ({ classNames }) =>
         label: "Bank Accounts and Other Money Sources",
       }),
       m.Div({
-        class: "flex flex-wrap",
+        class: "flex flex-wrap nl4",
         children: m.For({
           items: MOCK.ACCOUNTS,
-          n: 0,
+          n: 1000,
           nthChild: () => {
             return AddButtonTile({
-              classNames: "pt4 h4 w-45",
+              classNames: "ba bw1 b--near-white ml4 mb4 pt4 h4 w-43",
               label: "Add new account",
               onClick: () => console.log("Add new account"),
             });
           },
           map: (account) =>
             ListTile({
-              classNames: "h4 w-45",
+              classNames: "ba bw1 b--near-white ml4 mb4 h4 w-43",
               title: account.name,
               subtitle: `${account.accountId ? `${account.accountId} ` : ""}(${
                 account.currency

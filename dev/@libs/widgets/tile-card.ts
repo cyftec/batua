@@ -13,7 +13,7 @@ export const TileCard: Component<TileCardProps> = ({
   children,
 }) =>
   m.Div({
-    class: dstr`bg-almost-white br4 pa3 mb4 mr4 w-45 ${classNames}`,
+    class: dstr`br4 ph3 pt3 pb0 ${classNames}`,
     onclick: onClick,
     children,
   });
