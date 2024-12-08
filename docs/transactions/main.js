@@ -2085,6 +2085,8 @@ var Page = ({
   mainContent,
   sideContent
 }) => {
+  console.log(window.location.href);
+  console.log(window.location.pathname);
   return m.Html({
     lang: "en",
     children: [
