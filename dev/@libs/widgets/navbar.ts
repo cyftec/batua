@@ -1,7 +1,7 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { dstr, val } from "@maya/signal";
 import { Icon } from "../ui-kit/icon";
-import { path } from "../common";
+import { pathname } from "../common";
 
 type LinkData = {
   index: number;
@@ -24,12 +24,12 @@ export const Navbar: Component<NavbarProps> = ({
   selectedLinkIndex,
 }) => {
   return m.Div({
-    class: dstr`bg-almost-white flex flex-column vh-100 sticky left-0 top-0 bottom-0 ${classNames}`,
+    class: dstr`bg-almost-white flex flex-column mnw5 vh-100 sticky left-0 top-0 bottom-0 ${classNames}`,
     // style: "flex-grow: 1; flex-basis: 0;",
     children: [
       m.A({
-        class: "no-underline green",
-        href: path("/"),
+        class: "no-underline gray",
+        href: pathname("/"),
         children: m.Div({
           class: "tc f3 ph4 pv3 ma4 bn br3 bg-white",
           children: "batua 1.04",
@@ -76,7 +76,7 @@ const NavbarLink: Component<NavbarLinkProps> = ({
   isSelected,
 }) =>
   m.Div({
-    class: dstr`pointer br4 br--left ${() =>
+    class: dstr`pointer hover-pop br4 br--left ${() =>
       val(isSelected) ? "bg-white" : ""} ${classNames}`,
     children: m.A({
       class: dstr`no-underline hover-black ${() =>

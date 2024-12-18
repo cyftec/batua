@@ -1,4 +1,4 @@
-import { Component, HtmlNode, m } from "@maya/core";
+import { type Component, type HtmlNode, m } from "@maya/core";
 import { dstr, source, val } from "@maya/signal";
 import { Tag, TextBox } from "../../@libs/ui-kit";
 

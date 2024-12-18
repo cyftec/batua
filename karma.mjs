@@ -31,7 +31,7 @@ const config = {
     "files.exclude": {
       node_modules: true,
       ".vscode": true,
-      ".brahma": true,
+      ".brahma": false,
       ".gitignore": true,
       "tsconfig.json": true,
       [TS_GLOBALS_FILENAME]: true,
@@ -48,8 +48,8 @@ const config = {
           cmd: "brahma install",
         },
         {
-          match: ".*",
-          isAsync: false,
+          match: `.*`,
+          isAsync: true,
           cmd: "brahma stage",
         },
       ],

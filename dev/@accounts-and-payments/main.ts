@@ -1,6 +1,6 @@
 import { m } from "@maya/core";
 import { Page } from "../@libs/widgets";
-import { AccountsList, PaymentMethodsList } from "./@components";
+import { AccountsList, PaymentMethods } from "./@components";
 
 export default () =>
   Page({
@@ -11,7 +11,7 @@ export default () =>
       AccountsList({
         classNames: "pv4",
       }),
-      PaymentMethodsList({
+      PaymentMethods({
         classNames: "pv4",
       }),
     ]),

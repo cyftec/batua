@@ -1,4 +1,4 @@
-import { Child, Component, m } from "@maya/core";
+import { type Child, type Component, m } from "@maya/core";
 import { Button, Modal } from ".";
 
 type Dialog = {
@@ -20,6 +20,7 @@ export const Dialog: Component<Dialog> = ({
   onTapOutside,
   child,
 }) => {
+  console.log(isOpen);
   return Modal({
     classNames: "pa4",
     isOpen: isOpen,

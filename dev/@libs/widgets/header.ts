@@ -1,4 +1,4 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 
 type HeaderProps = {
   title: string;

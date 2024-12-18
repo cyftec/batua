@@ -1,4 +1,4 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { dstr, val } from "@maya/signal";
 
 type IconProps = {

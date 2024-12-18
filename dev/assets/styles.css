@@ -96,6 +96,11 @@ dialog::backdrop {
     flex-basis: 0;
 }
 
+.hover-pop:hover {
+    box-shadow: 0 0 20px 1px rgba(175, 175, 175, 0.2);
+}
+
+.vh-90 { height: 90vh; }
 .w-inherit {width: inherit;}
 .w100px { width: 100px; }
 .w-43 { width: 43%; }

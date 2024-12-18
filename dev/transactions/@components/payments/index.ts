@@ -1,6 +1,10 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { derived, dstr, val } from "@maya/signal";
-import { CURRENCIES, CurrencyCode, Payment } from "../../../@libs/common";
+import {
+  CURRENCIES,
+  type CurrencyCode,
+  type Payment,
+} from "../../../@libs/common";
 import { Link } from "../../../@libs/ui-kit";
 import { PaymentTile } from "./payment-tile";
 
@@ -8,16 +12,12 @@ type PaymentsProps = {
   classNames?: string;
   payments: Payment[];
   onchange: (payments: Payment[]) => void;
-  onadd: () => void;
-  onremove: (index: number) => void;
 };
 
 export const Payments: Component<PaymentsProps> = ({
   classNames,
   payments,
   onchange,
-  onadd,
-  onremove,
 }) => {
   const borderClass = "br3 bw1 ba b--light-gray";
   const multiPayments = derived(() => val(payments).length > 1);
@@ -50,6 +50,10 @@ export const Payments: Component<PaymentsProps> = ({
   const paidLabel = derived(() => val(totalPaymentLabels)[0]);
   const receivedLabel = derived(() => val(totalPaymentLabels)[1]);
 
+  const onAdd = () => {};
+
+  const onRemove = (index: string) => {};
+
   const onPaymentUpdate = (index: number, updated: Payment) => {
     const updatedPayments = [...val(payments)];
     updatedPayments[index] = updated;
@@ -71,8 +75,8 @@ export const Payments: Component<PaymentsProps> = ({
               payment,
               onPaymentUpdate,
               onLinkClick: (index) => {
-                if (val(multiPayments)) onremove(index);
-                else onadd();
+                if (val(multiPayments)) onRemove(index);
+                else onAdd();
               },
             }),
         })
@@ -110,7 +114,7 @@ export const Payments: Component<PaymentsProps> = ({
               }),
               Link({
                 label: "add more payment",
-                onClick: onadd,
+                onClick: onAdd,
               }),
             ],
           }),

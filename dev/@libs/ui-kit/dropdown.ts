@@ -1,4 +1,4 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type SelectOption = {
@@ -19,7 +19,7 @@ export const DropDown: Component<DropDownProps> = ({
   onchange,
 }) =>
   m.Select({
-    class: dstr`pointer ${classNames}`,
+    class: dstr`pointer bn bg-near-white ${classNames}`,
     onchange: (e) => onchange((e.target as HTMLSelectElement).value),
     children: m.For({
       items: options,

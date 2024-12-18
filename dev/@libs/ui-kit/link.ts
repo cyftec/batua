@@ -1,4 +1,4 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type LinkProps = {

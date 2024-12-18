@@ -1,4 +1,4 @@
-import { Component, m } from "@maya/core";
+import { type Component, m } from "@maya/core";
 import { derived, dstr, val } from "@maya/signal";
 import {
   getDateInputLocaleValue,
@@ -17,9 +17,10 @@ export const DateTimePicker: Component<DateTimePickerProps> = ({
   dateTime,
   onchange,
 }) => {
-  const dayOfWeek = derived(() =>
-    WEEKDAYS[val(dateTime).getDay()].substring(0, 3)
-  );
+  console.log(dateTime.toString() + "sdfkjajsn");
+  const dayOfWeek = derived(() => {
+    return WEEKDAYS[val(dateTime).getDay()].substring(0, 3);
+  });
   const dateTimeInputValue = derived(() =>
     getDateInputLocaleValue(val(dateTime))
   );

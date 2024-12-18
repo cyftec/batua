@@ -1,4 +1,4 @@
-import { Component, DomEventValue, m } from "@maya/core";
+import { type Component, type DomEventValue, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type TextBoxProps = {
@@ -6,6 +6,8 @@ type TextBoxProps = {
   placeholder?: string;
   text: string;
   onchange: (value: string) => void;
+  onfocus?: () => void;
+  onblur?: () => void;
 };
 
 export const TextBox: Component<TextBoxProps> = ({
@@ -13,9 +15,12 @@ export const TextBox: Component<TextBoxProps> = ({
   placeholder,
   text,
   onchange,
+  onfocus,
+  onblur,
 }) => {
   const onTextChange = (e: KeyboardEvent) => {
-    onchange((e.target as HTMLInputElement).value);
+    const value = (e.target as HTMLInputElement).value;
+    onchange(value);
   };
 
   return m.Input({
@@ -24,5 +29,7 @@ export const TextBox: Component<TextBoxProps> = ({
     placeholder,
     value: text,
     onchange: onTextChange as DomEventValue,
+    onfocus,
+    onblur,
   });
 };

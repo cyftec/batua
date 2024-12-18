@@ -1,5 +1,5 @@
-import { Component, m } from "@maya/core";
-import { derived, dstr, Signal, val } from "@maya/signal";
+import { type Component, m } from "@maya/core";
+import { derived, dstr, type Signal, val } from "@maya/signal";
 import { Icon } from "./icon";
 
 type TagProps = {

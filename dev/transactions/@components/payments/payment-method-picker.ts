@@ -1,6 +1,6 @@
-import { Component } from "@maya/core";
+import { type Component } from "@maya/core";
 import { derived, dstr, val } from "@maya/signal";
-import { MOCK, PaymentMethod } from "../../../@libs/common";
+import { type PaymentMethod } from "../../../@libs/common";
 import { DropDown } from "../../../@libs/ui-kit";
 
 type PaymentMethodPickerProps = {
@@ -15,14 +15,14 @@ export const PaymentMethodPicker: Component<PaymentMethodPickerProps> = ({
   onchange,
 }) => {
   return DropDown({
-    classNames: dstr`pa1 br3 bn bg-near-white ${classNames}`,
+    classNames: dstr`pa1 br3 ${classNames}`,
     options: derived(() =>
-      MOCK.PAYMENT_METHODS.map((pm) => ({
+      [].map((pm) => ({
         isSelected: val(selectedPaymentMethodCode) === pm.code,
         id: pm.code,
         label: pm.displayName,
       }))
     ),
-    onchange: (optionId) => onchange(optionId as PaymentMethod["code"]),
+    onchange: (optionId) => onchange(optionId as PaymentMethod["name"]),
   });
 };

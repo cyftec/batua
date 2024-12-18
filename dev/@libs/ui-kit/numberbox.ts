@@ -1,4 +1,4 @@
-import { Component, DomEventValue, m } from "@maya/core";
+import { type Component, type DomEventValue, m } from "@maya/core";
 import { derived, val } from "@maya/signal";
 
 type NumberBoxProps = {
@@ -23,7 +23,7 @@ export const NumberBox: Component<NumberBoxProps> = ({
     class: classNames,
     type: "number",
     placeholder,
-    value: derived(() => val(num).toString()),
+    value: derived(() => (val(num) || "").toString()),
     onchange: onTextChange as DomEventValue,
   });
 };

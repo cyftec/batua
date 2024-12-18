@@ -1,4 +1,4 @@
-import { Children, Component, m } from "@maya/core";
+import { type Children, type Component, m } from "@maya/core";
 import { dstr } from "@maya/signal";
 
 type TileCardProps = {
@@ -13,7 +13,9 @@ export const TileCard: Component<TileCardProps> = ({
   children,
 }) =>
   m.Div({
-    class: dstr`br4 ph3 pt3 pb0 ${classNames}`,
+    class: dstr`br4 ph3 pt3 pb0 ${
+      onClick ? "hover-pop pointer" : ""
+    } ${classNames}`,
     onclick: onClick,
     children,
   });

@@ -1,7 +1,7 @@
-import { Component, m, Child } from "@maya/core";
-import { TileCard } from "./tile-card";
+import { type Child, type Component, m } from "@maya/core";
+import { derived, type MaybeSignal, val } from "@maya/signal";
 import { Icon } from "../ui-kit";
-import { derived, MaybeSignal, val } from "@maya/signal";
+import { TileCard } from "./tile-card";
 
 type ListTileProps = {
   classNames?: string;
@@ -9,6 +9,7 @@ type ListTileProps = {
   title: string;
   subtitle: string;
   child: Child;
+  onClick?: () => void;
 };
 
 export const ListTile: Component<ListTileProps> = ({
@@ -17,9 +18,11 @@ export const ListTile: Component<ListTileProps> = ({
   title,
   subtitle,
   child,
+  onClick,
 }) =>
   TileCard({
     classNames: classNames,
+    onClick,
     children: [
       m.Div({
         class: "black b mb1 flex items-center",

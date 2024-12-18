@@ -1,4 +1,10 @@
-import { Children, Component, HtmlNode, m } from "@maya/core";
+import {
+  type Children,
+  type Component,
+  type HtmlNode,
+  m,
+  phases,
+} from "@maya/core";
 import { dstr, effect, val } from "@maya/signal";
 
 type ModalProps = {
@@ -14,13 +20,14 @@ export const Modal: Component<ModalProps> = ({
   content,
   onTapOutside,
 }) => {
-  let dialog: HtmlNode<HTMLDialogElement>;
-  effect(() => {
-    if (val(isOpen)) dialog?.showModal();
-    else dialog?.close();
-  });
-
-  return (dialog = m.Dialog({
+  const dialog: HtmlNode<HTMLDialogElement> = m.Dialog({
+    onmount: () =>
+      setTimeout(() =>
+        effect(() => {
+          if (val(isOpen)) dialog.showModal();
+          else dialog.close();
+        })
+      ),
     onclick: onTapOutside,
     class: dstr`pa0 br3 b--gray`,
     children: [
@@ -30,5 +37,7 @@ export const Modal: Component<ModalProps> = ({
         children: content,
       }),
     ],
-  }) as HtmlNode<HTMLDialogElement>);
+  }) as HtmlNode<HTMLDialogElement>;
+
+  return dialog;
 };
