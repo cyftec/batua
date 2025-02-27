@@ -1,4 +1,4 @@
-import { derived, source } from "@maya/signal";
+import { derived, signal } from "@cyftech/signal";
 import { STORAGE } from "../../../@libs/storage";
 import {
   getDiffDaysFromToday,
@@ -29,11 +29,11 @@ const newTransaction = (): TransactionUI => ({
   payments: [newPayment()],
 });
 
-export const isEditorOpen = source(false);
-export const isEditingNewTransaction = source(true);
-const editingTransaction = source<TransactionUI>(newTransaction());
+export const isEditorOpen = signal(false);
+export const isEditingNewTransaction = signal(true);
+const editingTransaction = signal<TransactionUI>(newTransaction());
 export const editableTransaction = derived(() => editingTransaction.value);
-export const editingError = source<string>("");
+export const editingError = signal<string>("");
 
 const validateTransaction = () => {
   editingError.value = "";

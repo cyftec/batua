@@ -1,21 +1,21 @@
+import { phase } from "@mufw/maya/utils";
 import type {
   CurrencyCode,
   DbInitializationPhase,
 } from "../../../@libs/common";
-import type { Preferences } from "./types";
 import { PREFS_KEYS } from "./contants";
-import { phases } from "@maya/core";
+import type { Preferences } from "./types";
 
 const getStorageItem = <V extends string>(
   propName: string,
   defaultValue: V
 ) => ({
   get value(): V {
-    if (phases.value.htmlBuildPhase) return "" as V;
+    if (phase.currentIs("build")) return "" as V;
     return (window.localStorage.getItem(propName) || defaultValue) as V;
   },
   set value(value: NonNullable<V>) {
-    if (phases.value.htmlBuildPhase) return;
+    if (phase.currentIs("build")) return;
     window.localStorage.setItem(propName, value);
   },
 });

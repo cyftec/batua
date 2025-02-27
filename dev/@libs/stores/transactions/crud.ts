@@ -1,10 +1,11 @@
-import { dpromise } from "@maya/signal";
-import { db } from "../../storage/localdb/setup";
+import { dpromise } from "@cyftech/signal";
+import { phase } from "@mufw/maya/utils";
 import type { Transaction, TransactionUI } from "../../../@libs/common";
+import { db } from "../../storage/localdb/setup";
 import { getAllPayments, payments } from "../payments";
-import { phases } from "@maya/core";
 
 const [getAllTransactions, allTransactions] = dpromise(async () => {
+  console.log(`fetching all transactions`);
   const txns = await db.transactions.getAll();
   if (!payments.value) await getAllPayments();
   const txnsWithPayments: TransactionUI[] = txns.map((txn) => {
@@ -13,6 +14,7 @@ const [getAllTransactions, allTransactions] = dpromise(async () => {
     return { ...txn, payments: plist };
   });
 
+  console.log(txnsWithPayments);
   return txnsWithPayments;
 });
 
@@ -33,12 +35,12 @@ const [deleteTransaction] = dpromise(
   }
 );
 
-if (!phases.value.htmlBuildPhase) getAllTransactions();
+if (!phase.currentIs("build")) getAllTransactions();
 
 export {
-  allTransactions,
-  getAllTransactions,
   addTransaction,
-  updateTransaction,
+  allTransactions,
   deleteTransaction,
+  getAllTransactions,
+  updateTransaction,
 };

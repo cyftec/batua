@@ -1,5 +1,4 @@
-import { phases } from "@maya/core";
-import { PUBLISHED_SITE_ROOT } from "../config";
+import { phase } from "@mufw/maya/utils";
 
 export const getDiffDaysFromToday = (date: Date) => {
   const DIFFS = {
@@ -46,8 +45,3 @@ export const getDateInputLocaleValue = (gmtDate: Date) => {
 
   return localeDateLabel;
 };
-
-export const pathname = (href: string) =>
-  phases.value.htmlBuildPhase || window.location.hostname === "127.0.0.1"
-    ? href
-    : `${PUBLISHED_SITE_ROOT}${href}`;

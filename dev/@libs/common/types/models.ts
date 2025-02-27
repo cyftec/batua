@@ -7,12 +7,13 @@ import {
 } from "../constants";
 
 export type DbInitializationPhase = keyof typeof DB_INIT_PHASES;
+export type AccountType = keyof typeof ACCOUNT_TYPE;
+export type TransactionType = keyof typeof TRANSACTION_TYPE;
+export type PaymentType = keyof typeof PAYMENT_TYPES;
 export type Currency = (typeof CURRENCIES)[number];
 export type CurrencyCode = Currency["code"];
-
 export type ID = `${string}-${string}-${string}-${string}-${string}`;
 
-export type AccountType = keyof typeof ACCOUNT_TYPE;
 export type Account = {
   id: ID;
   type: AccountType;
@@ -30,16 +31,34 @@ export type PaymentMethod = {
 };
 
 export type TagCategory = {
-  id: ID;
   icon: string;
   name: string;
 };
 
 export type Tag = {
-  id: ID;
   name: string;
   category: TagCategory["name"];
   isEditable: 0 | 1;
+};
+
+export type Payment = {
+  id: ID;
+  amount: number;
+  currencyCode: CurrencyCode;
+  account: Account["id"];
+  paymentMethod: PaymentMethod["id"];
+  type: PaymentType;
+};
+
+export type Transaction = {
+  id: ID;
+  title: string;
+  date: Date;
+  createdAt: Date;
+  modifiedAt: Date;
+  type: TransactionType;
+  tags: Tag["name"][];
+  payments: Payment["id"][];
 };
 
 export type Budget = {
@@ -53,34 +72,9 @@ export type Budget = {
   tags: Tag["name"][];
 };
 
-export type TransactionType = keyof typeof TRANSACTION_TYPE;
-
-type TransactionWoPayments = {
-  id: ID;
-  title: string;
-  date: Date;
-  createdAt: Date;
-  modifiedAt: Date;
-  type: TransactionType;
-  tags: Tag["name"][];
-};
-
-export type Transaction = TransactionWoPayments & {
-  payments: Payment["id"][];
-};
-
-export type TransactionUI = TransactionWoPayments & {
+/**
+ * UI Models
+ */
+export type TransactionUI = Omit<Transaction, "payments"> & {
   payments: Payment[];
-};
-
-export type PaymentType = keyof typeof PAYMENT_TYPES;
-
-export type Payment = {
-  id: ID;
-  transactionId: Transaction["id"];
-  amount: number;
-  currencyCode: CurrencyCode;
-  account: Account["id"];
-  paymentMethod: PaymentMethod["id"];
-  type: PaymentType;
 };

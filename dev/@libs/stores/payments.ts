@@ -1,4 +1,4 @@
-import { dpromise } from "@maya/signal";
+import { dpromise } from "@cyftech/signal";
 import { db } from "../storage/localdb/setup";
 import type { Payment } from "../../@libs/common";
 

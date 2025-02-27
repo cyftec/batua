@@ -1,104 +1,100 @@
-import { m, type Component } from "@maya/core";
+import { m, component } from "@mufw/maya";
 import {
   derived,
   dpromise,
-  dstr,
-  source,
+  dstring,
+  signal,
   type DerivedSignal,
-} from "@maya/signal";
+} from "@cyftech/signal";
 import type { ID, PaymentMethod } from "../../@libs/common";
 import { db } from "../../@libs/storage/localdb";
-import { Icon } from "../../@libs/ui-kit";
-import { AddButtonTile, ListTile, SectionTitle } from "../../@libs/widgets";
+import { Icon } from "../../@libs/elements";
+import { AddButtonTile, ListTile, SectionTitle } from "../../@libs/components";
 import { PaymentMethodEditor } from "./payment-method-editor";
 
 type PaymentMethodsProps = {
   classNames?: string;
 };
 
-export const PaymentMethods: Component<PaymentMethodsProps> = ({
-  classNames,
-}) => {
-  const initService = (id: ID): PaymentMethod => ({
-    id: id,
-    name: "",
-    uniqueId: undefined,
-    expiry: undefined,
-  });
-  const isEditorOpen = source(false);
-  const editingServiceName = source("");
-  const editingService = source(initService(crypto.randomUUID()));
-  const error = source("");
-  const [fecthPaymentMethods, paymentMethods] = dpromise(() =>
-    db.paymentMethods.getAll()
-  );
+export const PaymentMethods = component<PaymentMethodsProps>(
+  ({ classNames }) => {
+    const initService = (id: ID): PaymentMethod => ({
+      id: id,
+      name: "",
+      uniqueId: undefined,
+      expiry: undefined,
+    });
+    const isEditorOpen = signal(false);
+    const editingServiceName = signal("");
+    const editingService = signal(initService(crypto.randomUUID()));
+    const error = signal("");
+    const [fecthPaymentMethods, paymentMethods] = dpromise(() =>
+      db.paymentMethods.getAll()
+    );
 
-  const validateEditingService = () => {
-    error.value = "";
-  };
+    const validateEditingService = () => {
+      error.value = "";
+    };
 
-  const resetEditor = () => {
-    editingServiceName.value = "";
-    editingService.value = initService(crypto.randomUUID());
-    error.value = "";
-    isEditorOpen.value = false;
-  };
+    const resetEditor = () => {
+      editingServiceName.value = "";
+      editingService.value = initService(crypto.randomUUID());
+      error.value = "";
+      isEditorOpen.value = false;
+    };
 
-  const saveSevice = () => {
-    validateEditingService();
-    if (error.value) return;
+    const saveSevice = () => {
+      validateEditingService();
+      if (error.value) return;
 
-    console.log(editingService.value);
-    fecthPaymentMethods();
-  };
+      console.log(editingService.value);
+      fecthPaymentMethods();
+    };
 
-  return m.Div({
-    onmount: fecthPaymentMethods,
-    class: dstr`${classNames}`,
-    children: [
-      PaymentMethodEditor({
-        isOpen: isEditorOpen,
-        dialogTitle: derived(() =>
-          editingServiceName.value
-            ? `Edit payment service - '${editingServiceName.value}'`
-            : "Add new payment service"
-        ),
-        editingService: editingService,
-        onChange: (paymentMethod) => (editingService.value = paymentMethod),
-        onCancel: resetEditor,
-        onSave: saveSevice,
-      }),
-      SectionTitle({
-        classNames: "mt2 mb4",
-        iconName: "account_balance_wallet",
-        label: "Payment Methods and Wallet Apps",
-      }),
-      m.If({
-        condition: paymentMethods,
-        otherwise: () => m.Span("Loading..."),
-        then: () =>
-          m.Div({
+    return m.Div({
+      onmount: fecthPaymentMethods,
+      class: dstring`${classNames}`,
+      children: [
+        PaymentMethodEditor({
+          isOpen: isEditorOpen,
+          dialogTitle: derived(() =>
+            editingServiceName.value
+              ? `Edit payment service - '${editingServiceName.value}'`
+              : "Add new payment service"
+          ),
+          editingService: editingService,
+          onChange: (paymentMethod) => (editingService.value = paymentMethod),
+          onCancel: resetEditor,
+          onSave: saveSevice,
+        }),
+        SectionTitle({
+          classNames: "mt2 mb4",
+          iconName: "account_balance_wallet",
+          label: "Payment Methods and Wallet Apps",
+        }),
+        m.If({
+          subject: paymentMethods,
+          isFalsy: m.Span("Loading..."),
+          isTruthy: m.Div({
             class: "flex flex-wrap nl4",
             children: m.For({
-              items: paymentMethods as DerivedSignal<PaymentMethod[]>,
-              n: 1000,
-              nthChild: () => {
-                return AddButtonTile({
-                  classNames: "ba bw1 b--near-white ml4 mb4 pt4 w-43",
-                  onClick: () => (isEditorOpen.value = true),
-                  children: [
-                    Icon({
-                      className: "mb2",
-                      size: 42,
-                      iconName: "add",
-                    }),
-                    m.Div({
-                      class: "light-silver f6",
-                      children: "Add new payment method",
-                    }),
-                  ],
-                });
-              },
+              subject: paymentMethods as DerivedSignal<PaymentMethod[]>,
+              n: Infinity,
+              nthChild: AddButtonTile({
+                classNames: "ba bw1 b--near-white ml4 mb4 pt4 w-43",
+                onClick: () => (isEditorOpen.value = true),
+                children: [
+                  Icon({
+                    className: "mb2",
+                    size: 42,
+                    iconName: "add",
+                  }),
+                  m.Div({
+                    class: "light-silver f6",
+                    children: "Add new payment method",
+                  }),
+                ],
+              }),
               map: (ps) =>
                 ListTile({
                   classNames: "ba bw1 b--near-white ml4 mb4 w-43",
@@ -118,7 +114,8 @@ export const PaymentMethods: Component<PaymentMethodsProps> = ({
                 }),
             }),
           }),
-      }),
-    ],
-  });
-};
+        }),
+      ],
+    });
+  }
+);

@@ -1,6 +1,9 @@
-node_modules
-.brahma
-.vscode
-.env
 .DS_Store
-stage
+karma-types.ts
+bun.lock
+bun.lockb
+.vscode
+node_modules
+package.json
+/stage
+/prod
