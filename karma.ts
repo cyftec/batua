@@ -11,7 +11,7 @@ export const projectFileNames: ProjectFileNames = {
   },
   generated: {
     stagingDir: "stage",
-    publishDir: "prod",
+    publishDir: "docs",
     bunLockFile: "bun.lock",
     bunLockBFile: "bun.lockb",
     gitIgnoreFile: ".gitignore",
@@ -47,13 +47,13 @@ export const config: KarmaConfig = {
   maya: {
     mode: "web",
     sourceDirName: projectFileNames.static.sourceDir,
-    packageJson:{
-	"dependencies": {
-		"@mufw/maya": "0.1.14",
-		"@cyftech/immutjs": "0.1.0",
-		"@cyftech/signal": "0.1.4"
-	}
-},
+    packageJson: {
+      dependencies: {
+        "@mufw/maya": "0.1.14",
+        "@cyftech/immutjs": "0.1.0",
+        "@cyftech/signal": "0.1.4",
+      },
+    },
   },
   vscode: {
     settings: {
