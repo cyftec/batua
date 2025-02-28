@@ -29,7 +29,7 @@ export const Tag = component<TagProps>(
         m.If({
           subject: iconName,
           isTruthy: Icon({
-            className: dstring`pointer silver ${iconClassNames}`,
+            className: dstring`pointer mid-gray ${iconClassNames}`,
             size: derived(() => iconSize?.value || 16),
             onClick: onIconClick,
             iconName: iconName as Signal<string>,

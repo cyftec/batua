@@ -4,7 +4,7 @@ import { db } from "../../@libs/storage/localdb/setup";
 import { Tag, TextBox } from "../../@libs/elements";
 import { ListTile, SectionTitle } from "../../@libs/components";
 import { EditableTag } from "./editable-tag";
-import { Tag as TagType, TagCategory } from "../../@libs/common";
+import { Tag as TagType, TagCategory, ID } from "../../@libs/common";
 import { TAG_CATEGORIES } from "../../@libs/storage/localdb/setup/initial-data/tags-and-categories";
 import { allTags, fetchAllTags } from "../../@libs/stores/tags";
 
@@ -38,16 +38,15 @@ export const TagsSection = component<TagsSectionProps>(
       class: "mb5",
       children: [
         SectionTitle({
-          classNames: "mb3 pb2 silver",
           label: title,
         }),
         m.Div({
-          class: "nl4 flex flex-wrap",
+          class: "flex flex-wrap",
           children: m.For({
             subject: categoriesWithTags,
             map: (categoryWithTags) =>
               ListTile({
-                classNames: "ba bw1 b--near-white ml4 mb4",
+                classNames: "mr3 mt3",
                 titleIconName: categoryWithTags.icon,
                 title: categoryWithTags.name,
                 subtitle: "",
@@ -75,7 +74,7 @@ export const TagsSection = component<TagsSectionProps>(
                             tagAddInputText.value = value;
                             tagAddInputText.value = "";
                             await db.tags.add({
-                              id: crypto.randomUUID(),
+                              id: crypto.randomUUID() as ID,
                               name: value,
                               isEditable: 1,
                               category: categoryWithTags.name,

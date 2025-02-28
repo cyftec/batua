@@ -88,19 +88,18 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
         onSave: saveAccount,
       }),
       SectionTitle({
-        classNames: "mt2 mb4",
         iconName: "account_balance",
         label: "Spending and Investment Accounts",
       }),
       m.If({
         subject: accounts,
         isTruthy: m.Div({
-          class: "flex flex-wrap nl4",
+          class: "flex flex-wrap",
           children: m.For({
             subject: accounts as DerivedSignal<Account[]>,
             n: 1000,
             nthChild: AddButtonTile({
-              classNames: "ba bw1 b--near-white ml4 mb4 pt4 h4 w-43",
+              classNames: "mr3 mt3 pt4 h4 w-43",
               onClick: () => (isAccountEditorOpen.value = true),
               children: [
                 Icon({
@@ -116,7 +115,7 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
             }),
             map: (account) =>
               ListTile({
-                classNames: "ba bw1 b--near-white ml4 mb4 h4 w-43",
+                classNames: "mr3 mt3 h4 w-43",
                 title: account.name,
                 subtitle: `${account.uniqueId ? `${account.uniqueId} ` : ""}(${
                   account.currency

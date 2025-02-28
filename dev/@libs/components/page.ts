@@ -54,7 +54,7 @@ export const Page = component<PageProps>(
               class: "flex items-start",
               children: [
                 Navbar({
-                  classNames: "fg2",
+                  classNames: "fg3",
                   selectedLinkIndex: selectedTabIndex?.value ?? -1,
                   links: [
                     {
@@ -96,15 +96,18 @@ export const Page = component<PageProps>(
                   },
                 }),
                 m.Div({
-                  class: "relative pl5 fg8",
+                  class: "fg11",
                   children: [
-                    Header({ title: headerTitle }),
+                    Header({
+                      classNames: "ml4 pt45 z-999",
+                      title: headerTitle,
+                    }),
                     m.Div({
-                      class: "flex",
+                      class: "flex pt3",
                       children: [
-                        m.Div({ class: "fg5", children: mainContent }),
+                        m.Div({ class: "mh4 fg7", children: mainContent }),
                         m.Div({
-                          class: "dn db-ns dn-m bg-white fg3",
+                          class: "dn db-ns dn-m bg-near-white fg4",
                           children: sideContent,
                         }),
                       ],

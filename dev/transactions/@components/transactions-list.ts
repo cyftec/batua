@@ -15,7 +15,7 @@ import {
   allTransactions,
   getAllTransactions,
 } from "../../@libs/stores/transactions/crud";
-import { effect, type DerivedSignal } from "@cyftech/signal";
+import { derived, effect, type DerivedSignal } from "@cyftech/signal";
 import type { TransactionUI } from "../../@libs/common";
 
 type TransactionsListProps = {
@@ -32,6 +32,7 @@ export const TransactionsList = component<TransactionsListProps>(
       class: classNames,
       children: [
         Button({
+          // className: "mt2",
           label: "Add new transaction",
           onTap: startEditing,
         }),
@@ -47,10 +48,40 @@ export const TransactionsList = component<TransactionsListProps>(
           subject: allTransactions,
           isTruthy: m.Div(
             m.For({
-              subject: allTransactions as DerivedSignal<TransactionUI[]>,
+              subject: derived(() => {
+                const allTxns =
+                  (allTransactions as DerivedSignal<TransactionUI[]>).value ||
+                  [];
+                return [
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                  ...allTxns,
+                ];
+              }),
               map: (txn) => {
                 return TransactionTile({
-                  className: "mt4",
+                  className: "mt3",
                   transaction: txn,
                   onClick: () => startEditing(txn),
                 });

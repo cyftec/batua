@@ -68,20 +68,19 @@ export const PaymentMethods = component<PaymentMethodsProps>(
           onSave: saveSevice,
         }),
         SectionTitle({
-          classNames: "mt2 mb4",
           iconName: "account_balance_wallet",
-          label: "Payment Methods and Wallet Apps",
+          label: "Payment Methods and Digital Wallets",
         }),
         m.If({
           subject: paymentMethods,
           isFalsy: m.Span("Loading..."),
           isTruthy: m.Div({
-            class: "flex flex-wrap nl4",
+            class: "flex flex-wrap",
             children: m.For({
               subject: paymentMethods as DerivedSignal<PaymentMethod[]>,
               n: Infinity,
               nthChild: AddButtonTile({
-                classNames: "ba bw1 b--near-white ml4 mb4 pt4 w-43",
+                classNames: "mr3 mt3 pt4 w-43",
                 onClick: () => (isEditorOpen.value = true),
                 children: [
                   Icon({
@@ -97,7 +96,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
               }),
               map: (ps) =>
                 ListTile({
-                  classNames: "ba bw1 b--near-white ml4 mb4 w-43",
+                  classNames: "mr3 mt3 w-43",
                   title: ps.name,
                   subtitle: `${ps.uniqueId ? `${ps.uniqueId} ` : " "}${
                     ps.expiry ? " • " + ps.expiry.toLocaleDateString() : " "

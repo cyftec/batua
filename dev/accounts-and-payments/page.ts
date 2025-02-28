@@ -8,10 +8,10 @@ export default Page({
   selectedTabIndex: 4,
   mainContent: m.Div([
     AccountsList({
-      classNames: "pv4",
+      classNames: "mb5",
     }),
     PaymentMethods({
-      classNames: "pv4",
+      classNames: "mb4",
     }),
   ]),
   sideContent: "",

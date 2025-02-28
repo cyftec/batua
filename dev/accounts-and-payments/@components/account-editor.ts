@@ -79,7 +79,7 @@ export const AccountEditor = component<AccountEditorProps>(
               DropDown({
                 classNames: "ml3 br2 pa2",
                 options: derived(() =>
-                  ACCOUNT_TYPE.map((at) => ({
+                  Object.keys(ACCOUNT_TYPE).map((at) => ({
                     id: at,
                     label:
                       at.charAt(0).toUpperCase() +

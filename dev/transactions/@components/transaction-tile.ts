@@ -16,7 +16,7 @@ export const TransactionTile = component<TransactionTileProps>(
     const amount = derived(() => (payments.value[0]?.amount || 0).toFixed(2));
 
     return m.Div({
-      class: dstring`flex items-start justify-between br4 pv3 hover-pop pointer ${className}`,
+      class: dstring`flex items-start justify-between br4 pa3 nl3 nr3 hover-pop pointer ${className}`,
       onclick: onClick,
       children: [
         m.Div({

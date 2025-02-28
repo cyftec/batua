@@ -13,10 +13,11 @@ type ListTileProps = {
 };
 
 export const ListTile = component<ListTileProps>(
-  ({ classNames, titleIconName, title, subtitle, child, onClick }) =>
-    TileCard({
+  ({ classNames, titleIconName, title, subtitle, child, onClick }) => {
+    console.log(`onclick handler for '${title.value}' is`, onClick);
+    return TileCard({
       classNames: classNames,
-      onClick,
+      onClick: onClick,
       children: [
         m.Div({
           class: "black b mb1 flex items-center",
@@ -38,5 +39,6 @@ export const ListTile = component<ListTileProps>(
         }),
         child,
       ],
-    })
+    });
+  }
 );

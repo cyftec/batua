@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { dstring, val } from "@cyftech/signal";
+import { derived, dstring, val } from "@cyftech/signal";
 import { Icon } from "../elements/icon";
 
 type LinkData = {
@@ -20,26 +20,34 @@ export const Navbar = component<NavbarProps>(
   ({ classNames, rightLink, links, selectedLinkIndex }) => {
     return m.Div({
       class: dstring`bg-almost-white flex flex-column mnw5 vh-100 sticky left-0 top-0 bottom-0 ${classNames}`,
-      // style: "flex-grow: 1; flex-basis: 0;",
       children: [
         m.A({
-          class: "flex items-center no-underline ma4",
+          class: "flex items-center no-underline ma3 pa3 br4 hover-pop",
           href: "/",
           children: [
             m.Img({
-              class: "w2 h2 br3 mr3",
+              class: "h3rem w3rem mr2 br3",
               src: "/assets/images/batua-logo.png",
             }),
             m.Div({
-              class: "tc f4 bn br3 bg-white gray",
+              class: "ml1 black fw2",
               children: [
-                m.Span({
-                  class: "mr3 f3",
-                  children: "Batua",
+                m.Div({
+                  class: "tl f4 bn br3",
+                  children: [
+                    m.Span({
+                      class: "mr2 f2",
+                      children: "batua",
+                    }),
+                    m.Span({
+                      class: "f7 silver",
+                      // children: "v0.0.1",
+                    }),
+                  ],
                 }),
-                m.Span({
-                  class: "f6",
-                  children: "v1.04",
+                m.Div({
+                  class: "f6 fw3 mb1 silver",
+                  children: "Money Tracker App",
                 }),
               ],
             }),
@@ -51,7 +59,7 @@ export const Navbar = component<NavbarProps>(
             subject: links,
             map: (link, i) =>
               NavbarLink({
-                classNames: "ml3 pa3 mv3",
+                classNames: "mh3 mb3",
                 icon: link.icon,
                 label: link.label,
                 href: link.href,
@@ -60,7 +68,7 @@ export const Navbar = component<NavbarProps>(
           }),
         }),
         NavbarLink({
-          classNames: "ml3 pa3 mb3",
+          classNames: "mh3 mb3",
           icon: rightLink.value.icon,
           label: rightLink.value.label,
           href: rightLink.value.href,
@@ -82,16 +90,16 @@ type NavbarLinkProps = {
 const NavbarLink = component<NavbarLinkProps>(
   ({ classNames, icon, label, href, isSelected }) =>
     m.Div({
-      class: dstring`pointer hover-pop ${() =>
+      class: dstring`br4 ba ${() =>
         isSelected.value
-          ? "bg-white b ba br4 b--moon-gray"
-          : ""} ${classNames}`,
+          ? "bg-white b--light-gray black"
+          : "b--pale light-silver hover-pop"} ${classNames}`,
       children: m.A({
         class: dstring`no-underline hover-black ${() =>
-          isSelected.value ? "black" : "light-silver"}`,
-        href: href,
+          isSelected.value ? "black fw3 no-pointer" : "fw2 light-silver"}`,
+        href: derived(() => (isSelected.value ? undefined : href.value)),
         children: m.Div({
-          class: "flex items-center",
+          class: "pa3 flex items-center",
           children: [
             Icon({
               size: 22,

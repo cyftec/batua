@@ -10,18 +10,18 @@ type SectionTitleProps = {
 
 export const SectionTitle = component<SectionTitleProps>(
   ({ classNames, iconName, label }) =>
-    m.H2({
-      class: dstring`flex items-center mid-gray ${classNames}`,
+    m.Div({
+      class: dstring`flex items-center mt3 gray f5 fw4 ${classNames}`,
       children: [
         m.If({
           subject: iconName,
           isTruthy: Icon({
-            size: 28,
-            className: "b mr3",
+            size: 24,
+            className: "mr2",
             iconName: iconName as MaybeSignal<string>,
           }),
         }),
-        label.value,
+        label.value.toUpperCase(),
       ],
     })
 );
