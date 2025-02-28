@@ -1,7 +1,7 @@
 import type { Payment, Transaction } from "../../../../common";
 import {
-  cashAccountId,
-  notesAndCoinsPmId,
+  cashAccountName,
+  notesAndCoinsPmName,
 } from "./accounts-and-payment-services";
 
 const now = new Date();
@@ -24,11 +24,10 @@ export const TRANSACTIONS: Transaction[] = [
 export const PAYMENTS: Payment[] = [
   {
     id: paymentId,
-    transactionId: transactionId,
-    amount: 10,
+    amount: 18,
     currencyCode: "INR",
-    account: cashAccountId,
-    paymentMethod: notesAndCoinsPmId,
+    account: cashAccountName,
+    paymentMethod: notesAndCoinsPmName,
     type: "debit",
   },
 ];

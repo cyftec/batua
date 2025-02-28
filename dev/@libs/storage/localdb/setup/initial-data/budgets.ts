@@ -5,7 +5,6 @@ const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 export const BUDGETS: Budget[] = [
   {
-    id: crypto.randomUUID(),
     name: "Monthly household expense",
     limit: 15000,
     spend: 0,
@@ -15,7 +14,6 @@ export const BUDGETS: Budget[] = [
     tags: ["essential", "grocery", "stationery", "education", "homenkitchen"],
   },
   {
-    id: crypto.randomUUID(),
     name: "Entertainment Budget",
     limit: 1000,
     spend: 0,

@@ -1,7 +1,7 @@
 import { INITIAL_DATA } from "./initial-data";
 import { db } from "./db";
 
-export const initializeDb = async () => {
+export const populateDbWithInitialData = async () => {
   try {
     const accounts = await db.accounts.getAll();
     if (!accounts)
@@ -47,7 +47,6 @@ export const initializeDb = async () => {
             `No category id fround for tag with category - ${tag.name}`
           );
         await db.tags.add({
-          id: tag.id,
           name: tag.name,
           category: category.name,
           isEditable: tag.isEditable,

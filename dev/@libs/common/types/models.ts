@@ -15,16 +15,14 @@ export type CurrencyCode = Currency["code"];
 export type ID = `${string}-${string}-${string}-${string}-${string}`;
 
 export type Account = {
-  id: ID;
-  type: AccountType;
   name: string;
+  type: AccountType;
   uniqueId: string | undefined;
   balance: number;
   currency: CurrencyCode;
 };
 
 export type PaymentMethod = {
-  id: ID;
   name: string;
   uniqueId: string | undefined;
   expiry: Date | undefined;
@@ -45,8 +43,8 @@ export type Payment = {
   id: ID;
   amount: number;
   currencyCode: CurrencyCode;
-  account: Account["id"];
-  paymentMethod: PaymentMethod["id"];
+  account: Account["name"];
+  paymentMethod: PaymentMethod["name"];
   type: PaymentType;
 };
 
@@ -62,7 +60,6 @@ export type Transaction = {
 };
 
 export type Budget = {
-  id: ID;
   name: string;
   limit: number;
   spend: number;

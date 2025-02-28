@@ -1,6 +1,6 @@
 import { Child, type Children, component, m } from "@mufw/maya";
 import { Header, Navbar } from ".";
-import { initializeDb } from "../storage/localdb/setup/initiliaze-db";
+import { populateDbWithInitialData } from "../storage/localdb/setup/initiliaze-db";
 import { STORAGE } from "../storage";
 
 type PageProps = {
@@ -23,7 +23,7 @@ export const Page = component<PageProps>(
   }) => {
     const initDb = async () => {
       if (STORAGE.prefs.dbInitPhase.value === "pending") {
-        await initializeDb();
+        await populateDbWithInitialData();
         STORAGE.prefs.dbInitPhase.value = "done";
       }
     };

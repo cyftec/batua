@@ -4,14 +4,27 @@ export const DB_NAME = "batua";
 export const DB_VERSION = 1;
 export const DB_CONFIG = {
   accounts: {
-    keyPathsShorthand: "id",
+    keyPathsShorthand: "name",
     indices: [],
     initialData: INITIAL_DATA.ACCOUNTS,
   },
-  budgets: {
-    keyPathsShorthand: "id",
+  paymentMethods: {
+    keyPathsShorthand: "name",
     indices: [],
-    initialData: INITIAL_DATA.BUDGETS,
+    initialData: INITIAL_DATA.PAYMENT_METHODS,
+  },
+  tagCategories: {
+    keyPathsShorthand: "name",
+    indices: [],
+    initialData: INITIAL_DATA.TAG_CATEGORIES,
+  },
+  tags: {
+    keyPathsShorthand: "name",
+    indices: [
+      { category: "category|multiEntry" } as const,
+      { isEditable: "isEditable|multiEntry" } as const,
+    ],
+    initialData: INITIAL_DATA.TAGS,
   },
   payments: {
     keyPathsShorthand: "id",
@@ -24,25 +37,6 @@ export const DB_CONFIG = {
     ],
     initialData: INITIAL_DATA.PAYMENTS,
   },
-  paymentMethods: {
-    keyPathsShorthand: "id",
-    indices: [],
-    initialData: INITIAL_DATA.PAYMENT_METHODS,
-  },
-  tags: {
-    keyPathsShorthand: "id",
-    indices: [
-      { name: "name|unique" } as const,
-      { category: "category|multiEntry" } as const,
-      { isEditable: "isEditable|multiEntry" } as const,
-    ],
-    initialData: INITIAL_DATA.TAGS,
-  },
-  tagCategories: {
-    keyPathsShorthand: "id",
-    indices: [],
-    initialData: INITIAL_DATA.TAG_CATEGORIES,
-  },
   transactions: {
     keyPathsShorthand: "id",
     indices: [
@@ -54,5 +48,10 @@ export const DB_CONFIG = {
       { tags: "tags|multiEntry" } as const,
     ],
     initialData: INITIAL_DATA.TRANSACTIONS,
+  },
+  budgets: {
+    keyPathsShorthand: "name",
+    indices: [],
+    initialData: INITIAL_DATA.BUDGETS,
   },
 } as const;

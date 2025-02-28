@@ -15,7 +15,7 @@ export const openDb = <Conf extends DbConfig>(
 ): DBSchema<Conf> => {
   const storeNames = Object.keys(config) as (keyof Conf)[];
 
-  return storeNames.reduce((obj, storeName) => {
+  const database = storeNames.reduce((dbObject, storeName) => {
     const getTransaction = async <R>(
       actionReq: (store: IDBObjectStore) => IDBRequest<R>,
       mode: IDBTransactionMode,
@@ -35,7 +35,7 @@ export const openDb = <Conf extends DbConfig>(
       });
     };
 
-    obj[storeName] = {
+    dbObject[storeName] = {
       add: (value: Doc<typeof storeName, Conf>, key?: IDBValidKey) =>
         getTransaction<IDBValidKey>(
           (store: IDBObjectStore) => store.add(value, key),
@@ -154,6 +154,8 @@ export const openDb = <Conf extends DbConfig>(
       }, {} as ObjectStoreTransaction<keyof Conf, Conf>["indices"]),
     };
 
-    return obj;
+    return dbObject;
   }, {} as DBSchema<Conf>);
+
+  return database;
 };
