@@ -9,7 +9,6 @@ type TileCardProps = {
 
 export const TileCard = component<TileCardProps>(
   ({ classNames, onClick, children }) => {
-    console.log(`onclick handler for tile-card is`, onClick);
     return m.Div({
       class: dstring`ba b--light-gray br4 ph3 pt3 pb0 ${
         onClick ? "hover-pop pointer hover-bg-white" : ""

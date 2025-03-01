@@ -29,7 +29,6 @@ export const TagsSection = component<TagsSectionProps>(
         })
         .filter((cwt) => cwt.tags.length);
 
-      console.log(cwtList);
       return cwtList;
     });
 

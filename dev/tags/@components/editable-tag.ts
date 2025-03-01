@@ -1,8 +1,9 @@
 import { component, m } from "@mufw/maya";
-import { dstring, signal, val } from "@cyftech/signal";
+import { derived, dprops, dstring, effect, signal, val } from "@cyftech/signal";
 import { type Tag as TagModel } from "../../@libs/common";
-import { Dialog, DropDown, Icon, Tag } from "../../@libs/elements";
+import { Dialog, DropDown, Icon, Tag, TextBox } from "../../@libs/elements";
 import { TAG_CATEGORIES } from "../../@libs/storage/localdb/setup/initial-data/tags-and-categories";
+import { areObjectsEqual } from "@cyftech/immutjs";
 
 type EditableTagProps = {
   tag: TagModel;
@@ -10,72 +11,82 @@ type EditableTagProps = {
 
 export const EditableTag = component<EditableTagProps>(({ tag }) => {
   const isEditorDialogOpen = signal(false);
+  const editingTag = signal(tag.value);
+  const { name, category } = dprops(editingTag);
 
   const cancelEditing = () => {
+    editingTag.value = tag.value;
     isEditorDialogOpen.value = false;
   };
+
+  const updateTag = () => {
+    if (areObjectsEqual(editingTag.value, tag.value)) {
+      console.log(`No change`);
+      return;
+    }
+    console.log(JSON.stringify(editingTag.value));
+    isEditorDialogOpen.value = false;
+  };
+
+  effect(() => {
+    if (isEditorDialogOpen.value) {
+      console.log(`tag category is ${category.value}`);
+    }
+  });
 
   return m.Span([
     Dialog({
       isOpen: isEditorDialogOpen,
       header: dstring`Edit tag '${tag.value.name}'`,
+      headerChild: Icon({
+        className: "ba b--light-gray br-100 red",
+        iconName: "delete",
+        size: 22,
+        onClick: () => alert(`delete`),
+      }),
       prevLabel: "Cancel",
       nextLabel: "Save",
       onTapOutside: cancelEditing,
       onPrev: cancelEditing,
-      onNext: cancelEditing,
+      onNext: updateTag,
       child: m.Div({
         class: "mnw5",
         children: [
-          m.Div({
-            class: "flex items-center justify-between mb3",
-            children: [
-              Tag({ classNames: "ph3 pv2 mr4", label: tag.value.name }),
-              m.Span([
-                Icon({
-                  className: "ml3 pa2 ba b--light-gray br-100",
-                  iconName: "edit",
-                  size: 22,
-                  onClick: () => {},
-                }),
-                Icon({
-                  className: "ml3 pa2 ba b--light-gray br-100 red",
-                  iconName: "delete",
-                  size: 22,
-                  onClick: () => {},
-                }),
-              ]),
-            ],
+          TextBox({
+            classNames: "w-100 br3 b--gray mb3 ph3 pv2",
+            text: name,
+            onchange: (text) =>
+              (editingTag.value = { ...editingTag.value, name: text.trim() }),
           }),
-          m.Span({
-            children: [
-              DropDown({
-                classNames: "mr3 pa2 br2",
-                options: Object.entries(TAG_CATEGORIES).map(([key, cat]) => {
-                  return {
-                    id: key,
-                    label: cat.name,
-                    isSelected: key === tag.type,
-                  };
-                }),
-                onchange: function (optionId: string): void {
-                  // throw new Error("Function not implemented.");
-                },
-              }),
-              "Change category",
-            ],
+          DropDown({
+            classNames: "w-100 br3 mb3 ph3 pv2",
+            options: derived(() =>
+              Object.values(TAG_CATEGORIES).map((cat) => ({
+                id: cat.name,
+                label: cat.name,
+                isSelected: cat.name === category.value,
+              }))
+            ),
+            onchange: (optionId) => {
+              console.log(category.value);
+              console.log(optionId);
+              editingTag.value = {
+                ...editingTag.value,
+                category: optionId.trim(),
+              };
+            },
           }),
         ],
       }),
     }),
     Tag({
-      classNames: "ph3 pv2 mb3 mr3",
+      classNames: "ph3 pv2 mb3 mr3 pointer",
       label: tag.value.name,
       iconClassNames: "ml2",
       iconName: "edit",
       iconHint: "Edit tag",
       iconSize: 20,
-      onIconClick: () => {
+      onClick: () => {
         console.log("opening modal");
         isEditorDialogOpen.value = true;
       },

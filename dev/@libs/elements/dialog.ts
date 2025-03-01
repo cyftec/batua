@@ -4,6 +4,7 @@ import { Button, Modal } from ".";
 type Dialog = {
   isOpen: boolean;
   header: string;
+  headerChild?: Child;
   prevLabel: string;
   nextLabel: string;
   onPrev: () => void;
@@ -13,18 +14,29 @@ type Dialog = {
 };
 
 export const Dialog = component<Dialog>(
-  ({ header, isOpen, onPrev, onNext, onTapOutside, child }) => {
-    console.log(isOpen);
+  ({ header, headerChild, isOpen, onPrev, onNext, onTapOutside, child }) => {
     return Modal({
       classNames: "pa4",
       isOpen: isOpen,
       onTapOutside,
       content: m.Div([
-        m.H2({
-          class: "ma0 pb4",
-          children: header,
+        m.Div({
+          class: "flex items-center justify-between",
+          children: [
+            m.H2({
+              class: "ma0",
+              children: header,
+            }),
+            m.If({
+              subject: headerChild,
+              isTruthy: headerChild,
+            }),
+          ],
         }),
-        child,
+        m.Div({
+          class: "mt4",
+          children: child,
+        }),
         m.Div({
           class: "flex items-center w-100 pt4",
           children: [

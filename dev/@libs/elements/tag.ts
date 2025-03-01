@@ -9,6 +9,7 @@ type TagProps = {
   iconName?: string;
   iconHint?: string;
   iconSize?: number;
+  onClick?: () => void;
   onIconClick?: () => void;
 };
 
@@ -20,10 +21,12 @@ export const Tag = component<TagProps>(
     iconName,
     iconHint,
     iconSize,
+    onClick,
     onIconClick,
   }) =>
     m.Span({
       class: dstring`bg-near-white br2 flex items-center ${classNames}`,
+      onclick: onClick,
       children: [
         m.Span(label),
         m.If({

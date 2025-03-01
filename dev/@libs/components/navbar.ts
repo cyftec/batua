@@ -96,7 +96,7 @@ const NavbarLink = component<NavbarLinkProps>(
           : "b--pale light-silver hover-pop"} ${classNames}`,
       children: m.A({
         class: dstring`no-underline hover-black ${() =>
-          isSelected.value ? "black fw3 no-pointer" : "fw2 light-silver"}`,
+          isSelected.value ? "black fw4 no-pointer" : "fw3 light-silver"}`,
         href: derived(() => (isSelected.value ? undefined : href.value)),
         children: m.Div({
           class: "pa3 flex items-center",

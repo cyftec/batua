@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { dstring } from "@cyftech/signal";
+import { dstring, effect } from "@cyftech/signal";
 
 type SelectOption = {
   id: string;
@@ -14,18 +14,22 @@ type DropDownProps = {
 };
 
 export const DropDown = component<DropDownProps>(
-  ({ classNames, options, onchange }) =>
-    m.Select({
+  ({ classNames, options, onchange }) => {
+    return m.Select({
       class: dstring`pointer bn bg-near-white ${classNames}`,
       onchange: (e) => onchange((e.target as HTMLSelectElement).value),
       children: m.For({
         subject: options,
-        map: (option) =>
-          m.Option({
-            ...(option.isSelected ? { selected: "" } : {}),
+        map: (option) => {
+          return m.Option({
+            class: "pr3",
+            selected: option.isSelected,
             value: option.id,
+            // onclick: (e: Event) => e.stopPropagation(),
             children: option.label,
-          }),
+          });
+        },
       }),
-    })
+    });
+  }
 );
