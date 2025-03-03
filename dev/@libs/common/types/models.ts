@@ -31,12 +31,13 @@ export type PaymentMethod = {
 export type TagCategory = {
   icon: string;
   name: string;
+  isCategoryEditable: 0 | 1;
+  isTagEditable: 0 | 1;
 };
 
 export type Tag = {
   name: string;
   category: TagCategory["name"];
-  isEditable: 0 | 1;
 };
 
 export type Payment = {
@@ -75,3 +76,4 @@ export type Budget = {
 export type TransactionUI = Omit<Transaction, "payments"> & {
   payments: Payment[];
 };
+export type TagsCategory = TagCategory & { tags: Tag[] };

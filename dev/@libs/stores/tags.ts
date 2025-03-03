@@ -10,12 +10,13 @@ const [addTag] = dpromise(async (tag: Tag) => {
 });
 
 const [editTag] = dpromise(async (tag: Tag) => {
+  console.log(tag);
   await db.tags.put(tag);
   await fetchAllTags();
 });
 
-const [deleteTag] = dpromise(async (accountId: Account["id"]) => {
-  await db.tags.delete(accountId);
+const [deleteTag] = dpromise(async (tagName: Tag["name"]) => {
+  await db.tags.delete(tagName);
   await fetchAllTags();
 });
 

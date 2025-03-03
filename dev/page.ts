@@ -1,10 +1,10 @@
 import { m } from "@mufw/maya";
 import { Button } from "./@libs/elements";
-import { Page } from "./@libs/components";
+import { HtmlPage } from "./@libs/components";
 
-export default Page({
+export default HtmlPage({
   htmlTitle: "Batua - Money Tracker App",
-  headerTitle: "Home Page",
+  headerTitle: "Home HtmlPage",
   mainContent: m.Div([
     m.H3("home page stuff"),
     Button({

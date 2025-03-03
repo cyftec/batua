@@ -3,16 +3,17 @@ import { Header, Navbar } from ".";
 import { populateDbWithInitialData } from "../storage/localdb/setup/initiliaze-db";
 import { STORAGE } from "../storage";
 
-type PageProps = {
+type HtmlPageProps = {
   htmlTitle: string;
   headElements?: Child[];
   headerTitle: string;
   selectedTabIndex?: number;
   mainContent: Children;
   sideContent: Children;
+  onDocumentMount?: () => void;
 };
 
-export const Page = component<PageProps>(
+export const HtmlPage = component<HtmlPageProps>(
   ({
     htmlTitle,
     headElements,
@@ -20,6 +21,7 @@ export const Page = component<PageProps>(
     selectedTabIndex,
     mainContent,
     sideContent,
+    onDocumentMount,
   }) => {
     const initDb = async () => {
       if (STORAGE.prefs.dbInitPhase.value === "pending") {
@@ -48,6 +50,7 @@ export const Page = component<PageProps>(
         ]),
         m.Body({
           class: "mid-gray",
+          onmount: onDocumentMount,
           children: [
             m.Script({ src: "main.js", defer: "true" }),
             m.Div({

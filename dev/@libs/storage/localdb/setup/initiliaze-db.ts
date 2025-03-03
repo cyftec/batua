@@ -12,10 +12,19 @@ export const populateDbWithInitialData = async () => {
       }
     } else console.log(`accounts store store already populated`);
 
-    const paymetnServices = await db.paymentMethods.getAll();
-    if (!paymetnServices)
+    const budgets = await db.budgets.getAll();
+    if (!budgets)
+      throw new Error("DB didn't return records from tag-categories store");
+    if (!budgets.length) {
+      for (let bgt of INITIAL_DATA.BUDGETS) {
+        await db.budgets.add({ ...bgt });
+      }
+    } else console.log(`budgets store already populated`);
+
+    const paymentMethods = await db.paymentMethods.getAll();
+    if (!paymentMethods)
       throw new Error("DB didn't return records from payment-services store");
-    if (!paymetnServices.length) {
+    if (!paymentMethods.length) {
       for (let ps of INITIAL_DATA.PAYMENT_METHODS) {
         await db.paymentMethods.add({ ...ps });
       }
@@ -26,7 +35,7 @@ export const populateDbWithInitialData = async () => {
       throw new Error("DB didn't return records from tag-categories store");
     if (!tagCategories.length) {
       for (let cat of INITIAL_DATA.TAG_CATEGORIES) {
-        await db.tagCategories.add({ ...cat });
+        await db.tagCategories.add(cat);
       }
     } else console.log(`tag-categories store already populated`);
 
@@ -40,17 +49,13 @@ export const populateDbWithInitialData = async () => {
     if (!tags.length) {
       for (let tag of INITIAL_DATA.TAGS) {
         const category = newlyAddedCategories.find(
-          (ncat) => ncat.name === tag.category
+          (newCat) => newCat.name === tag.category
         );
         if (!category)
           throw new Error(
             `No category id fround for tag with category - ${tag.name}`
           );
-        await db.tags.add({
-          name: tag.name,
-          category: category.name,
-          isEditable: tag.isEditable,
-        });
+        await db.tags.add(tag);
       }
     } else console.log(`tags store already populated`);
 
@@ -70,15 +75,6 @@ export const populateDbWithInitialData = async () => {
         }
       }
     } else console.log(`transactions store already populated`);
-
-    const budgets = await db.budgets.getAll();
-    if (!budgets)
-      throw new Error("DB didn't return records from tag-categories store");
-    if (!budgets.length) {
-      for (let bgt of INITIAL_DATA.BUDGETS) {
-        await db.budgets.add({ ...bgt });
-      }
-    } else console.log(`budgets store already populated`);
   } catch (error) {
     console.log(error);
   }

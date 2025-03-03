@@ -1,203 +1,247 @@
 import type { Tag, TagCategory } from "../../../../common";
 
 export const TAG_CATEGORIES: TagCategory[] = [
-  { icon: "warning", name: "Necessity of transaction" },
-  { icon: "account_balance", name: "Payemnt Source" },
-  { icon: "credit_card", name: "Payemnt Method" },
-  { icon: "commute", name: "Commute and Transportation" },
-  { icon: "luggage", name: "Travel" },
-  { icon: "storefront", name: "Shop or Marketplace" },
-  { icon: "production_quantity_limits", name: "Product Category" },
-  { icon: "brand_family", name: "Product Brand" },
-  { icon: "family_restroom", name: "Relatives or Friends" },
-  { icon: "location_on", name: "Location of transaction" },
-  { icon: "routine", name: "Time of transaction" },
-  { icon: "celebration", name: "Events, groups or situations" },
-  { icon: "dangerous", name: "Not categorized" },
-  { icon: "category", name: "Miscellaneous category" },
-  { icon: "attractions", name: "Entertainment" },
-  { icon: "subscriptions", name: "Subscription" },
+  {
+    isCategoryEditable: 0,
+    isTagEditable: 0,
+    name: "Necessity of transaction",
+    icon: "priority_high",
+  },
+  {
+    isCategoryEditable: 0,
+    isTagEditable: 1,
+    name: "Not categorized",
+    icon: "warning",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Commute and Transportation",
+    icon: "commute",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Trips and Hotels",
+    icon: "luggage",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Shop or Marketplace",
+    icon: "storefront",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Product Category",
+    icon: "production_quantity_limits",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Product Brand",
+    icon: "brand_family",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Relatives or Friends",
+    icon: "family_restroom",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Location of transaction",
+    icon: "location_on",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Time of transaction",
+    icon: "routine",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Events, groups or situations",
+    icon: "celebration",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Miscellaneous category",
+    icon: "category",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Entertainment",
+    icon: "attractions",
+  },
+  {
+    isCategoryEditable: 1,
+    isTagEditable: 1,
+    name: "Subscription",
+    icon: "subscriptions",
+  },
 ];
 
 export const TAGS: Tag[] = [
   {
     name: "essential",
-    isEditable: 0,
     category: "Necessity of transaction",
   },
   {
     name: "maybeluxary",
-    isEditable: 0,
     category: "Necessity of transaction",
   },
   {
     name: "luxary",
-    isEditable: 0,
     category: "Necessity of transaction",
   },
   {
+    name: "mainto",
+    category: "Not categorized",
+  },
+  {
+    name: "ainwy",
+    category: "Not categorized",
+  },
+  {
+    name: "luttgaya",
+    category: "Not categorized",
+  },
+  {
     name: "uber",
-    isEditable: 1,
     category: "Commute and Transportation",
   },
   {
     name: "airbnb",
-    isEditable: 1,
-    category: "Travel",
+    category: "Trips and Hotels",
   },
   {
     name: "bookingdotcom",
-    isEditable: 1,
-    category: "Travel",
+    category: "Trips and Hotels",
   },
   {
     name: "decathlon",
-    isEditable: 1,
     category: "Shop or Marketplace",
   },
   {
     name: "amazon",
-    isEditable: 1,
     category: "Shop or Marketplace",
   },
   {
     name: "ikea",
-    isEditable: 1,
     category: "Shop or Marketplace",
   },
   {
     name: "grocery",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "apparel",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "gadgets",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "furniture",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "grooming",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "gifting",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "jewellery",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "stationery",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "books",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "gardening",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "sportsnfitness",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "treatment",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "vehicle",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "outing",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "softwareapp",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "appliances",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "education",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "petsupplies",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "diningout",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "homenkitchen",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "luggagenbags",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "toysngames",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "accessories",
-    isEditable: 1,
     category: "Product Category",
   },
   {
     name: "movies",
-    isEditable: 1,
     category: "Entertainment",
   },
   {
     name: "standupshows",
-    isEditable: 1,
     category: "Entertainment",
   },
   {
     name: "netflix",
-    isEditable: 1,
     category: "Subscription",
   },
   {
     name: "hotstar",
-    isEditable: 1,
     category: "Subscription",
   },
 ];

@@ -20,10 +20,7 @@ export const DB_CONFIG = {
   },
   tags: {
     keyPathsShorthand: "name",
-    indices: [
-      { category: "category|multiEntry" } as const,
-      { isEditable: "isEditable|multiEntry" } as const,
-    ],
+    indices: [{ category: "category|multiEntry" } as const],
     initialData: INITIAL_DATA.TAGS,
   },
   payments: {

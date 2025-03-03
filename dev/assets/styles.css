@@ -34,6 +34,7 @@ body {
 .link { text-decoration: none; transition: var(--pcolor) .15s ease-in; }
 .link:hover { transition: var(--pcolor) .15s ease-in;  }
 .no-pointer { cursor: default; }
+.cursor-move { cursor: move; }
 .hover-pop { cursor: pointer; position: relative; transition: all .5s cubic-bezier( .165, .84, .44, 1 ); }
 .hover-pop:after { content: ''; background-color: white; box-shadow: 0 0 16px 2px rgba( 0, 0, 0, .05 ); border-radius: inherit; opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; transition: opacity .5s cubic-bezier( .165, .84, .44, 1 ); }
 .hover-pop:hover::after, .hover-pop:focus::after { opacity: 1; }
@@ -51,9 +52,6 @@ body {
 .b--pale { border-color: var(--pale); }
 .purple { color: #7a00cc; }
 .bg-purple { background-color: #9226da; }
-.light-moon-gray { color: #e2e2e2; }
-.bg-light-moon-gray { background-color: #e2e2e2; }
-.b--light-moon-gray { border-color: #e2e2e2; }
 .red { color: red; }
 .bg-red { background-color: #ffe4e4; }
 .highlight { background-color: #efff00; }

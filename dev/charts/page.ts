@@ -1,7 +1,7 @@
 import { m } from "@mufw/maya";
-import { Page } from "../@libs/components";
+import { HtmlPage } from "../@libs/components";
 
-export default Page({
+export default HtmlPage({
   htmlTitle: "Batua | Charts & Trends",
   headerTitle: "Charts & Trends",
   selectedTabIndex: 1,

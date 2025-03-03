@@ -1,7 +1,7 @@
-import { Page } from "../@libs/components";
+import { HtmlPage } from "../@libs/components";
 import { Summary, TransactionsList } from "./@components";
 
-export default Page({
+export default HtmlPage({
   htmlTitle: "Batua - Money Tracker App",
   headerTitle: "Transactions List",
   selectedTabIndex: 0,

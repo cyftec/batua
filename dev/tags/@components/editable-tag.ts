@@ -28,11 +28,7 @@ export const EditableTag = component<EditableTagProps>(({ tag }) => {
     isEditorDialogOpen.value = false;
   };
 
-  effect(() => {
-    if (isEditorDialogOpen.value) {
-      console.log(`tag category is ${category.value}`);
-    }
-  });
+  const onTagDragStart = (e) => {};
 
   return m.Span([
     Dialog({
@@ -79,17 +75,24 @@ export const EditableTag = component<EditableTagProps>(({ tag }) => {
         ],
       }),
     }),
-    Tag({
-      classNames: "ph3 pv2 mb3 mr3 pointer",
-      label: tag.value.name,
-      iconClassNames: "ml2",
-      iconName: "edit",
-      iconHint: "Edit tag",
-      iconSize: 20,
-      onClick: () => {
-        console.log("opening modal");
-        isEditorDialogOpen.value = true;
+    m.Div({
+      draggable: "true",
+      ondragstart: (e) => {
+        e.dataTransfer.setData("droppingTagName", tag.value.name);
+        console.log(`dragging '${e.dataTransfer.getData("droppingTagName")}'`);
       },
+      children: Tag({
+        classNames: "ph3 pv2 mb3 mr3 cursor-move",
+        label: tag.value.name,
+        iconClassNames: "ml2 silver f7",
+        iconName: "edit",
+        iconHint: "Edit tag",
+        iconSize: 16,
+        onIconClick: () => {
+          console.log("opening modal");
+          isEditorDialogOpen.value = true;
+        },
+      }),
     }),
   ]);
 });
