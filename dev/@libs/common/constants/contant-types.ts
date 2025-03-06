@@ -6,10 +6,10 @@ export const DB_INIT_PHASES = {
 } as const;
 
 export const ACCOUNT_TYPE = {
-  investment: "Piggybank or Investment Account",
-  loan: "Credit or Loan Account",
-  savings: "Income, Profits or Savings Account",
-  people: "People as Accounts for borrowing or lending",
+  investment: "Investment Account (Stocks, Bonds, etc)",
+  loan: "Loan Account (Loan or Credit)",
+  savings: "Savings Account (Profits, Income, Piggybank or Savings)",
+  people: "People Account (Lending, Borrwing or Unsettled Balance)",
 } as const;
 
 export const PAYMENT_TYPES = {

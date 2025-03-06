@@ -2,21 +2,27 @@ import { dpromise } from "@cyftech/signal";
 import type { Account } from "../../@libs/common";
 import { db } from "../storage/localdb/setup";
 
-const [fetchAccounts, accounts] = dpromise(() => db.accounts.getAll());
+const [fetchAllAccounts, allAccounts] = dpromise(() => db.accounts.getAll());
 
 const [addAccount] = dpromise(async (account: Account) => {
   await db.accounts.add(account);
-  await fetchAccounts();
+  await fetchAllAccounts();
 });
 
 const [editAccount] = dpromise(async (account: Account) => {
   await db.accounts.put(account);
-  await fetchAccounts();
+  await fetchAllAccounts();
 });
 
 const [deleteAccount] = dpromise(async (accountId: Account["id"]) => {
   await db.accounts.delete(accountId);
-  await fetchAccounts();
+  await fetchAllAccounts();
 });
 
-export { accounts, addAccount, deleteAccount, editAccount, fetchAccounts };
+export {
+  allAccounts,
+  addAccount,
+  deleteAccount,
+  editAccount,
+  fetchAllAccounts,
+};

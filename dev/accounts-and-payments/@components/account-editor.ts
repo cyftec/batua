@@ -1,4 +1,4 @@
-import { m, component } from "@mufw/maya";
+import { m, component, Child, Children } from "@mufw/maya";
 import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
 import {
   ACCOUNT_TYPE,
@@ -7,7 +7,13 @@ import {
   type AccountType,
   type CurrencyCode,
 } from "../../@libs/common";
-import { Dialog, DropDown, NumberBox, TextBox } from "../../@libs/elements";
+import {
+  Dialog,
+  DropDown,
+  FormField,
+  NumberBox,
+  TextBox,
+} from "../../@libs/elements";
 
 type AccountEditorProps = {
   isOpen: boolean;
@@ -28,6 +34,18 @@ export const AccountEditor = component<AccountEditorProps>(
       currency,
     } = dprops(editingAccount);
 
+    const onAccountBalance = (value: number) =>
+      onChange({
+        ...editingAccount.value,
+        balance: value,
+      });
+
+    const onCurrencyChange = (currCode: string) =>
+      onChange({
+        ...editingAccount.value,
+        currency: currCode as CurrencyCode,
+      });
+
     return Dialog({
       isOpen: isOpen,
       header: dialogTitle,
@@ -37,74 +55,80 @@ export const AccountEditor = component<AccountEditorProps>(
       onPrev: onCancel,
       onNext: onSave,
       child: m.Div({
+        class: "w-100",
         children: [
-          TextBox({
-            classNames: "mb3 ba bw1 br2 b--light-gray pa2 w-100",
-            text: name,
-            placeholder: "account name",
-            onchange: (value) => {
-              console.log(value);
-              onChange({
-                ...editingAccount.value,
-                name: value,
-              });
-            },
+          FormField({
+            classNames: "mb3",
+            label: "Account name",
+            children: TextBox({
+              classNames: "w-100 ba bw1 br2 b--light-gray pa2",
+              text: name,
+              placeholder: "account name",
+              onchange: (value) => {
+                console.log(value);
+                onChange({
+                  ...editingAccount.value,
+                  name: value,
+                });
+              },
+            }),
           }),
-          m.Div({
-            class: "mb3 flex items-center justify-between",
-            children: [
-              NumberBox({
-                classNames: "ba bw1 br2 b--light-gray pa2 w-100",
-                placeholder: "account balance",
-                num: balance,
-                onchange: (value) =>
-                  onChange({
-                    ...editingAccount.value,
-                    balance: value,
-                  }),
-              }),
-              DropDown({
-                classNames: "ml3 br2 pa2",
-                options: CURRENCIES.map((curr) => ({
-                  id: curr.code,
-                  label: curr.code,
-                  isSelected: curr.code == currency.value,
-                })),
-                onchange: (currCode) =>
-                  onChange({
-                    ...editingAccount.value,
-                    currency: currCode as CurrencyCode,
-                  }),
-              }),
-              DropDown({
-                classNames: "ml3 br2 pa2",
-                options: derived(() =>
-                  Object.keys(ACCOUNT_TYPE).map((at) => ({
-                    id: at,
-                    label:
-                      at.charAt(0).toUpperCase() +
-                      at.substring(1, at.length) +
-                      " Account",
-                    isSelected: accountType.value == at,
-                  }))
-                ),
-                onchange: (accountType) =>
-                  onChange({
-                    ...editingAccount.value,
-                    type: accountType as AccountType,
-                  }),
-              }),
-            ],
+          FormField({
+            classNames: "mb3",
+            label: "Account ID",
+            children: TextBox({
+              classNames: "ba flex w-100 bw1 br2 b--light-gray pa2",
+              text: dstring`${uniqueId}`,
+              placeholder: "account id (Optional)",
+              onchange: (uniqueId) =>
+                onChange({
+                  ...editingAccount.value,
+                  uniqueId,
+                }),
+            }),
           }),
-          TextBox({
-            classNames: "ba bw1 br2 b--light-gray pa2 w-100",
-            text: dstring`${uniqueId}`,
-            placeholder: "account id (Optional)",
-            onchange: (uniqueId) =>
-              onChange({
-                ...editingAccount.value,
-                uniqueId,
-              }),
+          FormField({
+            classNames: "mb3",
+            label: "Account type",
+            children: DropDown({
+              classNames: "br2 pa2 w-100",
+              options: derived(() =>
+                Object.keys(ACCOUNT_TYPE).map((accKey) => ({
+                  id: accKey,
+                  label: ACCOUNT_TYPE[accKey],
+                  isSelected: accountType.value == accKey,
+                }))
+              ),
+              onchange: (accountType) =>
+                onChange({
+                  ...editingAccount.value,
+                  type: accountType as AccountType,
+                }),
+            }),
+          }),
+          FormField({
+            classNames: "mb3",
+            label: "Account balance",
+            children: m.Div({
+              class: "flex items-center",
+              children: [
+                DropDown({
+                  classNames: "br2 pa2",
+                  options: CURRENCIES.map((curr) => ({
+                    id: curr.code,
+                    label: curr.code,
+                    isSelected: curr.code == currency.value,
+                  })),
+                  onchange: onCurrencyChange,
+                }),
+                NumberBox({
+                  classNames: "ba bw1 br2 b--light-gray pa2 w-100",
+                  placeholder: "account balance",
+                  num: balance,
+                  onchange: onAccountBalance,
+                }),
+              ],
+            }),
           }),
         ],
       }),

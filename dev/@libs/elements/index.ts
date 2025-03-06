@@ -2,6 +2,7 @@ export * from "./button.ts";
 export * from "./datetimepicker.ts";
 export * from "./dialog.ts";
 export * from "./dropdown.ts";
+export * from "./form-field.ts";
 export * from "./icon.ts";
 export * from "./link.ts";
 export * from "./modal.ts";

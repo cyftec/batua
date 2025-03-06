@@ -2,24 +2,24 @@ import { dpromise } from "@cyftech/signal";
 import type { PaymentMethod } from "../../@libs/common";
 import { db } from "../storage/localdb/setup";
 
-const [fetchPaymentMethods, paymentMethods] = dpromise(() =>
+const [fetchAllPaymentMethods, allPaymentMethods] = dpromise(() =>
   db.paymentMethods.getAll()
 );
 
 const [addPaymentMethod] = dpromise(async (paymentMethod: PaymentMethod) => {
   await db.paymentMethods.add(paymentMethod);
-  await fetchPaymentMethods();
+  await fetchAllPaymentMethods();
 });
 
 const [editPaymentMethod] = dpromise(async (paymentMethod: PaymentMethod) => {
   await db.paymentMethods.put(paymentMethod);
-  await fetchPaymentMethods();
+  await fetchAllPaymentMethods();
 });
 
 const [deletePaymentMethod] = dpromise(
   async (paymentMethodId: PaymentMethod["id"]) => {
     await db.paymentMethods.delete(paymentMethodId);
-    await fetchPaymentMethods();
+    await fetchAllPaymentMethods();
   }
 );
 
@@ -27,6 +27,6 @@ export {
   addPaymentMethod,
   deletePaymentMethod,
   editPaymentMethod,
-  fetchPaymentMethods,
-  paymentMethods,
+  fetchAllPaymentMethods,
+  allPaymentMethods,
 };

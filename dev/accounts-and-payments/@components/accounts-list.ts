@@ -1,17 +1,14 @@
+import { derived, type DerivedSignal, dstring, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import {
-  derived,
-  type DerivedSignal,
-  dpromise,
-  dstring,
-  signal,
-} from "@cyftech/signal";
 import { type Account, CURRENCIES, type ID } from "../../@libs/common";
-import { db } from "../../@libs/storage/localdb/setup/db";
-import { Icon } from "../../@libs/elements";
 import { AddButtonTile, ListTile, SectionTitle } from "../../@libs/components";
+import { Icon } from "../../@libs/elements";
+import {
+  addAccount,
+  allAccounts,
+  editAccount,
+} from "../../@libs/stores/accounts";
 import { AccountEditor } from "./account-editor";
-import { phase } from "@mufw/maya/utils";
 
 type AccountsListProps = {
   classNames?: string;
@@ -30,7 +27,11 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
   const isAccountEditorOpen = signal(false);
   const editingAccountName = signal("");
   const editingAccount = signal<Account>(initAccount(crypto.randomUUID()));
-  const [fetchAccounts, accounts] = dpromise(() => db.accounts.getAll());
+  const editorDialogTitle = derived(() =>
+    editingAccountName.value
+      ? `Edit account - '${editingAccountName.value}'`
+      : "Add new account"
+  );
 
   const resetEditor = () => {
     editingAccount.value = initAccount(crypto.randomUUID());
@@ -54,34 +55,25 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
   };
 
   const saveAccount = async () => {
-    if (!phase.currentIs("build")) {
-      const oldAccountName = editingAccountName.value;
-      const account = editingAccount.value;
-      validateEditingAccount();
-      if (error.value) return;
+    const oldAccountName = editingAccountName.value;
+    const account = editingAccount.value;
+    validateEditingAccount();
+    if (error.value) return;
 
-      if (oldAccountName) {
-        await db.accounts.put(account);
-      } else {
-        await db.accounts.add(account);
-      }
-
-      fetchAccounts();
+    if (oldAccountName) {
+      await editAccount(account);
+    } else {
+      await addAccount(account);
     }
     resetEditor();
   };
 
   return m.Div({
-    onmount: fetchAccounts,
     class: dstring`${classNames}`,
     children: [
       AccountEditor({
         isOpen: isAccountEditorOpen,
-        dialogTitle: derived(() =>
-          editingAccountName.value
-            ? `Edit account - '${editingAccountName.value}'`
-            : "Add new account"
-        ),
+        dialogTitle: editorDialogTitle,
         editingAccount: editingAccount,
         onChange: (account) => (editingAccount.value = account),
         onCancel: resetEditor,
@@ -92,11 +84,11 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
         label: "Spending and Investment Accounts",
       }),
       m.If({
-        subject: accounts,
+        subject: allAccounts,
         isTruthy: m.Div({
           class: "flex flex-wrap",
           children: m.For({
-            subject: accounts as DerivedSignal<Account[]>,
+            subject: allAccounts as DerivedSignal<Account[]>,
             n: 1000,
             nthChild: AddButtonTile({
               classNames: "mr3 mt3 pt4 h4 w-43",
@@ -117,9 +109,9 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
               ListTile({
                 classNames: "mr3 mt3 h4 w-43",
                 title: account.name,
-                subtitle: `${account.uniqueId ? `${account.uniqueId} ` : ""}(${
-                  account.currency
-                })`,
+                subtitle: `(${account.currency}) ${
+                  account.uniqueId ? `${account.uniqueId} ` : ""
+                }`,
                 onClick: () => {
                   editingAccountName.value = account.name;
                   editingAccount.value = account;
