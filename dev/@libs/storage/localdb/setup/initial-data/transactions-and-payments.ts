@@ -1,8 +1,9 @@
 import type { Payment, Transaction } from "../../../../common";
 import {
-  cashAccountName,
-  notesAndCoinsPmName,
+  CASH_ACCOUNT_ID,
+  NOTES_COINS_PAYMENT_METHOD_ID,
 } from "./accounts-and-payment-services";
+import { DUMMY_EXPENSE_TAG_ID, TEST_TAG_ID } from "./tags-and-categories";
 
 const now = new Date();
 const transactionId = crypto.randomUUID();
@@ -16,7 +17,7 @@ export const TRANSACTIONS: Transaction[] = [
     modifiedAt: now,
     type: "purchase",
     title: "My first expense (You can delete this)",
-    tags: ["test", "dummyexpense"],
+    tags: [TEST_TAG_ID, DUMMY_EXPENSE_TAG_ID],
     payments: [paymentId],
   },
 ];
@@ -26,8 +27,8 @@ export const PAYMENTS: Payment[] = [
     id: paymentId,
     amount: 18,
     currencyCode: "INR",
-    account: cashAccountName,
-    paymentMethod: notesAndCoinsPmName,
+    account: CASH_ACCOUNT_ID,
+    paymentMethod: NOTES_COINS_PAYMENT_METHOD_ID,
     type: "debit",
   },
 ];

@@ -4,22 +4,22 @@ export const DB_NAME = "batua";
 export const DB_VERSION = 1;
 export const DB_CONFIG = {
   accounts: {
-    keyPathsShorthand: "name",
+    keyPathsShorthand: "id",
     indices: [],
     initialData: INITIAL_DATA.ACCOUNTS,
   },
   paymentMethods: {
-    keyPathsShorthand: "name",
+    keyPathsShorthand: "id",
     indices: [],
     initialData: INITIAL_DATA.PAYMENT_METHODS,
   },
   tagCategories: {
-    keyPathsShorthand: "name",
+    keyPathsShorthand: "id",
     indices: [],
     initialData: INITIAL_DATA.TAG_CATEGORIES,
   },
   tags: {
-    keyPathsShorthand: "name",
+    keyPathsShorthand: "id",
     indices: [{ category: "category|multiEntry" } as const],
     initialData: INITIAL_DATA.TAGS,
   },
@@ -47,7 +47,7 @@ export const DB_CONFIG = {
     initialData: INITIAL_DATA.TRANSACTIONS,
   },
   budgets: {
-    keyPathsShorthand: "name",
+    keyPathsShorthand: "id",
     indices: [],
     initialData: INITIAL_DATA.BUDGETS,
   },

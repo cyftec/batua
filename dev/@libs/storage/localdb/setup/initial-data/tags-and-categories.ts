@@ -1,85 +1,120 @@
 import type { Tag, TagCategory } from "../../../../common";
 
+export const NECESSITY_CATEGORY_ID = crypto.randomUUID();
+export const UNCATEGORISED_CATEGORY_ID = crypto.randomUUID();
+export const COMMUTE_CATEGORY_ID = crypto.randomUUID();
+export const TRIPS_CATEGORY_ID = crypto.randomUUID();
+export const SHOPS_CATEGORY_ID = crypto.randomUUID();
+export const PRODUCTS_CATEGORY_ID = crypto.randomUUID();
+export const ENTERTAINMENT_CATEGORY_ID = crypto.randomUUID();
+export const SUBSCRIPTION_CATEGORY_ID = crypto.randomUUID();
+
+export const ESSENTIAL_TAG_ID = crypto.randomUUID();
+export const GROCERY_TAG_ID = crypto.randomUUID();
+export const STATIONERY_TAG_ID = crypto.randomUUID();
+export const EDUCATION_TAG_ID = crypto.randomUUID();
+export const HOMENKITCHEN_TAG_ID = crypto.randomUUID();
+export const NETFLIX_TAG_ID = crypto.randomUUID();
+export const HOTSTAR_TAG_ID = crypto.randomUUID();
+export const STANDUP_TAG_ID = crypto.randomUUID();
+export const MOVIES_TAG_ID = crypto.randomUUID();
+export const TEST_TAG_ID = crypto.randomUUID();
+export const DUMMY_EXPENSE_TAG_ID = crypto.randomUUID();
+
 export const TAG_CATEGORIES: TagCategory[] = [
   {
+    id: NECESSITY_CATEGORY_ID,
     isCategoryEditable: 0,
     isTagEditable: 0,
     name: "Necessity of transaction",
     icon: "priority_high",
   },
   {
+    id: UNCATEGORISED_CATEGORY_ID,
     isCategoryEditable: 0,
     isTagEditable: 1,
-    name: "Not categorized",
+    name: "Not Categorized",
     icon: "warning",
   },
   {
+    id: COMMUTE_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
-    name: "Commute and Transportation",
+    name: "Commute & Transportation",
     icon: "commute",
   },
   {
+    id: TRIPS_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
-    name: "Trips and Hotels",
+    name: "Trips & Hotels",
     icon: "luggage",
   },
   {
+    id: SHOPS_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
-    name: "Shop or Marketplace",
+    name: "Shops or Marketplace",
     icon: "storefront",
   },
   {
+    id: PRODUCTS_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Product Category",
     icon: "production_quantity_limits",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Product Brand",
     icon: "brand_family",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Relatives or Friends",
     icon: "family_restroom",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Location of transaction",
     icon: "location_on",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Time of transaction",
     icon: "routine",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Events, groups or situations",
     icon: "celebration",
   },
   {
+    id: crypto.randomUUID(),
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Miscellaneous category",
     icon: "category",
   },
   {
+    id: ENTERTAINMENT_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Entertainment",
     icon: "attractions",
   },
   {
+    id: SUBSCRIPTION_CATEGORY_ID,
     isCategoryEditable: 1,
     isTagEditable: 1,
     name: "Subscription",
@@ -89,159 +124,198 @@ export const TAG_CATEGORIES: TagCategory[] = [
 
 export const TAGS: Tag[] = [
   {
+    id: ESSENTIAL_TAG_ID,
     name: "essential",
-    category: "Necessity of transaction",
+    category: NECESSITY_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "maybeluxary",
-    category: "Necessity of transaction",
+    category: NECESSITY_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "luxary",
-    category: "Necessity of transaction",
+    category: NECESSITY_CATEGORY_ID,
   },
   {
-    name: "mainto",
-    category: "Not categorized",
+    id: TEST_TAG_ID,
+    name: "test",
+    category: UNCATEGORISED_CATEGORY_ID,
   },
   {
-    name: "ainwy",
-    category: "Not categorized",
+    id: DUMMY_EXPENSE_TAG_ID,
+    name: "dummyexpense",
+    category: UNCATEGORISED_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "luttgaya",
-    category: "Not categorized",
+    category: UNCATEGORISED_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "uber",
-    category: "Commute and Transportation",
+    category: COMMUTE_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "airbnb",
-    category: "Trips and Hotels",
+    category: TRIPS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "bookingdotcom",
-    category: "Trips and Hotels",
+    category: TRIPS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "decathlon",
-    category: "Shop or Marketplace",
+    category: SHOPS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "amazon",
-    category: "Shop or Marketplace",
+    category: SHOPS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "ikea",
-    category: "Shop or Marketplace",
+    category: SHOPS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "grocery",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "apparel",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "gadgets",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "furniture",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "grooming",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "gifting",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "jewellery",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "stationery",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "books",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "gardening",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "sportsnfitness",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "treatment",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "vehicle",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "outing",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "softwareapp",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "appliances",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "education",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "petsupplies",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "diningout",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "homenkitchen",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "luggagenbags",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "toysngames",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "accessories",
-    category: "Product Category",
+    category: PRODUCTS_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "movies",
-    category: "Entertainment",
+    category: ENTERTAINMENT_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "standupshows",
-    category: "Entertainment",
+    category: ENTERTAINMENT_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "netflix",
-    category: "Subscription",
+    category: SUBSCRIPTION_CATEGORY_ID,
   },
   {
+    id: crypto.randomUUID(),
     name: "hotstar",
-    category: "Subscription",
+    category: SUBSCRIPTION_CATEGORY_ID,
   },
 ];

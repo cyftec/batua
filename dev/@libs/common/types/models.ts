@@ -15,6 +15,7 @@ export type CurrencyCode = Currency["code"];
 export type ID = `${string}-${string}-${string}-${string}-${string}`;
 
 export type Account = {
+  id: ID;
   name: string;
   type: AccountType;
   uniqueId: string | undefined;
@@ -23,12 +24,14 @@ export type Account = {
 };
 
 export type PaymentMethod = {
+  id: ID;
   name: string;
   uniqueId: string | undefined;
   expiry: Date | undefined;
 };
 
 export type TagCategory = {
+  id: ID;
   icon: string;
   name: string;
   isCategoryEditable: 0 | 1;
@@ -36,16 +39,17 @@ export type TagCategory = {
 };
 
 export type Tag = {
+  id: ID;
   name: string;
-  category: TagCategory["name"];
+  category: TagCategory["id"];
 };
 
 export type Payment = {
   id: ID;
   amount: number;
   currencyCode: CurrencyCode;
-  account: Account["name"];
-  paymentMethod: PaymentMethod["name"];
+  account: Account["id"];
+  paymentMethod: PaymentMethod["id"];
   type: PaymentType;
 };
 
@@ -56,18 +60,19 @@ export type Transaction = {
   createdAt: Date;
   modifiedAt: Date;
   type: TransactionType;
-  tags: Tag["name"][];
+  tags: Tag["id"][];
   payments: Payment["id"][];
 };
 
 export type Budget = {
+  id: ID;
   name: string;
   limit: number;
   spend: number;
   startDate: Date;
   endDate: Date;
   currency: CurrencyCode;
-  tags: Tag["name"][];
+  tags: Tag["id"][];
 };
 
 /**

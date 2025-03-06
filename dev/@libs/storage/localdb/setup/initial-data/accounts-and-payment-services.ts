@@ -1,11 +1,12 @@
 import type { Account, PaymentMethod } from "../../../../common";
 
-export const cashAccountName = "Cash";
-export const notesAndCoinsPmName = "Notes & Coins";
+export const CASH_ACCOUNT_ID = crypto.randomUUID();
+export const NOTES_COINS_PAYMENT_METHOD_ID = crypto.randomUUID();
 
 export const ACCOUNTS: Account[] = [
   {
-    name: cashAccountName,
+    id: CASH_ACCOUNT_ID,
+    name: "Cash",
     type: "savings",
     uniqueId: undefined,
     balance: 1000,
@@ -15,7 +16,8 @@ export const ACCOUNTS: Account[] = [
 
 export const PAYMENT_METHODS: PaymentMethod[] = [
   {
-    name: notesAndCoinsPmName,
+    id: NOTES_COINS_PAYMENT_METHOD_ID,
+    name: "Notes & Coins",
     uniqueId: undefined,
     expiry: undefined,
   },

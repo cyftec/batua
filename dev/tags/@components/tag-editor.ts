@@ -1,90 +1,178 @@
-import { areObjectsEqual } from "@cyftech/immutjs";
+import { areValuesEqual } from "@cyftech/immutjs";
 import { derived, dprops, dstring, effect, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { TagCategory, type Tag as TagModel } from "../../@libs/common";
-import { Dialog, DropDown, Icon, Tag, TextBox } from "../../@libs/elements";
-import { TAG_CATEGORIES } from "../../@libs/storage/localdb/setup/initial-data/tags-and-categories";
+import { ID, type Tag as TagModel } from "../../@libs/common";
+import { Dialog, DropDown, Icon, TextBox } from "../../@libs/elements";
+import { allTagCategories } from "../../@libs/stores/tags-categories";
+import { allTags, deleteTag, editTag } from "../../@libs/stores/tags";
+import { UNCATEGORISED_CATEGORY_ID } from "../../@libs/storage/localdb/setup/initial-data/tags-and-categories";
 
 type TagEditorProps = {
-  isOpen: boolean;
-  tag: TagModel;
-  allCategories: TagCategory[];
-  onSaveNew: (newTag: TagModel) => void;
-  onUpdate: (newTag: TagModel) => void;
-  onDelete: (newTag: TagModel) => void;
-  onMerge: (newTag: TagModel, oldTag: TagModel) => void;
+  editableTag?: TagModel;
+  onDone: () => void;
   onCancel: () => void;
 };
 
 export const TagEditor = component<TagEditorProps>(
-  ({
-    isOpen,
-    tag,
-    allCategories,
-    onSaveNew,
-    onUpdate,
-    onDelete,
-    onMerge,
-    onCancel,
-  }) => {
+  ({ editableTag, onDone, onCancel }) => {
+    effect(() => {
+      if (editableTag?.value) {
+        console.log(editableTag.value);
+        editedTag.value = editableTag.value;
+      }
+    });
+    const isDeleteMode = signal(false);
+    const dialogTitle = dstring`${() =>
+      isDeleteMode.value ? "Delete" : "Edit"} tag '${() =>
+      editableTag?.value?.name || ""}'`;
     const error = signal("");
-    const editingTag = signal(tag.value);
-    const { name, category } = dprops(editingTag);
+    const isOpen = derived(() => !!editableTag?.value);
+    const initTag = (): TagModel => ({
+      id: crypto.randomUUID(),
+      name: "",
+      category: UNCATEGORISED_CATEGORY_ID,
+    });
+    const editedTag = signal(editableTag?.value || initTag());
+    const { name: editedTagName, category: editedTagCategoryId } =
+      dprops(editedTag);
+    const categoryOptions = derived(() => {
+      const allCats = allTagCategories.value;
+      const editedTagCat = editedTagCategoryId.value;
+      if (!allCats.length || !editedTagCat) return [];
+      return allCats.map((cat) => ({
+        id: cat.id,
+        label: cat.name,
+        isSelected: cat.id === editedTagCat,
+      }));
+    });
+
+    const onTagNameChange = (newName: string) => {
+      error.value = "";
+      editedTag.value = { ...editedTag.value, name: newName.trim() };
+    };
+
+    const onTagCategoryChange = (newCategoryId: string) => {
+      error.value = "";
+      editedTag.value = {
+        ...editedTag.value,
+        category: newCategoryId as ID,
+      };
+    };
+
+    const resetEditor = () => {
+      error.value = "";
+      isDeleteMode.value = false;
+    };
 
     const cancelEditing = () => {
+      resetEditor();
       onCancel();
     };
 
-    const updateTag = () => {
-      if (tag && areObjectsEqual(editingTag.value, tag.value || {})) {
-        error.value = `No change in original tag`;
+    const onPrev = () => {
+      if (isDeleteMode.value) {
+        isDeleteMode.value = false;
         return;
       }
-      onUpdate(editingTag.value);
+      cancelEditing();
+    };
+
+    const onUpdateTag = async () => {
+      if (!editableTag?.value?.name) {
+        error.value = `No tag to edit`;
+        return;
+      }
+      await editTag(editedTag.value);
+      console.log(
+        `tag updated from '${JSON.stringify(
+          editableTag?.value
+        )}' to '${JSON.stringify(editedTag.value)}'`
+      );
+    };
+
+    const onDeleteTag = async () => {
+      await deleteTag(editedTag.value.id);
+      console.log(`tag '${editableTag?.value?.name}' permanently deleted`);
+      onDone();
+    };
+
+    const onSubmit = () => {
+      if (isDeleteMode.value) {
+        onDeleteTag();
+      } else {
+        if (areValuesEqual(editableTag?.value, editedTag.value)) {
+          error.value = `No change in original tag`;
+          console.log(error.value);
+          return;
+        }
+
+        if (
+          editableTag?.value?.id !== editedTag.value.id &&
+          allTags.value.find((t) => t.name === editedTag.value.name)
+        ) {
+          error.value = "A tag with same name already exists.";
+          return;
+        }
+        onUpdateTag();
+      }
+
+      onDone();
+      resetEditor();
     };
 
     return Dialog({
+      classNames: "w-34",
       isOpen: isOpen,
-      header: derived(() => (tag ? `Edit tag '${tag.value.name}'` : ``)),
+      header: dialogTitle,
       headerChild: Icon({
-        className: "ba b--light-gray br-100 red",
-        iconName: "delete",
+        className: dstring`ba br-100 pa2 ${() =>
+          isDeleteMode.value ? "b--silver" : "red b--light-red"}`,
+        iconName: derived(() => (isDeleteMode.value ? "edit" : "delete")),
         size: 22,
-        onClick: () => alert(`delete`),
+        onClick: () => (isDeleteMode.value = !isDeleteMode.value),
       }),
-      prevLabel: "Cancel",
-      nextLabel: "Save",
+      prevLabel: derived(() =>
+        isDeleteMode.value ? "Back to editing" : "Cancel"
+      ),
+      nextLabel: derived(() => (isDeleteMode.value ? "Yes, delete" : "Update")),
       onTapOutside: cancelEditing,
-      onPrev: cancelEditing,
-      onNext: updateTag,
+      onPrev: onPrev,
+      onNext: onSubmit,
       child: m.Div({
-        class: "mnw5",
-        children: [
-          TextBox({
-            classNames: "w-100 br3 b--gray mb3 ph3 pv2",
-            text: name,
-            onchange: (text) =>
-              (editingTag.value = { ...editingTag.value, name: text.trim() }),
+        children: m.If({
+          subject: isDeleteMode,
+          isFalsy: m.Div({
+            class: "mnw5",
+            children: [
+              TextBox({
+                classNames: "w-100 br3 ba b--light-gray mb3 ph3 pv2",
+                text: editedTagName,
+                onchange: onTagNameChange,
+              }),
+              DropDown({
+                classNames: "w-100 br3 mb3 ph3 pv2",
+                options: categoryOptions,
+                onchange: onTagCategoryChange,
+              }),
+              m.If({
+                subject: error,
+                isTruthy: m.Span({
+                  class: "red",
+                  children: error,
+                }),
+              }),
+            ],
           }),
-          DropDown({
-            classNames: "w-100 br3 mb3 ph3 pv2",
-            options: derived(() =>
-              Object.values(TAG_CATEGORIES).map((cat) => ({
-                id: cat.name,
-                label: cat.name,
-                isSelected: cat.name === category.value,
-              }))
-            ),
-            onchange: (optionId) => {
-              console.log(category.value);
-              console.log(optionId);
-              editingTag.value = {
-                ...editingTag.value,
-                category: optionId.trim(),
-              };
-            },
+          isTruthy: m.Div({
+            class: "mnw5",
+            children: [
+              m.Span({
+                children: dstring`Are you sure you want to delete '${() =>
+                  editableTag?.value?.name}' permanently?`,
+              }),
+            ],
           }),
-        ],
+        }),
       }),
     });
   }

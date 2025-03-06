@@ -1,10 +1,11 @@
-import { dpromise } from "@cyftech/signal";
+import { derived, dpromise } from "@cyftech/signal";
 import type { TagCategory } from "../common";
 import { db } from "../storage/localdb/setup";
 
-const [fetchAllTagCategories, allTagCategories] = dpromise(() =>
+const [fetchAllTagCategories, allCategories] = dpromise(() =>
   db.tagCategories.getAll()
 );
+const allTagCategories = derived(() => allCategories.value || []);
 
 const [addTagCategory] = dpromise(async (category: TagCategory) => {
   await db.tagCategories.add(category);
@@ -16,12 +17,10 @@ const [editTagCategory] = dpromise(async (category: TagCategory) => {
   await fetchAllTagCategories();
 });
 
-const [deleteTagCategory] = dpromise(
-  async (categoryName: TagCategory["name"]) => {
-    await db.tagCategories.delete(categoryName);
-    await fetchAllTagCategories();
-  }
-);
+const [deleteTagCategory] = dpromise(async (categoryId: TagCategory["id"]) => {
+  await db.tagCategories.delete(categoryId);
+  await fetchAllTagCategories();
+});
 
 export {
   addTagCategory,
