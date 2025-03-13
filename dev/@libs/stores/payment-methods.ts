@@ -1,10 +1,12 @@
-import { dpromise } from "@cyftech/signal";
+import { derived, dpromise } from "@cyftech/signal";
 import type { PaymentMethod } from "../../@libs/common";
 import { db } from "../storage/localdb/setup";
 
-const [fetchAllPaymentMethods, allPaymentMethods] = dpromise(() =>
+const [fetchAllPaymentMethods, paymentMethodsList] = dpromise(() =>
   db.paymentMethods.getAll()
 );
+
+const allPaymentMethods = derived(() => paymentMethodsList.value || []);
 
 const [addPaymentMethod] = dpromise(async (paymentMethod: PaymentMethod) => {
   await db.paymentMethods.add(paymentMethod);

@@ -1,6 +1,7 @@
 import { m, component } from "@mufw/maya";
 import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
 import type { TransactionUI } from "../../@libs/common";
+import { Icon } from "../../@libs/elements";
 
 type TransactionTileProps = {
   className?: string;
@@ -35,7 +36,6 @@ export const TransactionTile = component<TransactionTileProps>(
         }),
         m.Div({
           class: "fg3",
-          // style: "max-width: 20rem;",
           children: [
             m.Div({
               class: "truncate mnw5 mr3 mb1 f4",
@@ -45,10 +45,14 @@ export const TransactionTile = component<TransactionTileProps>(
               class: "flex flex-wrap",
               children: m.For({
                 subject: tags,
-                map: (tag) =>
+                map: (tag, i) =>
                   m.Span({
-                    class: "mr2 f7 silver",
-                    children: `#${tag}`,
+                    class: "f7 silver flex items-center",
+                    children: [
+                      m.If({ subject: i > 0, isTruthy: ",&nbsp;" }),
+                      Icon({ size: 10, iconName: tag.category.icon }),
+                      m.Span({ children: `${tag.name}` }),
+                    ],
                   }),
               }),
             }),
@@ -57,7 +61,6 @@ export const TransactionTile = component<TransactionTileProps>(
         m.Div({
           class: "fg1 flex justify-end",
           children: [
-            // m.Div(paymentMethod),
             m.Div({
               class: "mt1 f7 silver",
               children: derived(() =>

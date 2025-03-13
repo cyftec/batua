@@ -1,1 +1,2 @@
-export * from "./tags-section.ts";
+export * from "./tag-editor";
+export * from "./tags-category-card";

@@ -3,7 +3,7 @@ import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
 import {
   ACCOUNT_TYPE,
   CURRENCIES,
-  type Account,
+  type AccountDB,
   type AccountType,
   type CurrencyCode,
 } from "../../@libs/common";
@@ -18,8 +18,8 @@ import {
 type AccountEditorProps = {
   isOpen: boolean;
   dialogTitle: string;
-  editingAccount: Signal<Account>;
-  onChange: (account: Account) => void;
+  editingAccount: Signal<AccountDB>;
+  onChange: (account: AccountDB) => void;
   onCancel: () => void;
   onSave: () => void;
 };

@@ -1,38 +1,38 @@
 import { areValuesEqual } from "@cyftech/immutjs";
 import { derived, dprops, dstring, effect, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { ID, type Tag as TagModel } from "../../@libs/common";
+import { ID, TagCategory, type TagUI } from "../../@libs/common";
 import { Dialog, DropDown, Icon, TextBox } from "../../@libs/elements";
 import { allTagCategories } from "../../@libs/stores/tags-categories";
 import { allTags, deleteTag, editTag } from "../../@libs/stores/tags";
-import { UNCATEGORISED_CATEGORY_ID } from "../../@libs/storage/localdb/setup/initial-data/tags-and-categories";
 
 type TagEditorProps = {
-  editableTag?: TagModel;
+  editableTag?: TagUI;
   onDone: () => void;
   onCancel: () => void;
 };
 
 export const TagEditor = component<TagEditorProps>(
   ({ editableTag, onDone, onCancel }) => {
-    effect(() => {
-      if (editableTag?.value) {
-        console.log(editableTag.value);
-        editedTag.value = editableTag.value;
-      }
-    });
     const isDeleteMode = signal(false);
     const dialogTitle = dstring`${() =>
       isDeleteMode.value ? "Delete" : "Edit"} tag '${() =>
       editableTag?.value?.name || ""}'`;
     const error = signal("");
     const isOpen = derived(() => !!editableTag?.value);
-    const initTag = (): TagModel => ({
+    const initTag: TagUI = {
       id: crypto.randomUUID(),
       name: "",
-      category: UNCATEGORISED_CATEGORY_ID,
-    });
-    const editedTag = signal(editableTag?.value || initTag());
+      category: {
+        id: crypto.randomUUID(),
+        icon: "",
+        name: "",
+        isCategoryEditable: 0,
+        isTagEditable: 0,
+      },
+    };
+    const editedTag = signal(editableTag?.value || initTag);
+
     const { name: editedTagName, category: editedTagCategoryId } =
       dprops(editedTag);
     const categoryOptions = derived(() => {
@@ -42,8 +42,15 @@ export const TagEditor = component<TagEditorProps>(
       return allCats.map((cat) => ({
         id: cat.id,
         label: cat.name,
-        isSelected: cat.id === editedTagCat,
+        isSelected: cat.id === editedTagCat.id,
       }));
+    });
+
+    effect(() => {
+      if (editableTag?.value) {
+        console.log(editableTag.value);
+        editedTag.value = editableTag.value;
+      }
     });
 
     const onTagNameChange = (newName: string) => {
@@ -55,7 +62,9 @@ export const TagEditor = component<TagEditorProps>(
       error.value = "";
       editedTag.value = {
         ...editedTag.value,
-        category: newCategoryId as ID,
+        category: allTagCategories.value.find(
+          (cat) => cat.id === newCategoryId
+        ) as TagCategory,
       };
     };
 

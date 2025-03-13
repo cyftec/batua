@@ -1,14 +1,14 @@
 import { derived, dstring, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { Tag as TagModel, TagsCategory } from "../../@libs/common";
+import { TagCategoryUI, TagUI } from "../../@libs/common";
 import { ListTile } from "../../@libs/components";
 import { Tag, TextBox } from "../../@libs/elements";
 import { addTag, allTags, editTag } from "../../@libs/stores/tags";
 
 type TagsCategoryCardProps = {
   classNames?: string;
-  category: TagsCategory;
-  onTagEdit: (tag: TagModel) => void;
+  category: TagCategoryUI;
+  onTagEdit: (tag: TagUI) => void;
 };
 
 export const TagsCategoryCard = component<TagsCategoryCardProps>(
@@ -24,7 +24,7 @@ export const TagsCategoryCard = component<TagsCategoryCardProps>(
       const foundTag = allTags.value.find((t) => t.name === tagName);
       if (foundTag) {
         const categoryLabel =
-          foundTag.category === category.value.name
+          foundTag.category.name === category.value.name
             ? "this"
             : `'${foundTag.category}'`;
         error.value = `A tag with same name exist in ${categoryLabel} category`;
@@ -33,11 +33,12 @@ export const TagsCategoryCard = component<TagsCategoryCardProps>(
 
       tagAddInputText.value = tagName;
       tagAddInputText.value = "";
-      await addTag({
+      const newTag: TagUI = {
         id: crypto.randomUUID(),
         name: tagName,
-        category: category.value.id,
-      });
+        category: category.value,
+      };
+      await addTag(newTag);
     };
 
     const onDragHoverEnd = () => (itemHoveringOver.value = false);
@@ -50,13 +51,13 @@ export const TagsCategoryCard = component<TagsCategoryCardProps>(
       if (
         !tagName ||
         !droppedTag ||
-        droppedTag.category === category.value.name
+        droppedTag.category.name === category.value.name
       )
         return;
 
       editTag({
         ...droppedTag,
-        category: category.value.id,
+        category: category.value,
       });
     };
 

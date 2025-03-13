@@ -1,38 +1,32 @@
-import { m, component } from "@mufw/maya";
+import { derived, effect, type DerivedSignal } from "@cyftech/signal";
+import { component, m } from "@mufw/maya";
+import type { TransactionUI } from "../../@libs/common";
+import { Button } from "../../@libs/elements";
 import {
-  editingError,
   editableTransaction,
+  editingError,
   isEditorOpen,
   resetEditing,
   saveTransaction,
   startEditing,
   updateEditingTransaction,
 } from "../../@libs/stores/transactions";
-import { Button } from "../../@libs/elements";
+import { allTransactions } from "../../@libs/stores/transactions/crud";
 import { TransactionEditor } from "./transaction-editor";
 import { TransactionTile } from "./transaction-tile";
-import {
-  allTransactions,
-  getAllTransactions,
-} from "../../@libs/stores/transactions/crud";
-import { derived, effect, type DerivedSignal } from "@cyftech/signal";
-import type { TransactionUI } from "../../@libs/common";
 
 type TransactionsListProps = {
   classNames?: string;
 };
 
-effect(() => console.log(allTransactions.value));
-
 export const TransactionsList = component<TransactionsListProps>(
   ({ classNames }) => {
     console.log(isEditorOpen);
+
     return m.Div({
-      onmount: getAllTransactions,
       class: classNames,
       children: [
         Button({
-          // className: "mt2",
           label: "Add new transaction",
           onTap: startEditing,
         }),
@@ -48,37 +42,7 @@ export const TransactionsList = component<TransactionsListProps>(
           subject: allTransactions,
           isTruthy: m.Div(
             m.For({
-              subject: derived(() => {
-                const allTxns =
-                  (allTransactions as DerivedSignal<TransactionUI[]>).value ||
-                  [];
-                return [
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                  ...allTxns,
-                ];
-              }),
+              subject: allTransactions,
               map: (txn) => {
                 return TransactionTile({
                   className: "mt3",

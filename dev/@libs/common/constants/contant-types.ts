@@ -1,5 +1,3 @@
-import { TagCategory } from "../types";
-
 export const DB_INIT_PHASES = {
   pending: "pending",
   done: "done",

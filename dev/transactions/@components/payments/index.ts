@@ -3,15 +3,15 @@ import { dbools, derived, dstring, val } from "@cyftech/signal";
 import {
   CURRENCIES,
   type CurrencyCode,
-  type Payment,
+  type PaymentDB,
 } from "../../../@libs/common";
 import { Link } from "../../../@libs/elements";
 import { PaymentTile } from "./payment-tile";
 
 type PaymentsProps = {
   classNames?: string;
-  payments: Payment[];
-  onchange: (payments: Payment[]) => void;
+  payments: PaymentDB[];
+  onchange: (payments: PaymentDB[]) => void;
 };
 
 export const Payments = component<PaymentsProps>(
@@ -53,7 +53,7 @@ export const Payments = component<PaymentsProps>(
 
     const onRemove = (index: number) => {};
 
-    const onPaymentUpdate = (index: number, updated: Payment) => {
+    const onPaymentUpdate = (index: number, updated: PaymentDB) => {
       const updatedPayments = [...payments.value];
       updatedPayments[index] = updated;
       onchange(updatedPayments);

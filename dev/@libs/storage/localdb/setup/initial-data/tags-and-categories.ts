@@ -1,4 +1,4 @@
-import type { Tag, TagCategory } from "../../../../common";
+import type { TagDB, TagCategory } from "../../../../common";
 
 export const NECESSITY_CATEGORY_ID = crypto.randomUUID();
 export const UNCATEGORISED_CATEGORY_ID = crypto.randomUUID();
@@ -122,7 +122,7 @@ export const TAG_CATEGORIES: TagCategory[] = [
   },
 ];
 
-export const TAGS: Tag[] = [
+export const TAGS: TagDB[] = [
   {
     id: ESSENTIAL_TAG_ID,
     name: "essential",

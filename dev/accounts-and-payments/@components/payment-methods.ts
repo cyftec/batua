@@ -60,47 +60,43 @@ export const PaymentMethods = component<PaymentMethodsProps>(
           iconName: "account_balance_wallet",
           label: "Digital Wallets and Payment Methods",
         }),
-        m.If({
-          subject: allPaymentMethods,
-          isFalsy: m.Span("Loading..."),
-          isTruthy: m.Div({
-            class: "flex flex-wrap",
-            children: m.For({
-              subject: allPaymentMethods as DerivedSignal<PaymentMethod[]>,
-              n: Infinity,
-              nthChild: AddButtonTile({
-                classNames: "mr3 mt3 pt4 w-43",
-                onClick: () => (isEditorOpen.value = true),
-                children: [
-                  Icon({
-                    className: "mb2",
-                    size: 42,
-                    iconName: "add",
-                  }),
-                  m.Div({
-                    class: "light-silver f6",
-                    children: "Add new payment method",
-                  }),
-                ],
-              }),
-              map: (ps) =>
-                ListTile({
-                  classNames: "mr3 mt3 w-43",
-                  title: ps.name,
-                  subtitle: `${ps.uniqueId ? `${ps.uniqueId} ` : " "}${
-                    ps.expiry ? " • " + ps.expiry.toLocaleDateString() : " "
-                  }`,
-                  onClick: () => {
-                    editingServiceName.value = ps.name;
-                    editingService.value = ps;
-                    isEditorOpen.value = true;
-                  },
-                  child: m.Div({
-                    class: "mt3",
-                    children: "Something to fill here",
-                  }),
+        m.Div({
+          class: "flex flex-wrap",
+          children: m.For({
+            subject: allPaymentMethods,
+            n: Infinity,
+            nthChild: AddButtonTile({
+              classNames: "mr3 mt3 pt4 w-43",
+              onClick: () => (isEditorOpen.value = true),
+              children: [
+                Icon({
+                  className: "mb2",
+                  size: 42,
+                  iconName: "add",
                 }),
+                m.Div({
+                  class: "light-silver f6",
+                  children: "Add new payment method",
+                }),
+              ],
             }),
+            map: (ps) =>
+              ListTile({
+                classNames: "mr3 mt3 w-43",
+                title: ps.name,
+                subtitle: `${ps.uniqueId ? `${ps.uniqueId} ` : " "}${
+                  ps.expiry ? " • " + ps.expiry.toLocaleDateString() : " "
+                }`,
+                onClick: () => {
+                  editingServiceName.value = ps.name;
+                  editingService.value = ps;
+                  isEditorOpen.value = true;
+                },
+                child: m.Div({
+                  class: "mt3",
+                  children: "Something to fill here",
+                }),
+              }),
           }),
         }),
       ],

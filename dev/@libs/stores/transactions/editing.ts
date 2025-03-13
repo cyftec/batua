@@ -3,13 +3,13 @@ import { STORAGE } from "../../../@libs/storage";
 import {
   getDiffDaysFromToday,
   type ID,
-  type Payment,
+  type PaymentDB,
   type TransactionUI,
 } from "../../common";
 import { addTransaction, updateTransaction } from "./crud";
 
 const newTransactionId = crypto.randomUUID();
-const newPayment = (): Payment => ({
+const newPayment = (): PaymentDB => ({
   id: crypto.randomUUID(),
   amount: 0,
   transactionId: newTransactionId,

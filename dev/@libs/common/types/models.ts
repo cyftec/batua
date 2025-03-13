@@ -14,7 +14,7 @@ export type Currency = (typeof CURRENCIES)[number];
 export type CurrencyCode = Currency["code"];
 export type ID = `${string}-${string}-${string}-${string}-${string}`;
 
-export type Account = {
+export type AccountDB = {
   id: ID;
   name: string;
   type: AccountType;
@@ -38,33 +38,32 @@ export type TagCategory = {
   isTagEditable: 0 | 1;
 };
 
-export type Tag = {
+export type TagDB = {
   id: ID;
   name: string;
   category: TagCategory["id"];
 };
 
-export type Payment = {
+export type PaymentDB = {
   id: ID;
   amount: number;
-  currencyCode: CurrencyCode;
-  account: Account["id"];
+  account: AccountDB["id"];
   paymentMethod: PaymentMethod["id"];
   type: PaymentType;
 };
 
-export type Transaction = {
+export type TransactionDB = {
   id: ID;
   title: string;
   date: Date;
   createdAt: Date;
   modifiedAt: Date;
   type: TransactionType;
-  tags: Tag["id"][];
-  payments: Payment["id"][];
+  tags: TagDB["id"][];
+  payments: PaymentDB["id"][];
 };
 
-export type Budget = {
+export type BudgetDB = {
   id: ID;
   name: string;
   limit: number;
@@ -72,13 +71,31 @@ export type Budget = {
   startDate: Date;
   endDate: Date;
   currency: CurrencyCode;
-  tags: Tag["id"][];
+  tags: TagDB["id"][];
 };
 
 /**
  * UI Models
  */
-export type TransactionUI = Omit<Transaction, "payments"> & {
-  payments: Payment[];
+export type AccountUI = Omit<AccountDB, "currency"> & {
+  currency: Currency;
 };
-export type TagsCategory = TagCategory & { tags: Tag[] };
+export type TagUI = Omit<TagDB, "category"> & {
+  category: TagCategory;
+};
+export type TagCategoryUI = {
+  id: ID;
+  icon: string;
+  name: string;
+  isCategoryEditable: 0 | 1;
+  isTagEditable: 0 | 1;
+  tags: TagUI[];
+};
+export type PaymentUI = Omit<PaymentDB, "account" | "paymentMethod"> & {
+  account: AccountUI;
+  paymentMethod: PaymentMethod;
+};
+export type TransactionUI = Omit<TransactionDB, "tags" | "payments"> & {
+  tags: TagUI[];
+  payments: PaymentUI[];
+};

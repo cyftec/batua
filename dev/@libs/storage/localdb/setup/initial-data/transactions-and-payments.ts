@@ -1,4 +1,4 @@
-import type { Payment, Transaction } from "../../../../common";
+import type { PaymentDB, TransactionDB } from "../../../../common";
 import {
   CASH_ACCOUNT_ID,
   NOTES_COINS_PAYMENT_METHOD_ID,
@@ -9,7 +9,7 @@ const now = new Date();
 const transactionId = crypto.randomUUID();
 const paymentId = crypto.randomUUID();
 
-export const TRANSACTIONS: Transaction[] = [
+export const TRANSACTIONS: TransactionDB[] = [
   {
     id: transactionId,
     date: now,
@@ -22,7 +22,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
 ];
 
-export const PAYMENTS: Payment[] = [
+export const PAYMENTS: PaymentDB[] = [
   {
     id: paymentId,
     amount: 18,

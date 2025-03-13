@@ -1,9 +1,9 @@
-import type { Account, PaymentMethod } from "../../../../common";
+import type { AccountDB, PaymentMethod } from "../../../../common";
 
 export const CASH_ACCOUNT_ID = crypto.randomUUID();
 export const NOTES_COINS_PAYMENT_METHOD_ID = crypto.randomUUID();
 
-export const ACCOUNTS: Account[] = [
+export const ACCOUNTS: AccountDB[] = [
   {
     id: CASH_ACCOUNT_ID,
     name: "Cash",

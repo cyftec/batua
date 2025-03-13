@@ -1,16 +1,16 @@
 import { component, m } from "@mufw/maya";
 import { derived, dstring, val } from "@cyftech/signal";
-import { CURRENCIES, Payment } from "../../../@libs/common";
+import { CURRENCIES, PaymentDB } from "../../../@libs/common";
 import { Link, NumberBox } from "../../../@libs/elements";
 import { CurrencyPicker } from "../currency-picker";
 import { PaymentMethodPicker } from "./payment-method-picker";
 
 type PaymentTileProps = {
   classNames?: string;
-  payment: Payment & { index: number };
+  payment: PaymentDB & { index: number };
   linkLabel: string;
   onLinkClick: (index: number) => void;
-  onPaymentUpdate: (tileIndex: number, updated: Payment) => void;
+  onPaymentUpdate: (tileIndex: number, updated: PaymentDB) => void;
 };
 
 export const PaymentTile = component<PaymentTileProps>(
@@ -20,9 +20,9 @@ export const PaymentTile = component<PaymentTileProps>(
       () => payment.value.paymentMethodCode
     );
 
-    const onPaymentChange = <K extends keyof Payment>(
+    const onPaymentChange = <K extends keyof PaymentDB>(
       key: K,
-      value: Payment[K]
+      value: PaymentDB[K]
     ) => {
       onPaymentUpdate(payment.value.index, {
         ...payment.value,

@@ -1,6 +1,6 @@
 import { derived, type DerivedSignal, dstring, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { type Account, CURRENCIES, type ID } from "../../@libs/common";
+import { type AccountDB, CURRENCIES, type ID } from "../../@libs/common";
 import { AddButtonTile, ListTile, SectionTitle } from "../../@libs/components";
 import { Icon } from "../../@libs/elements";
 import {
@@ -15,7 +15,7 @@ type AccountsListProps = {
 };
 
 export const AccountsList = component<AccountsListProps>(({ classNames }) => {
-  const initAccount = (id: ID): Account => ({
+  const initAccount = (id: ID): AccountDB => ({
     id,
     type: "savings",
     name: "",
@@ -26,7 +26,7 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
   const error = signal("");
   const isAccountEditorOpen = signal(false);
   const editingAccountName = signal("");
-  const editingAccount = signal<Account>(initAccount(crypto.randomUUID()));
+  const editingAccount = signal<AccountDB>(initAccount(crypto.randomUUID()));
   const editorDialogTitle = derived(() =>
     editingAccountName.value
       ? `Edit account - '${editingAccountName.value}'`
@@ -88,7 +88,7 @@ export const AccountsList = component<AccountsListProps>(({ classNames }) => {
         isTruthy: m.Div({
           class: "flex flex-wrap",
           children: m.For({
-            subject: allAccounts as DerivedSignal<Account[]>,
+            subject: allAccounts as DerivedSignal<AccountDB[]>,
             n: 1000,
             nthChild: AddButtonTile({
               classNames: "mr3 mt3 pt4 h4 w-43",

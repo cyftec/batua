@@ -1,24 +1,23 @@
 import { derived, DerivedSignal, signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { Tag, TagsCategory } from "../@libs/common";
+import { ID, TagCategoryUI, TagUI } from "../@libs/common";
 import { HtmlPage, SectionTitle } from "../@libs/components";
 import { allTags, fetchAllTags } from "../@libs/stores/tags";
 import {
   allTagCategories,
   fetchAllTagCategories,
 } from "../@libs/stores/tags-categories";
-import { TagEditor } from "./@components/tag-editor";
-import { TagsCategoryCard } from "./@components/tags-category-card";
+import { TagEditor, TagsCategoryCard } from "./@components";
 
 const categoriesSections = derived(() => {
   if (!allTags.value?.length || !allTagCategories.value) return [];
 
   const [fixedCats, editablesCats, emptyCats] = allTagCategories.value.reduce(
     ([nonEditables, editables, empty], cat) => {
-      const tags = ((allTags as DerivedSignal<Tag[]>).value || []).filter(
-        (t) => t.category === cat.id
+      const tags = ((allTags as DerivedSignal<TagUI[]>).value || []).filter(
+        (t) => t.category.id === cat.id
       );
-      const catWithTags: TagsCategory = {
+      const catWithTags = {
         ...cat,
         tags,
       };
@@ -39,7 +38,7 @@ const categoriesSections = derived(() => {
 
       return [fixedTagsCategories, editableTagsCategories, noTagsCategories];
     },
-    [[] as TagsCategory[], [] as TagsCategory[], [] as TagsCategory[]]
+    [[] as TagCategoryUI[], [] as TagCategoryUI[], [] as TagCategoryUI[]]
   );
 
   return [
@@ -57,8 +56,8 @@ const categoriesSections = derived(() => {
     },
   ];
 });
-const editableTag = signal<Tag | undefined>(undefined);
-const openEditor = (tag: Tag) => {
+const editableTag = signal<TagUI | undefined>(undefined);
+const openEditor = (tag: TagUI) => {
   editableTag.value = tag;
 };
 const closeEditor = () => (editableTag.value = undefined);

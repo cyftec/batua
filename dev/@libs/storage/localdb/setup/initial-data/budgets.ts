@@ -1,4 +1,4 @@
-import { type Budget } from "../../../../common";
+import { type BudgetDB } from "../../../../common";
 import {
   ESSENTIAL_TAG_ID,
   GROCERY_TAG_ID,
@@ -15,7 +15,7 @@ const now = new Date();
 const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-export const BUDGETS: Budget[] = [
+export const BUDGETS: BudgetDB[] = [
   {
     id: crypto.randomUUID(),
     name: "Monthly household expense",
