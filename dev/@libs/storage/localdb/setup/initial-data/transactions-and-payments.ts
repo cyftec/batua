@@ -2,7 +2,7 @@ import type { PaymentDB, TransactionDB } from "../../../../common";
 import {
   CASH_ACCOUNT_ID,
   NOTES_COINS_PAYMENT_METHOD_ID,
-} from "./accounts-and-payment-services";
+} from "./accounts-and-payment-methods";
 import { DUMMY_EXPENSE_TAG_ID, TEST_TAG_ID } from "./tags-and-categories";
 
 const now = new Date();

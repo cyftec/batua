@@ -5,6 +5,7 @@ import { TileCard } from "./tile-card";
 
 type ListTileProps = {
   classNames?: string;
+  tooltip?: string;
   titleIconName?: string;
   title: string;
   subtitle: string;
@@ -13,9 +14,10 @@ type ListTileProps = {
 };
 
 export const ListTile = component<ListTileProps>(
-  ({ classNames, titleIconName, title, subtitle, child, onClick }) => {
+  ({ classNames, tooltip, titleIconName, title, subtitle, child, onClick }) => {
     return TileCard({
       classNames: classNames,
+      tooltip: tooltip,
       onClick: onClick,
       children: [
         m.Div({

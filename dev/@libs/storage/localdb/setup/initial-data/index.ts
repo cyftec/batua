@@ -1,4 +1,4 @@
-import { ACCOUNTS, PAYMENT_METHODS } from "./accounts-and-payment-services";
+import { ACCOUNTS, PAYMENT_METHODS } from "./accounts-and-payment-methods";
 import { BUDGETS } from "./budgets";
 import { TAG_CATEGORIES, TAGS } from "./tags-and-categories";
 import { PAYMENTS, TRANSACTIONS } from "./transactions-and-payments";

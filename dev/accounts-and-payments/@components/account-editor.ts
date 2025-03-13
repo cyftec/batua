@@ -2,7 +2,9 @@ import { m, component, Child, Children } from "@mufw/maya";
 import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
 import {
   ACCOUNT_TYPE,
+  AccountUI,
   CURRENCIES,
+  Currency,
   type AccountDB,
   type AccountType,
   type CurrencyCode,
@@ -18,8 +20,8 @@ import {
 type AccountEditorProps = {
   isOpen: boolean;
   dialogTitle: string;
-  editingAccount: Signal<AccountDB>;
-  onChange: (account: AccountDB) => void;
+  editingAccount: Signal<AccountUI>;
+  onChange: (account: AccountUI) => void;
   onCancel: () => void;
   onSave: () => void;
 };
@@ -43,7 +45,7 @@ export const AccountEditor = component<AccountEditorProps>(
     const onCurrencyChange = (currCode: string) =>
       onChange({
         ...editingAccount.value,
-        currency: currCode as CurrencyCode,
+        currency: CURRENCIES.find((curr) => curr.code === currCode) as Currency,
       });
 
     return Dialog({
@@ -61,7 +63,7 @@ export const AccountEditor = component<AccountEditorProps>(
             classNames: "mb3",
             label: "Account name",
             children: TextBox({
-              classNames: "w-100 ba bw1 br2 b--light-gray pa2",
+              classNames: "w-100 br2 ba bw1 b--light-gray pa2",
               text: name,
               placeholder: "account name",
               onchange: (value) => {
@@ -77,7 +79,7 @@ export const AccountEditor = component<AccountEditorProps>(
             classNames: "mb3",
             label: "Account ID",
             children: TextBox({
-              classNames: "ba flex w-100 bw1 br2 b--light-gray pa2",
+              classNames: "flex w-100 br2 ba bw1 b--light-gray pa2",
               text: dstring`${uniqueId}`,
               placeholder: "account id (Optional)",
               onchange: (uniqueId) =>
@@ -91,7 +93,7 @@ export const AccountEditor = component<AccountEditorProps>(
             classNames: "mb3",
             label: "Account type",
             children: DropDown({
-              classNames: "br2 pa2 w-100",
+              classNames: "w-100 br2 pa2",
               options: derived(() =>
                 Object.keys(ACCOUNT_TYPE).map((accKey) => ({
                   id: accKey,
@@ -117,7 +119,7 @@ export const AccountEditor = component<AccountEditorProps>(
                   options: CURRENCIES.map((curr) => ({
                     id: curr.code,
                     label: curr.code,
-                    isSelected: curr.code == currency.value,
+                    isSelected: curr.code == currency.value.code,
                   })),
                   onchange: onCurrencyChange,
                 }),

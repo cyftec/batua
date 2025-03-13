@@ -1,12 +1,12 @@
 import { component } from "@mufw/maya";
 import { derived, dstring, val } from "@cyftech/signal";
-import { type PaymentMethod } from "../../../@libs/common";
+import { type PaymentMethodDB } from "../../../@libs/common";
 import { DropDown } from "../../../@libs/elements";
 
 type PaymentMethodPickerProps = {
   classNames?: string;
-  selectedPaymentMethodCode: PaymentMethod["id"];
-  onchange: (code: PaymentMethod["id"]) => void;
+  selectedPaymentMethodCode: PaymentMethodDB["id"];
+  onchange: (code: PaymentMethodDB["id"]) => void;
 };
 
 export const PaymentMethodPicker = component<PaymentMethodPickerProps>(
@@ -20,7 +20,7 @@ export const PaymentMethodPicker = component<PaymentMethodPickerProps>(
           label: pm.displayName,
         }))
       ),
-      onchange: (optionId) => onchange(optionId as PaymentMethod["name"]),
+      onchange: (optionId) => onchange(optionId as PaymentMethodDB["name"]),
     });
   }
 );

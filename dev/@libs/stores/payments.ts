@@ -2,12 +2,12 @@ import { derived, dpromise } from "@cyftech/signal";
 import type {
   AccountUI,
   PaymentDB,
-  PaymentMethod,
+  PaymentMethodUI,
   PaymentUI,
 } from "../../@libs/common";
 import { db } from "../storage/localdb/setup";
-import { allPaymentMethods, fetchAllPaymentMethods } from "./payment-methods";
 import { allAccounts, fetchAllAccounts } from "./accounts";
+import { allPaymentMethods, fetchAllPaymentMethods } from "./payment-methods";
 
 const [fetchAllPayments, paymentsList] = dpromise(async () => {
   if (!allAccounts.value.length) await fetchAllAccounts();
@@ -19,7 +19,7 @@ const [fetchAllPayments, paymentsList] = dpromise(async () => {
     ) as AccountUI,
     paymentMethod: allPaymentMethods.value?.find(
       (pm) => pm.id === pmt.paymentMethod
-    ) as PaymentMethod,
+    ) as PaymentMethodUI,
   }));
   return payments;
 });

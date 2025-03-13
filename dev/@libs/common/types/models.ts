@@ -23,11 +23,11 @@ export type AccountDB = {
   currency: CurrencyCode;
 };
 
-export type PaymentMethod = {
+export type PaymentMethodDB = {
   id: ID;
   name: string;
   uniqueId: string | undefined;
-  expiry: Date | undefined;
+  accounts: AccountDB["id"][];
 };
 
 export type TagCategory = {
@@ -48,7 +48,7 @@ export type PaymentDB = {
   id: ID;
   amount: number;
   account: AccountDB["id"];
-  paymentMethod: PaymentMethod["id"];
+  paymentMethod: PaymentMethodDB["id"];
   type: PaymentType;
 };
 
@@ -91,9 +91,12 @@ export type TagCategoryUI = {
   isTagEditable: 0 | 1;
   tags: TagUI[];
 };
+export type PaymentMethodUI = Omit<PaymentMethodDB, "accounts"> & {
+  accounts: AccountUI[];
+};
 export type PaymentUI = Omit<PaymentDB, "account" | "paymentMethod"> & {
   account: AccountUI;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethodUI;
 };
 export type TransactionUI = Omit<TransactionDB, "tags" | "payments"> & {
   tags: TagUI[];

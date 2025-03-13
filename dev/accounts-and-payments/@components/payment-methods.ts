@@ -1,6 +1,6 @@
-import { derived, dstring, signal, type DerivedSignal } from "@cyftech/signal";
+import { dstring, signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import type { ID, PaymentMethod } from "../../@libs/common";
+import type { PaymentMethodUI } from "../../@libs/common";
 import { AddButtonTile, ListTile, SectionTitle } from "../../@libs/components";
 import { Icon } from "../../@libs/elements";
 import { allPaymentMethods } from "../../@libs/stores/payment-methods";
@@ -12,33 +12,14 @@ type PaymentMethodsProps = {
 
 export const PaymentMethods = component<PaymentMethodsProps>(
   ({ classNames }) => {
-    const initService = (id: ID): PaymentMethod => ({
-      id: id,
-      name: "",
-      uniqueId: undefined,
-      expiry: undefined,
-    });
     const isEditorOpen = signal(false);
-    const editingServiceName = signal("");
-    const editingService = signal(initService(crypto.randomUUID()));
-    const error = signal("");
+    const editablePaymentMethod = signal<PaymentMethodUI | undefined>(
+      undefined
+    );
 
-    const validateEditingService = () => {
-      error.value = "";
-    };
-
-    const resetEditor = () => {
-      editingServiceName.value = "";
-      editingService.value = initService(crypto.randomUUID());
-      error.value = "";
+    const closeEditor = () => {
+      editablePaymentMethod.value = undefined;
       isEditorOpen.value = false;
-    };
-
-    const saveSevice = () => {
-      validateEditingService();
-      if (error.value) return;
-
-      console.log(editingService.value);
     };
 
     return m.Div({
@@ -46,15 +27,13 @@ export const PaymentMethods = component<PaymentMethodsProps>(
       children: [
         PaymentMethodEditor({
           isOpen: isEditorOpen,
-          dialogTitle: derived(() =>
-            editingServiceName.value
-              ? `Edit payment service - '${editingServiceName.value}'`
-              : "Add new payment service"
-          ),
-          editingService: editingService,
-          onChange: (paymentMethod) => (editingService.value = paymentMethod),
-          onCancel: resetEditor,
-          onSave: saveSevice,
+          dialogTitle: dstring`${() =>
+            editablePaymentMethod.value
+              ? `Edit '${editablePaymentMethod.value.name}'`
+              : "Add new"} payment method`,
+          editablePaymentMethod: editablePaymentMethod,
+          onDone: closeEditor,
+          onCancel: closeEditor,
         }),
         SectionTitle({
           iconName: "account_balance_wallet",
@@ -67,34 +46,29 @@ export const PaymentMethods = component<PaymentMethodsProps>(
             n: Infinity,
             nthChild: AddButtonTile({
               classNames: "mr3 mt3 pt4 w-43",
+              tooltip: "Add new payment method",
               onClick: () => (isEditorOpen.value = true),
-              children: [
-                Icon({
-                  className: "mb2",
-                  size: 42,
-                  iconName: "add",
-                }),
-                m.Div({
-                  class: "light-silver f6",
-                  children: "Add new payment method",
-                }),
-              ],
+              children: Icon({
+                className: "mb2 silver",
+                size: 42,
+                iconName: "add",
+              }),
             }),
-            map: (ps) =>
+            map: (pm) =>
               ListTile({
                 classNames: "mr3 mt3 w-43",
-                title: ps.name,
-                subtitle: `${ps.uniqueId ? `${ps.uniqueId} ` : " "}${
-                  ps.expiry ? " • " + ps.expiry.toLocaleDateString() : " "
-                }`,
+                title: pm.name,
+                subtitle: `${pm.uniqueId ? `${pm.uniqueId} ` : " "}`,
                 onClick: () => {
-                  editingServiceName.value = ps.name;
-                  editingService.value = ps;
+                  editablePaymentMethod.value = pm;
                   isEditorOpen.value = true;
                 },
                 child: m.Div({
-                  class: "mt3",
-                  children: "Something to fill here",
+                  class: "mv3",
+                  children: m.For({
+                    subject: pm.accounts,
+                    map: (pmAcc) => m.Span(pmAcc.name),
+                  }),
                 }),
               }),
           }),

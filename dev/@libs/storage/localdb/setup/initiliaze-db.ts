@@ -23,12 +23,12 @@ export const populateDbWithInitialData = async () => {
 
     const paymentMethods = await db.paymentMethods.getAll();
     if (!paymentMethods)
-      throw new Error("DB didn't return records from payment-services store");
+      throw new Error("DB didn't return records from payment-methods store");
     if (!paymentMethods.length) {
       for (let ps of INITIAL_DATA.PAYMENT_METHODS) {
         await db.paymentMethods.add({ ...ps });
       }
-    } else console.log(`payment-services store already populated`);
+    } else console.log(`payment-methods store already populated`);
 
     const tagCategories = await db.tagCategories.getAll();
     if (!tagCategories)

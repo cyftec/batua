@@ -4,6 +4,7 @@ import { Icon } from "./icon";
 
 type TagProps = {
   classNames?: string;
+  isHighlighted?: boolean;
   label: string;
   iconClassNames?: string;
   iconName?: string;
@@ -16,6 +17,7 @@ type TagProps = {
 export const Tag = component<TagProps>(
   ({
     classNames,
+    isHighlighted,
     label,
     iconClassNames,
     iconName,
@@ -25,7 +27,10 @@ export const Tag = component<TagProps>(
     onIconClick,
   }) =>
     m.Span({
-      class: dstring`bg-near-white br2 flex items-center ${classNames}`,
+      class: dstring`ba br2 flex items-center ${() =>
+        isHighlighted?.value
+          ? "bg-light-gray b--moon-gray"
+          : "bg-near-white b--transparent"} ${classNames}`,
       onclick: onClick,
       children: [
         m.Span(label),

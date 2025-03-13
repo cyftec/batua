@@ -4,14 +4,16 @@ import { TileCard } from ".";
 
 type AddButtonTileProps = {
   classNames?: string;
+  tooltip?: string;
   onClick: () => void;
   children: Children;
 };
 
 export const AddButtonTile = component<AddButtonTileProps>(
-  ({ classNames, children, onClick }) =>
+  ({ classNames, tooltip, children, onClick }) =>
     TileCard({
       classNames: dstring`tc ${classNames}`,
+      tooltip: tooltip,
       onClick: onClick,
       children,
     })

@@ -13,7 +13,7 @@ export const FormField = component<FormFieldProps>(
       class: dstring`w-100 flex items-center justify-between ${classNames}`,
       children: [
         m.Span({
-          class: "silver",
+          class: "w-25 silver",
           children: label,
         }),
         m.Div({

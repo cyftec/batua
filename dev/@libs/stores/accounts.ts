@@ -2,6 +2,7 @@ import { derived, dpromise } from "@cyftech/signal";
 import {
   CURRENCIES,
   Currency,
+  ID,
   type AccountDB,
   type AccountUI,
 } from "../../@libs/common";
@@ -17,17 +18,19 @@ const [fetchAllAccounts, accountsList] = dpromise(async () => {
 
 const allAccounts = derived(() => accountsList.value || []);
 
-const [addAccount] = dpromise(async (account: AccountDB) => {
-  await db.accounts.add(account);
+const [addAccount] = dpromise(async (account: AccountUI) => {
+  const acc: AccountDB = { ...account, currency: account.currency.code };
+  await db.accounts.add(acc);
   await fetchAllAccounts();
 });
 
-const [editAccount] = dpromise(async (account: AccountDB) => {
-  await db.accounts.put(account);
+const [editAccount] = dpromise(async (account: AccountUI) => {
+  const acc: AccountDB = { ...account, currency: account.currency.code };
+  await db.accounts.put(acc);
   await fetchAllAccounts();
 });
 
-const [deleteAccount] = dpromise(async (accountId: AccountDB["id"]) => {
+const [deleteAccount] = dpromise(async (accountId: ID) => {
   await db.accounts.delete(accountId);
   await fetchAllAccounts();
 });

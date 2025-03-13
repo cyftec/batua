@@ -40,6 +40,7 @@ body {
 .hover-pop:hover::after, .hover-pop:focus::after { opacity: 1; }
 .sticky { position: sticky; }
 .h3rem { height: 3rem; }
+.mw-35 { min-width: 35%; }
 .w3rem { width: 3rem; }
 .w-45 { width: 45%; }
 .pt45 { padding-top: 2.5rem; }

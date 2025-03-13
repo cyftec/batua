@@ -8,12 +8,13 @@ import {
 
 type DateTimePickerProps = {
   classNames?: string;
+  dateOnly?: boolean;
   dateTime: Date;
   onchange: (value: Date) => void;
 };
 
 export const DateTimePicker = component<DateTimePickerProps>(
-  ({ classNames, dateTime, onchange }) => {
+  ({ classNames, dateOnly, dateTime, onchange }) => {
     console.log(dateTime.toString() + "sdfkjajsn");
     const dayOfWeek = derived(() => {
       return WEEKDAYS[dateTime.value.getDay()].substring(0, 3);
@@ -33,7 +34,9 @@ export const DateTimePicker = component<DateTimePickerProps>(
             m.Span({ class: "pr3 mr3 br b--light-gray bw1" }),
             m.Input({
               class: "bn pointer",
-              type: "datetime-local",
+              type: derived(() =>
+                dateOnly?.value ? "date" : "datetime-local"
+              ),
               value: dateTimeInputValue,
               onchange: (e) =>
                 onchange(new Date((e.target as HTMLInputElement).value)),
