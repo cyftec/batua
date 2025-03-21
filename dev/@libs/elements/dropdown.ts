@@ -1,7 +1,7 @@
 import { component, m } from "@mufw/maya";
 import { dstring, effect } from "@cyftech/signal";
 
-type SelectOption = {
+export type DropdownOption = {
   id: string;
   label: string;
   isSelected: boolean;
@@ -9,14 +9,16 @@ type SelectOption = {
 
 type DropDownProps = {
   classNames?: string;
-  options: SelectOption[];
+  withBorder?: boolean;
+  options: DropdownOption[];
   onchange: (optionId: string) => void;
 };
 
 export const DropDown = component<DropDownProps>(
-  ({ classNames, options, onchange }) => {
+  ({ classNames, withBorder, options, onchange }) => {
     return m.Select({
-      class: dstring`pointer bn bg-near-white ${classNames}`,
+      class: dstring`pointer bg-near-white ${() =>
+        withBorder?.value ? "ba" : "bn"} ${classNames}`,
       onchange: (e) => onchange((e.target as HTMLSelectElement).value),
       children: m.For({
         subject: options,

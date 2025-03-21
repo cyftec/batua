@@ -1,8 +1,6 @@
-import { phase } from "@mufw/maya/utils";
-
 export const getDiffDaysFromToday = (date: Date) => {
   const DIFFS = {
-    FUT: { isFuture: true, label: "ERROR: Future date or time" },
+    FUT: { isFuture: true, label: "Future date or time" },
     TOD: { isFuture: false, label: "Today" },
     YST: { isFuture: false, label: "Yesterday" },
     DBY: { isFuture: false, label: "Day before yesterday" },
@@ -45,3 +43,6 @@ export const getDateInputLocaleValue = (gmtDate: Date) => {
 
   return localeDateLabel;
 };
+
+export const capitalise = (text: string) =>
+  `${text.charAt(0).toUpperCase()}${text.slice(1)}`;

@@ -130,12 +130,12 @@ export const TAGS: TagDB[] = [
   },
   {
     id: crypto.randomUUID(),
-    name: "maybeluxary",
+    name: "maybeluxury",
     category: NECESSITY_CATEGORY_ID,
   },
   {
     id: crypto.randomUUID(),
-    name: "luxary",
+    name: "luxury",
     category: NECESSITY_CATEGORY_ID,
   },
   {

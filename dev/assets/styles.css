@@ -77,6 +77,8 @@ body {
 .fg17 { flex-grow: 17; flex-basis: 0; }
 .fg18 { flex-grow: 18; flex-basis: 0; }
 .fg19 { flex-grow: 19; flex-basis: 0; }
+.overlay-parent { position:relative; }
+.overlay { position:absolute; z-index:9999; width:100%; }
 
 @media screen and (min-width: 30em) {
   .dark-gray-ns { color: #333; }

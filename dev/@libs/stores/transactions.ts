@@ -1,9 +1,9 @@
 import { derived, dpromise } from "@cyftech/signal";
 import { phase } from "@mufw/maya/utils";
-import type { TransactionDB, TransactionUI } from "../../../@libs/common";
-import { db } from "../../storage/localdb/setup";
-import { fetchAllPayments, allPayments } from "../payments";
-import { allTags, fetchAllTags } from "../tags";
+import type { ID, TransactionDB, TransactionUI } from "../common";
+import { db } from "../storage/localdb/setup";
+import { fetchAllPayments, allPayments } from "./payments";
+import { allTags, fetchAllTags } from "./tags";
 
 const [fetchAllTransactions, txnsList] = dpromise(async () => {
   const txns = await db.transactions.getAll();
@@ -21,22 +21,30 @@ const [fetchAllTransactions, txnsList] = dpromise(async () => {
 
 const allTransactions = derived(() => txnsList.value || []);
 
-const [addTransaction] = dpromise(async (transaction: TransactionDB) => {
-  await db.transactions.add(transaction);
+const [addTransaction] = dpromise(async (transaction: TransactionUI) => {
+  const txn: TransactionDB = {
+    ...transaction,
+    tags: transaction.tags.map((tag) => tag.id),
+    payments: transaction.payments.map((p) => p.id),
+  };
+  await db.transactions.add(txn);
   await fetchAllTransactions();
 });
 
-const [updateTransaction] = dpromise(async (transaction: TransactionDB) => {
-  await db.transactions.put(transaction);
+const [updateTransaction] = dpromise(async (transaction: TransactionUI) => {
+  const txn: TransactionDB = {
+    ...transaction,
+    tags: transaction.tags.map((tag) => tag.id),
+    payments: transaction.payments.map((p) => p.id),
+  };
+  await db.transactions.put(txn);
   await fetchAllTransactions();
 });
 
-const [deleteTransaction] = dpromise(
-  async (transactionId: TransactionDB["id"]) => {
-    await db.transactions.delete(transactionId);
-    await fetchAllTransactions();
-  }
-);
+const [deleteTransaction] = dpromise(async (transactionId: ID) => {
+  await db.transactions.delete(transactionId);
+  await fetchAllTransactions();
+});
 
 if (!phase.currentIs("build")) fetchAllTransactions();
 

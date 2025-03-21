@@ -1,6 +1,6 @@
 import { HtmlPage } from "../@libs/components";
 import { fetchAllTags } from "../@libs/stores/tags";
-import { fetchAllTransactions } from "../@libs/stores/transactions/crud";
+import { fetchAllTransactions } from "../@libs/stores/transactions";
 import { Summary, TransactionsList } from "./@components";
 
 export default HtmlPage({

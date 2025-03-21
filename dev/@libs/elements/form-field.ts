@@ -10,14 +10,14 @@ type FormFieldProps = {
 export const FormField = component<FormFieldProps>(
   ({ classNames, label, children }) => {
     return m.Div({
-      class: dstring`w-100 flex items-center justify-between ${classNames}`,
+      class: dstring`w-100 ${classNames}`,
       children: [
         m.Span({
-          class: "w-25 silver",
+          class: dstring`w-25 f7 ml2 light-silver`,
           children: label,
         }),
         m.Div({
-          class: "w-75",
+          class: "w-100",
           children: children,
         }),
       ],

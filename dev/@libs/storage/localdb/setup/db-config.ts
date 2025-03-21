@@ -8,10 +8,10 @@ export const DB_CONFIG = {
     indices: [],
     initialData: INITIAL_DATA.ACCOUNTS,
   },
-  paymentMethods: {
+  paymentServices: {
     keyPathsShorthand: "id",
     indices: [],
-    initialData: INITIAL_DATA.PAYMENT_METHODS,
+    initialData: INITIAL_DATA.PAYMENT_SERVICES,
   },
   tagCategories: {
     keyPathsShorthand: "id",
@@ -29,7 +29,7 @@ export const DB_CONFIG = {
       { amount: "amount|multiEntry" } as const,
       { currencyCode: "currencyCode|multiEntry" } as const,
       { account: "account|multiEntry" } as const,
-      { paymentMethod: "paymentMethod|multiEntry" } as const,
+      { paymentService: "paymentService|multiEntry" } as const,
       { type: "type|multiEntry" } as const,
     ],
     initialData: INITIAL_DATA.PAYMENTS,

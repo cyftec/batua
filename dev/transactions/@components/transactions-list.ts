@@ -1,19 +1,10 @@
-import { derived, effect, type DerivedSignal } from "@cyftech/signal";
+import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import type { TransactionUI } from "../../@libs/common";
 import { Button } from "../../@libs/elements";
-import {
-  editableTransaction,
-  editingError,
-  isEditorOpen,
-  resetEditing,
-  saveTransaction,
-  startEditing,
-  updateEditingTransaction,
-} from "../../@libs/stores/transactions";
-import { allTransactions } from "../../@libs/stores/transactions/crud";
 import { TransactionEditor } from "./transaction-editor";
 import { TransactionTile } from "./transaction-tile";
+import { allTransactions } from "../../@libs/stores/transactions";
 
 type TransactionsListProps = {
   classNames?: string;
@@ -21,38 +12,44 @@ type TransactionsListProps = {
 
 export const TransactionsList = component<TransactionsListProps>(
   ({ classNames }) => {
-    console.log(isEditorOpen);
+    const isEditorOpen = signal(false);
+    const editableTransaction = signal<TransactionUI | undefined>(undefined);
+
+    const openEditor = (editableTxn?: TransactionUI) => {
+      editableTransaction.value = editableTxn;
+      isEditorOpen.value = true;
+    };
+
+    const closeEditor = () => {
+      editableTransaction.value = undefined;
+      isEditorOpen.value = false;
+    };
 
     return m.Div({
       class: classNames,
       children: [
         Button({
           label: "Add new transaction",
-          onTap: startEditing,
+          onTap: () => openEditor(),
         }),
         TransactionEditor({
           isOpen: isEditorOpen,
           editableTransaction: editableTransaction,
-          onChange: updateEditingTransaction,
-          onCancel: resetEditing,
-          onSave: saveTransaction,
-          error: editingError,
+          onCancel: closeEditor,
+          onDone: closeEditor,
         }),
-        m.If({
-          subject: allTransactions,
-          isTruthy: m.Div(
-            m.For({
-              subject: allTransactions,
-              map: (txn) => {
-                return TransactionTile({
-                  className: "mt3",
-                  transaction: txn,
-                  onClick: () => startEditing(txn),
-                });
-              },
-            })
-          ),
-        }),
+        m.Div(
+          m.For({
+            subject: allTransactions,
+            map: (txn) => {
+              return TransactionTile({
+                className: "mt3",
+                transaction: txn,
+                onClick: () => openEditor(txn),
+              });
+            },
+          })
+        ),
       ],
     });
   }

@@ -1,2 +1,2 @@
 export * from "./accounts-list.ts";
-export * from "./payment-methods.ts";
+export * from "./payment-services.ts";

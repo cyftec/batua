@@ -1,5 +1,5 @@
 import { derived, DerivedSignal, dpromise } from "@cyftech/signal";
-import type { TagCategory } from "../common";
+import type { ID, TagCategory, TagCategoryUI } from "../common";
 import { db } from "../storage/localdb/setup";
 
 const [fetchAllTagCategories, allCategories] = dpromise(() =>
@@ -8,6 +8,8 @@ const [fetchAllTagCategories, allCategories] = dpromise(() =>
 const allTagCategories: DerivedSignal<TagCategory[]> = derived(
   () => allCategories.value || []
 );
+const getTagCategory = (id?: ID): TagCategory | undefined =>
+  allTagCategories.value.find((tc) => tc.id === id);
 
 const [addTagCategory] = dpromise(async (category: TagCategory) => {
   await db.tagCategories.add(category);
@@ -29,5 +31,6 @@ export {
   allTagCategories,
   deleteTagCategory,
   editTagCategory,
+  getTagCategory,
   fetchAllTagCategories,
 };

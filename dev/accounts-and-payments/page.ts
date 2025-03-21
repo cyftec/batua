@@ -1,19 +1,19 @@
 import { m } from "@mufw/maya";
 import { HtmlPage } from "../@libs/components";
-import { AccountsList, PaymentMethods } from "./@components";
-import { fetchAllPaymentMethods } from "../@libs/stores/payment-methods";
+import { AccountsList, PaymentServices } from "./@components";
+import { fetchAllPaymentServices } from "../@libs/stores/payment-services";
 import { fetchAllAccounts } from "../@libs/stores/accounts";
 
 export default HtmlPage({
   htmlTitle: "Batua | Accounts & Assets",
-  headerTitle: "Accounts and payment methods",
+  headerTitle: "Accounts and payment services",
   selectedTabIndex: 4,
   onDocumentMount: () => {
-    fetchAllPaymentMethods();
+    fetchAllPaymentServices();
     fetchAllAccounts();
   },
   mainContent: m.Div([
-    PaymentMethods({ classNames: "mb5" }),
+    PaymentServices({ classNames: "mb5" }),
     AccountsList({ classNames: "mb5" }),
   ]),
   sideContent: "",

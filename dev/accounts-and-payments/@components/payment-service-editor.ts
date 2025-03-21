@@ -6,7 +6,7 @@ import {
   signal,
 } from "@cyftech/signal";
 import { Child, component, m } from "@mufw/maya";
-import type { AccountUI, ID, PaymentMethodUI } from "../../@libs/common";
+import type { AccountUI, ID, PaymentServiceUI } from "../../@libs/common";
 import {
   DateTimePicker,
   Dialog,
@@ -17,61 +17,64 @@ import {
 import { allAccounts } from "../../@libs/stores/accounts";
 import { areValuesEqual } from "@cyftech/immutjs";
 import {
-  addPaymentMethod,
-  editPaymentMethod,
-} from "../../@libs/stores/payment-methods";
+  addPaymentService,
+  editPaymentService,
+} from "../../@libs/stores/payment-services";
 
-type PaymentMethodEditorProps = {
+type PaymentServiceEditorProps = {
   classNames?: string;
   isOpen: boolean;
   dialogTitle: string;
-  editablePaymentMethod?: PaymentMethodUI;
+  editablePaymentService?: PaymentServiceUI;
   onDone: () => void;
   onCancel: () => void;
 };
 
-export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
+export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
   ({
     classNames,
     isOpen,
     dialogTitle,
-    editablePaymentMethod,
+    editablePaymentService,
     onDone,
     onCancel,
   }) => {
     const error = signal("");
-    const initPaymentMethod = (id: ID): PaymentMethodUI => ({
+    const initPaymentService = (id: ID): PaymentServiceUI => ({
       id: id,
       name: "",
       uniqueId: undefined,
       accounts: [],
     });
-    const editedPaymentMethod = signal(
-      editablePaymentMethod?.value || initPaymentMethod(crypto.randomUUID())
+    const editedPaymentService = signal(
+      editablePaymentService?.value || initPaymentService(crypto.randomUUID())
     );
     effect(() => {
-      const editable = editablePaymentMethod?.value;
+      const editable = editablePaymentService?.value;
       if (isOpen.value) {
-        editedPaymentMethod.value =
-          editable || initPaymentMethod(crypto.randomUUID());
+        editedPaymentService.value =
+          editable || initPaymentService(crypto.randomUUID());
       }
     });
 
-    const validateEditingPaymentMethod = () => {
+    const validateEditingPaymentService = () => {
       if (
-        editablePaymentMethod?.value &&
-        areValuesEqual(editablePaymentMethod?.value, editedPaymentMethod.value)
+        editablePaymentService?.value &&
+        areValuesEqual(
+          editablePaymentService?.value,
+          editedPaymentService.value
+        )
       ) {
-        error.value = "No change in original payment method";
+        error.value = "No change in original payment service";
         return;
       }
 
-      if (!editedPaymentMethod.value.name) {
+      if (!editedPaymentService.value.name) {
         error.value = "Name should not be empty";
         return;
       }
 
-      if (!editedPaymentMethod.value.accounts.length) {
+      if (!editedPaymentService.value.accounts.length) {
         error.value = "At least one connected account should be selected";
         return;
       }
@@ -79,29 +82,29 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
 
     const onNameChange = (text: string) => {
       error.value = "";
-      editedPaymentMethod.value = {
-        ...editedPaymentMethod.value,
+      editedPaymentService.value = {
+        ...editedPaymentService.value,
         name: text.trim(),
       };
     };
 
     const onUniqueIdChange = (text: string) => {
       error.value = "";
-      editedPaymentMethod.value = {
-        ...editedPaymentMethod.value,
+      editedPaymentService.value = {
+        ...editedPaymentService.value,
         uniqueId: text.trim() || undefined,
       };
     };
 
     const toggleAccountSelection = (account: MaybeSignalObject<AccountUI>) => {
       error.value = "";
-      const updatedAccounts = editedPaymentMethod.value.accounts.filter(
+      const updatedAccounts = editedPaymentService.value.accounts.filter(
         (pmAcc) => pmAcc.id !== account.value.id
       );
       const isAddition =
-        updatedAccounts.length === editedPaymentMethod.value.accounts.length;
-      editedPaymentMethod.value = {
-        ...editedPaymentMethod.value,
+        updatedAccounts.length === editedPaymentService.value.accounts.length;
+      editedPaymentService.value = {
+        ...editedPaymentService.value,
         accounts: isAddition
           ? [...updatedAccounts, account.value]
           : updatedAccounts,
@@ -109,13 +112,13 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
     };
 
     const onUpdate = () => {
-      validateEditingPaymentMethod();
+      validateEditingPaymentService();
       if (error.value) return;
 
-      if (editablePaymentMethod?.value) {
-        editPaymentMethod(editedPaymentMethod.value);
+      if (editablePaymentService?.value) {
+        editPaymentService(editedPaymentService.value);
       } else {
-        addPaymentMethod(editedPaymentMethod.value);
+        addPaymentService(editedPaymentService.value);
       }
       onDone();
     };
@@ -131,7 +134,7 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
       header: dialogTitle,
       prevLabel: "Cancel",
       nextLabel: derived(() =>
-        editablePaymentMethod?.value ? "Update" : "Add"
+        editablePaymentService?.value ? "Update" : "Add"
       ),
       onNext: onUpdate,
       onPrev: onCancelEditing,
@@ -144,7 +147,7 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
             label: "Name",
             children: TextBox({
               classNames: "w-100 br2 ba bw1 b--light-gray pa2",
-              text: derived(() => editedPaymentMethod.value.name),
+              text: derived(() => editedPaymentService.value.name),
               onchange: onNameChange,
             }),
           }),
@@ -154,7 +157,7 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
             children: TextBox({
               classNames: "w-100 br2 ba bw1 b--light-gray pa2",
               placeholder: "(optional) unique ID",
-              text: derived(() => editedPaymentMethod.value.uniqueId || ""),
+              text: derived(() => editedPaymentService.value.uniqueId || ""),
               onchange: onUniqueIdChange,
             }),
           }),
@@ -168,7 +171,7 @@ export const PaymentMethodEditor = component<PaymentMethodEditorProps>(
                 itemKey: "id",
                 map: (acc) => {
                   const isSelected = derived(() =>
-                    editedPaymentMethod.value.accounts.some(
+                    editedPaymentService.value.accounts.some(
                       (pmAcc) => pmAcc.id === acc.value.id
                     )
                   );

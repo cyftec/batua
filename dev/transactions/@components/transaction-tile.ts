@@ -50,8 +50,8 @@ export const TransactionTile = component<TransactionTileProps>(
                     class: "f7 silver flex items-center",
                     children: [
                       m.If({ subject: i > 0, isTruthy: ",&nbsp;" }),
-                      Icon({ size: 10, iconName: tag.category.icon }),
-                      m.Span({ children: `${tag.name}` }),
+                      Icon({ size: 12, iconName: tag.category.icon }),
+                      m.Span({ children: `&nbsp;${tag.name}` }),
                     ],
                   }),
               }),

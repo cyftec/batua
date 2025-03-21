@@ -39,7 +39,7 @@ export const config: KarmaConfig = {
     localServer: {
       port: 3000,
       redirectOnStart: false,
-      reloadPageOnFocus: true,
+      reloadPageOnFocus: false,
       otherWatchDirs: [],
       serveDirectory: `${projectFileNames.generated.stagingDir}`,
     },

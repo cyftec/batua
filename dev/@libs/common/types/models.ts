@@ -12,7 +12,7 @@ export type TransactionType = keyof typeof TRANSACTION_TYPE;
 export type PaymentType = keyof typeof PAYMENT_TYPES;
 export type Currency = (typeof CURRENCIES)[number];
 export type CurrencyCode = Currency["code"];
-export type ID = `${string}-${string}-${string}-${string}-${string}`;
+export type ID = ReturnType<Crypto["randomUUID"]>;
 
 export type AccountDB = {
   id: ID;
@@ -23,7 +23,7 @@ export type AccountDB = {
   currency: CurrencyCode;
 };
 
-export type PaymentMethodDB = {
+export type PaymentServiceDB = {
   id: ID;
   name: string;
   uniqueId: string | undefined;
@@ -48,8 +48,7 @@ export type PaymentDB = {
   id: ID;
   amount: number;
   account: AccountDB["id"];
-  paymentMethod: PaymentMethodDB["id"];
-  type: PaymentType;
+  paymentService: PaymentServiceDB["id"];
 };
 
 export type TransactionDB = {
@@ -91,11 +90,13 @@ export type TagCategoryUI = {
   isTagEditable: 0 | 1;
   tags: TagUI[];
 };
-export type PaymentMethodUI = Omit<PaymentMethodDB, "accounts"> & {
+export type PaymentServiceUI = Omit<PaymentServiceDB, "accounts"> & {
   accounts: AccountUI[];
 };
-export type PaymentUI = Omit<PaymentDB, "account" | "paymentMethod"> & {
+export type PaymentMethodUI = Omit<PaymentServiceDB, "accounts"> & {
   account: AccountUI;
+};
+export type PaymentUI = Omit<PaymentDB, "account" | "paymentService"> & {
   paymentMethod: PaymentMethodUI;
 };
 export type TransactionUI = Omit<TransactionDB, "tags" | "payments"> & {

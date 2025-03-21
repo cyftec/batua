@@ -87,7 +87,7 @@ export const HtmlPage = component<HtmlPageProps>(
                     {
                       index: 4,
                       icon: "account_balance_wallet",
-                      label: "Accounts & Payment Methods",
+                      label: "Accounts & Payment Services",
                       href: "/accounts-and-payments",
                     },
                   ],

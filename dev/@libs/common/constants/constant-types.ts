@@ -16,12 +16,12 @@ export const PAYMENT_TYPES = {
 } as const;
 
 export const TRANSACTION_TYPE = {
-  purchase: "paid in full for purchase",
-  earning: "received as income, gift, profit or interest",
-  loss: "lost in investment, missing records or elsewhere",
-  bowrrow: "borrowed, loaned or took credit from others",
-  investment: "invested or lent money to others",
-  unsettled: "paid or owe partly in a group purchase",
-  settlement: "paid or received unsettled money in part or full",
-  transfer: "transferred between same account types",
+  spent: "paid in full for a purchase",
+  earned: "received as income, gift, profit or interest",
+  loaned: "borrowed, loaned or took credit from others",
+  invested: "invested or lent money to others",
+  unsettled: "paid or owed partly in a group purchase",
+  settled: "paid or received unsettled money in part or full",
+  transferred: "transferred between same account types",
+  lost: "lost in investment, missing records or elsewhere",
 } as const;
