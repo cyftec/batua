@@ -6,7 +6,7 @@ export type ObjectStoreTransaction<
   clear: () => Promise<undefined>;
   count: (query?: IDBValidKey | IDBKeyRange) => Promise<number>;
   delete: (query: IDBValidKey | IDBKeyRange) => Promise<undefined>;
-  get: (query: IDBValidKey | IDBKeyRange) => Promise<Doc<K, Conf>>;
+  get: (query: IDBValidKey | IDBKeyRange) => Promise<Doc<K, Conf> | undefined>;
   getAll: (
     query?: IDBValidKey | IDBKeyRange | null,
     count?: number

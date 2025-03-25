@@ -1,7 +1,6 @@
 import { derived, dpromise } from "@cyftech/signal";
 import {
-  CURRENCIES,
-  Currency,
+  getCurrencyFromCode,
   ID,
   type AccountDB,
   type AccountUI,
@@ -11,34 +10,59 @@ import { db } from "../storage/localdb/setup";
 const [fetchAllAccounts, accountsList] = dpromise(async () => {
   const accounts: AccountUI[] = (await db.accounts.getAll()).map((acc) => ({
     ...acc,
-    currency: CURRENCIES.find((curr) => curr.code === acc.currency) as Currency,
+    currency: getCurrencyFromCode(acc.currency),
   }));
   return accounts;
 });
-
 const allAccounts = derived(() => accountsList.value || []);
 
-const [addAccount] = dpromise(async (account: AccountUI) => {
+const findAccount = async (accountID: ID): Promise<AccountUI | undefined> => {
+  if (!accountID) throw `Invalid account-ID for finding the account`;
+  const foundAcc = await db.accounts.get(accountID);
+  if (!foundAcc) return;
+
+  return {
+    ...foundAcc,
+    currency: getCurrencyFromCode(foundAcc.currency),
+  };
+};
+
+const addAccount = async (account: AccountUI) => {
   const acc: AccountDB = { ...account, currency: account.currency.code };
   await db.accounts.add(acc);
   await fetchAllAccounts();
-});
+};
 
-const [editAccount] = dpromise(async (account: AccountUI) => {
+const editAccount = async (account: AccountUI) => {
   const acc: AccountDB = { ...account, currency: account.currency.code };
+  console.log(`putting updated account`, acc);
   await db.accounts.put(acc);
   await fetchAllAccounts();
-});
+};
 
-const [deleteAccount] = dpromise(async (accountId: ID) => {
+const addBalanceToAccount = async (accountID: ID, amount: number) => {
+  const acc = await findAccount(accountID);
+  if (!acc) throw `Account doesn't exist for give account ID`;
+
+  const updatedAccountBalance = acc.balance + amount;
+  const updatedNewAccount: AccountUI = {
+    ...acc,
+    balance: updatedAccountBalance,
+  };
+  await editAccount(updatedNewAccount);
+};
+
+const deleteAccount = async (accountId: ID) => {
   await db.accounts.delete(accountId);
   await fetchAllAccounts();
-});
+};
 
 export {
-  allAccounts,
   addAccount,
+  allAccounts,
   deleteAccount,
+  addBalanceToAccount,
   editAccount,
   fetchAllAccounts,
+  findAccount,
 };

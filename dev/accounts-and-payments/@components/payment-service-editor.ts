@@ -1,5 +1,7 @@
 import {
+  compute,
   derived,
+  dprops,
   dstring,
   effect,
   MaybeSignalObject,
@@ -49,13 +51,7 @@ export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
     const editedPaymentService = signal(
       editablePaymentService?.value || initPaymentService(crypto.randomUUID())
     );
-    effect(() => {
-      const editable = editablePaymentService?.value;
-      if (isOpen.value) {
-        editedPaymentService.value =
-          editable || initPaymentService(crypto.randomUUID());
-      }
-    });
+    const { name, uniqueId, accounts } = dprops(editedPaymentService);
 
     const validateEditingPaymentService = () => {
       if (
@@ -128,6 +124,14 @@ export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
       onCancel();
     };
 
+    effect(() => {
+      const editable = editablePaymentService?.value;
+      if (isOpen.value) {
+        editedPaymentService.value =
+          editable || initPaymentService(crypto.randomUUID());
+      }
+    });
+
     return Dialog({
       classNames: "mw-35",
       isOpen: isOpen,
@@ -147,7 +151,7 @@ export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
             label: "Name",
             children: TextBox({
               classNames: "w-100 br2 ba bw1 b--light-gray pa2",
-              text: derived(() => editedPaymentService.value.name),
+              text: name,
               onchange: onNameChange,
             }),
           }),
@@ -157,7 +161,7 @@ export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
             children: TextBox({
               classNames: "w-100 br2 ba bw1 b--light-gray pa2",
               placeholder: "(optional) unique ID",
-              text: derived(() => editedPaymentService.value.uniqueId || ""),
+              text: dstring`${uniqueId}`,
               onchange: onUniqueIdChange,
             }),
           }),
@@ -171,9 +175,7 @@ export const PaymentServiceEditor = component<PaymentServiceEditorProps>(
                 itemKey: "id",
                 map: (acc) => {
                   const isSelected = derived(() =>
-                    editedPaymentService.value.accounts.some(
-                      (pmAcc) => pmAcc.id === acc.value.id
-                    )
+                    accounts.value.some((pmAcc) => pmAcc.id === acc.value.id)
                   );
                   return Tag({
                     classNames: "ph2 pv1 mr2 mb2 pointer",

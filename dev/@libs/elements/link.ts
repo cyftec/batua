@@ -4,13 +4,18 @@ import { dstring } from "@cyftech/signal";
 type LinkProps = {
   className?: string;
   label: string;
-  onClick: () => void;
+  href?: string;
+  target?: string;
+  onClick?: () => void;
 };
 
-export const Link = component<LinkProps>(({ className, onClick, label }) =>
-  m.Span({
-    class: dstring`underline pointer hover-black f6 ${className}`,
-    onclick: onClick,
-    children: label,
-  })
+export const Link = component<LinkProps>(
+  ({ className, href, target, onClick, label }) =>
+    m.A({
+      class: dstring`underline pointer dark-gray hover-black ${className}`,
+      href,
+      target,
+      onclick: () => onClick && onClick(),
+      children: label,
+    })
 );

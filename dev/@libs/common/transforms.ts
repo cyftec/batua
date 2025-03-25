@@ -1,3 +1,6 @@
+import { CURRENCIES } from "./constants";
+import { Currency, CurrencyCode } from "./types";
+
 export const getDiffDaysFromToday = (date: Date) => {
   const DIFFS = {
     FUT: { isFuture: true, label: "Future date or time" },
@@ -42,6 +45,13 @@ export const getDateInputLocaleValue = (gmtDate: Date) => {
   const localeDateLabel = `${localeDate}T${localeTime}`;
 
   return localeDateLabel;
+};
+
+export const getCurrencyFromCode = (currencyCode: CurrencyCode): Currency => {
+  const foundCurr = CURRENCIES.find((curr) => curr.code === currencyCode);
+  if (!foundCurr)
+    throw `Invalid currency code provided to find the currency details`;
+  return foundCurr;
 };
 
 export const capitalise = (text: string) =>

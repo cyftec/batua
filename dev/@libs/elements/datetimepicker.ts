@@ -15,7 +15,6 @@ type DateTimePickerProps = {
 
 export const DateTimePicker = component<DateTimePickerProps>(
   ({ classNames, dateOnly, dateTime, onchange }) => {
-    console.log(dateTime.toString() + "sdfkjajsn");
     const dayOfWeek = derived(() => {
       return WEEKDAYS[dateTime.value.getDay()].substring(0, 3);
     });

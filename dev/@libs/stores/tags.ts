@@ -20,6 +20,11 @@ const [fetchAllTags, allTagsList] = dpromise(async () => {
 
 const allTags = derived(() => allTagsList.value || []);
 
+const findTag = async (tagID: ID) => {
+  if (!tagID) throw `Invalid tag-ID for finding the tag`;
+  return await db.tags.get(tagID);
+};
+
 const [addTag] = dpromise(async (tag: TagUI) => {
   const dbTag: TagDB = {
     ...tag,
@@ -43,4 +48,4 @@ const [deleteTag] = dpromise(async (tagId: ID) => {
   await fetchAllTags();
 });
 
-export { addTag, allTags, deleteTag, editTag, fetchAllTags };
+export { findTag, addTag, allTags, deleteTag, editTag, fetchAllTags };

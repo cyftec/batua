@@ -1,7 +1,7 @@
 import { m, component } from "@mufw/maya";
 import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
-import type { TransactionUI } from "../../@libs/common";
-import { Icon } from "../../@libs/elements";
+import type { TransactionUI } from "../../../@libs/common";
+import { Icon } from "../../../@libs/elements";
 
 type TransactionTileProps = {
   className?: string;
@@ -25,7 +25,8 @@ export const TransactionTile = component<TransactionTileProps>(
           children: [
             m.Span({
               id: "abcd",
-              class: "f2 gray",
+              class: dstring`gray ${() =>
+                amount.value.length > 7 ? "f3 pt2" : "f2"}`,
               children: derived(() => amount.value.split(".")[0]),
             }),
             m.Span({
@@ -49,9 +50,16 @@ export const TransactionTile = component<TransactionTileProps>(
                   m.Span({
                     class: "f7 silver flex items-center",
                     children: [
-                      m.If({ subject: i > 0, isTruthy: ",&nbsp;" }),
-                      Icon({ size: 12, iconName: tag.category.icon }),
-                      m.Span({ children: `&nbsp;${tag.name}` }),
+                      m.Span({
+                        class: dstring`white bg-moon-gray br-100 h1 w1 flex items-center justify-center ${
+                          i > 0 ? "ml2" : ""
+                        }`,
+                        children: Icon({
+                          size: 12,
+                          iconName: tag.category.icon,
+                        }),
+                      }),
+                      m.Span({ class: "ml1", children: tag.name }),
                     ],
                   }),
               }),

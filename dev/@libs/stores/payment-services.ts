@@ -27,11 +27,8 @@ const getPaymentMethodUI = (
   accountId: ID
 ): PaymentMethodUI => {
   const allPSs = allPaymentServices.value;
-  console.log(allPSs);
   const foundPS = allPSs.find((ps) => ps.id === paymentServiceId);
-  console.log(foundPS);
   const foundAccount = foundPS?.accounts.find((acc) => acc.id === accountId);
-  console.log(foundAccount);
   if (!foundPS || !foundAccount)
     throw `No payment-method found with given payment-service and account IDs`;
 

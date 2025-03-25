@@ -15,7 +15,7 @@ export const TileCard = component<TileCardProps>(
         onClick ? "hover-pop pointer hover-bg-white" : ""
       } ${classNames}`,
       title: tooltip,
-      onclick: onClick,
+      onclick: () => onClick && onClick(),
       children,
     });
   }

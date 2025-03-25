@@ -1,61 +1,112 @@
-import { m, component, Child, Children } from "@mufw/maya";
-import { derived, dprops, dstring, val, type Signal } from "@cyftech/signal";
+import {
+  derived,
+  dprops,
+  dstring,
+  effect,
+  MaybeSignalObject,
+  signal,
+} from "@cyftech/signal";
+import { component, m } from "@mufw/maya";
 import {
   ACCOUNT_TYPE,
   AccountUI,
   CURRENCIES,
   Currency,
-  type AccountDB,
+  ID,
   type AccountType,
-  type CurrencyCode,
 } from "../../@libs/common";
 import {
   Dialog,
   DropDown,
   FormField,
-  NumberBox,
+  Link,
   TextBox,
 } from "../../@libs/elements";
+import { addAccount, editAccount } from "../../@libs/stores/accounts";
 
 type AccountEditorProps = {
   isOpen: boolean;
-  dialogTitle: string;
-  editingAccount: Signal<AccountUI>;
-  onChange: (account: AccountUI) => void;
-  onCancel: () => void;
-  onSave: () => void;
+  editableAccount?: AccountUI;
+  onCancel?: () => void;
+  onDone?: () => void;
 };
 
 export const AccountEditor = component<AccountEditorProps>(
-  ({ isOpen, dialogTitle, editingAccount, onChange, onCancel, onSave }) => {
+  ({ isOpen, editableAccount, onCancel, onDone }) => {
+    const initAccount = (id: ID): AccountUI => ({
+      id,
+      type: "savings",
+      name: "",
+      uniqueId: undefined,
+      balance: 0,
+      currency: CURRENCIES.find((curr) => curr.code === "INR") as Currency,
+    });
+    const error = signal("");
+    const isAccountEditorOpen = signal(false);
+    const editedAccount = signal<AccountUI>(initAccount(crypto.randomUUID()));
+    const dialogTitle = derived(() =>
+      editedAccount.value
+        ? `Edit account - '${editedAccount.value.name}'`
+        : "Add new account"
+    );
+
+    const resetEditor = () => {
+      error.value = "";
+      editedAccount.value = initAccount(crypto.randomUUID());
+      isAccountEditorOpen.value = false;
+    };
+
+    const validateEditingAccount = () => {
+      console.log(error.value);
+      const account = editedAccount.value;
+      if (!account.name) {
+        error.value = "Account name cannot be empty.";
+        return;
+      }
+      error.value = "";
+    };
+
+    const saveAccount = async () => {
+      const account = editedAccount.value;
+      validateEditingAccount();
+      if (error.value) return;
+
+      if (editableAccount?.value) {
+        await editAccount(account);
+      } else {
+        await addAccount(account);
+      }
+      onDone && onDone();
+      resetEditor();
+    };
+
+    const onPrevAction = () => {
+      onCancel && onCancel();
+      resetEditor();
+    };
+
     const {
       type: accountType,
       name,
       uniqueId,
       balance,
       currency,
-    } = dprops(editingAccount);
+    } = dprops(editedAccount);
 
-    const onAccountBalance = (value: number) =>
-      onChange({
-        ...editingAccount.value,
-        balance: value,
-      });
-
-    const onCurrencyChange = (currCode: string) =>
-      onChange({
-        ...editingAccount.value,
-        currency: CURRENCIES.find((curr) => curr.code === currCode) as Currency,
-      });
+    effect(() => {
+      if (editableAccount?.value) {
+        editedAccount.value = editableAccount.value;
+      }
+    });
 
     return Dialog({
       isOpen: isOpen,
       header: dialogTitle,
       prevLabel: "Cancel",
       nextLabel: "Save",
-      onTapOutside: onCancel,
-      onPrev: onCancel,
-      onNext: onSave,
+      onTapOutside: onPrevAction,
+      onPrev: onPrevAction,
+      onNext: saveAccount,
       child: m.Div({
         class: "w-100",
         children: [
@@ -68,10 +119,10 @@ export const AccountEditor = component<AccountEditorProps>(
               placeholder: "account name",
               onchange: (value) => {
                 console.log(value);
-                onChange({
-                  ...editingAccount.value,
+                editedAccount.value = {
+                  ...editedAccount.value,
                   name: value,
-                });
+                };
               },
             }),
           }),
@@ -83,8 +134,8 @@ export const AccountEditor = component<AccountEditorProps>(
               text: dstring`${uniqueId}`,
               placeholder: "account id (Optional)",
               onchange: (uniqueId) =>
-                onChange({
-                  ...editingAccount.value,
+                (editedAccount.value = {
+                  ...editedAccount.value,
                   uniqueId,
                 }),
             }),
@@ -102,8 +153,8 @@ export const AccountEditor = component<AccountEditorProps>(
                 }))
               ),
               onchange: (accountType) =>
-                onChange({
-                  ...editingAccount.value,
+                (editedAccount.value = {
+                  ...editedAccount.value,
                   type: accountType as AccountType,
                 }),
             }),
@@ -111,25 +162,39 @@ export const AccountEditor = component<AccountEditorProps>(
           FormField({
             classNames: "mb3",
             label: "Account balance",
-            children: m.Div({
-              class: "flex items-center",
-              children: [
-                DropDown({
-                  classNames: "br2 pa2",
-                  options: CURRENCIES.map((curr) => ({
-                    id: curr.code,
-                    label: curr.code,
-                    isSelected: curr.code == currency.value.code,
-                  })),
-                  onchange: onCurrencyChange,
-                }),
-                NumberBox({
-                  classNames: "ba bw1 br2 b--light-gray pa2 w-100",
-                  placeholder: "account balance",
-                  num: balance,
-                  onchange: onAccountBalance,
-                }),
-              ],
+            children: [
+              m.Div({
+                class: "flex items-center mv2",
+                children: [
+                  m.Span({
+                    class: "ml2 silver f6",
+                    children: currency.value.symbol,
+                  }),
+                  m.Span({
+                    class: "ml1 f3",
+                    children: dstring`${() => {
+                      console.log(editedAccount.value);
+                      console.log(balance.value);
+                      return balance.value.toFixed(2);
+                    }}`,
+                  }),
+                ],
+              }),
+              Link({
+                className: "ml2 f7",
+                href: "/transactions?open=new",
+                label: "change balance with a transaction",
+                onClick: function (): void {
+                  throw new Error("Function not implemented.");
+                },
+              }),
+            ],
+          }),
+          m.If({
+            subject: error,
+            isTruthy: m.Div({
+              class: "red",
+              children: error as MaybeSignalObject<string>,
             }),
           }),
         ],

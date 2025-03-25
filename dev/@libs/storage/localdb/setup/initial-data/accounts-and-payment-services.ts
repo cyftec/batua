@@ -9,7 +9,7 @@ export const ACCOUNTS: AccountDB[] = [
     name: "Cash",
     type: "savings",
     uniqueId: undefined,
-    balance: 1000,
+    balance: 982,
     currency: "INR",
   },
 ];
