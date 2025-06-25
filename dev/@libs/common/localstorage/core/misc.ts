@@ -1,3 +1,4 @@
+import { phase } from "@mufw/maya/utils";
 import { ID } from "../../models/core";
 
 export const getNewNumberID = (): ID => new Date().getTime();
@@ -20,6 +21,8 @@ export const parseObjectJsonString = <T extends Object>(
 
 export const validLocalStorageKeys = () => {
   const lsKeys: string[] = [];
+  if (!phase.currentIs("run")) return lsKeys;
+
   for (const key in localStorage) {
     if (!localStorage.hasOwnProperty(key)) {
       continue;

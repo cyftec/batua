@@ -37,8 +37,8 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
   },
   getAllKeys: function () {
     const validKeys: string[] = [];
+    const thisStore = this as Store<Record, RecordUI>;
     for (const lsKey of validLocalStorageKeys()) {
-      const thisStore = this as Store<Record, RecordUI>;
       if (thisStore.keyIsValid(lsKey)) validKeys.push(lsKey);
     }
     return validKeys;
@@ -47,7 +47,6 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
     return `${recordKeyPrefix}${id}`;
   },
   getAll: function (ids?: ID[]) {
-    if (!phase.currentIs("run")) return [];
     const thisStore = this as Store<Record, RecordUI>;
     const validIDs: ID[] =
       ids ||
@@ -65,6 +64,7 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
     return records;
   },
   get: function (id: ID) {
+    if (!phase.currentIs("run")) return;
     const thisStore = this as Store<Record, RecordUI>;
     const key = thisStore.getKey(id);
     const recordString = localStorage.getItem(key);
@@ -74,12 +74,15 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
     return recordUI;
   },
   add: function (record: Record) {
+    const recordID = getNewNumberID();
     const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(getNewNumberID());
+    const recordKey = thisStore.getKey(recordID);
     const recordValue = recordToLsValue(record);
     localStorage.setItem(recordKey, recordValue);
+    return recordID;
   },
   update: function (recordUI: RecordUI) {
+    if (!phase.currentIs("run")) return;
     const thisStore = this as Store<Record, RecordUI>;
     const recordKey = thisStore.getKey(recordUI.id);
     const record = recordUIToRecord(recordUI);
@@ -87,6 +90,7 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
     localStorage.setItem(recordKey, recordValue);
   },
   delete: function (recordUI: RecordUI) {
+    if (!phase.currentIs("run")) return;
     const thisStore = this as Store<Record, RecordUI>;
     const recordKey = thisStore.getKey(recordUI.id);
     localStorage.removeItem(recordKey);
