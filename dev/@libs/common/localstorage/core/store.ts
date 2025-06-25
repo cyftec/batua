@@ -10,7 +10,7 @@ export type Store<Record, RecordUI> = {
   getKey: (id: ID) => string;
   getAll: (ids?: ID[]) => RecordUI[];
   get: (id: ID) => RecordUI | undefined;
-  add: (record: Record) => void;
+  add: (record: Record) => ID;
   update: (record: RecordUI) => void;
   delete: (record: RecordUI) => void;
 };
@@ -75,6 +75,7 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
   },
   add: function (record: Record) {
     const recordID = getNewNumberID();
+    if (!phase.currentIs("run")) return recordID;
     const thisStore = this as Store<Record, RecordUI>;
     const recordKey = thisStore.getKey(recordID);
     const recordValue = recordToLsValue(record);
