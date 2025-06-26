@@ -1,7 +1,14 @@
-import { Child, m } from "@mufw/maya";
-import { HTMLPage, NavScaffold, Tag } from "../../../@libs/components";
-import { DropDown, Label, Section, TextBox } from "../../../@libs/elements";
+import { m } from "@mufw/maya";
 import { ACCOUNT_TYPES, MONEY_TYPES } from "../../../@libs/common/models/core";
+import { HTMLPage, NavScaffold, Tag } from "../../../@libs/components";
+import {
+  DialogActionButtons,
+  DropDown,
+  Icon,
+  Label,
+  Section,
+  TextBox,
+} from "../../../@libs/elements";
 
 export default HTMLPage({
   body: NavScaffold({
@@ -113,6 +120,17 @@ export default HTMLPage({
           ],
         }),
       ],
+    }),
+    hideNavbar: true,
+    navbarTop: DialogActionButtons({
+      cssClasses: "sticky bottom-0 bg-near-white pv2 ph3 nl3 nr3",
+      discardLabel: [
+        Icon({ cssClasses: "nl2 mr2", iconName: "arrow_back" }),
+        "Cancel",
+      ],
+      commitLabel: [Icon({ cssClasses: "nl3 mr2", iconName: "add" }), "Save"],
+      onDiscard: () => history.back(),
+      onCommit: () => history.back(),
     }),
   }),
 });

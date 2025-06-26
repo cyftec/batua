@@ -2,7 +2,7 @@ import { updateInteractionTime } from "../localstorage";
 
 const vibrateOnTap = () => {
   if (!!window.navigator?.vibrate) {
-    window.navigator.vibrate(3);
+    window.navigator.vibrate(5);
   }
 };
 

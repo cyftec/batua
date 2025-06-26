@@ -8,10 +8,11 @@ type NavScaffoldProps = {
   header?: Children;
   content: Child;
   navbarTop?: Child;
+  hideNavbar?: boolean;
 };
 
 export const NavScaffold = component<NavScaffoldProps>(
-  ({ cssClasses, header, content, navbarTop }) => {
+  ({ cssClasses, header, content, navbarTop, hideNavbar }) => {
     return Scaffold({
       cssClasses: tmpl`ph3 bg-white ${cssClasses}`,
       header: header,
@@ -21,7 +22,10 @@ export const NavScaffold = component<NavScaffoldProps>(
           subject: navbarTop,
           isTruthy: navbarTop as Child,
         }),
-        NavBar({ cssClasses: "nl3 nr3 ph3" }),
+        m.If({
+          subject: hideNavbar,
+          isFalsy: NavBar({ cssClasses: "nl3 nr3 ph3" }),
+        }),
       ],
     });
   }

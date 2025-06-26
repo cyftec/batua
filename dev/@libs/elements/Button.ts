@@ -11,7 +11,7 @@ type ButtonProps = {
 
 export const Button = component<ButtonProps>(
   ({ cssClasses, onTap, onUnmount, children }) => {
-    const btnClasses = tmpl`pointer noselect br-pill ba bw1 b--light-silver b--hover-black bg-white black ${cssClasses}`;
+    const btnClasses = tmpl`pointer noselect br-pill ba bw1 b--light-silver b--hover-black bg-white fw6 black ${cssClasses}`;
 
     const onBtnUnmount = () => {
       dispose(btnClasses);
