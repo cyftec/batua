@@ -9,7 +9,12 @@ import {
   paymentMethodsStore,
 } from "./stores";
 import { Account, PaymentMethod } from "../models/core";
-import { CASH_PAYMENT_METHOD, getCashAccount, MARKET_ACCOUNT } from "../utils";
+import {
+  CASH_PAYMENT_METHOD,
+  getCashAccount,
+  MARKET_ACCOUNT,
+  NET_BANKING_PAYMENT_METHOD,
+} from "../utils";
 
 /**
  *
@@ -63,6 +68,7 @@ export const isNewToApp = (): boolean => {
 };
 
 export const populateInitialData = () => {
+  paymentMethodsStore.add(NET_BANKING_PAYMENT_METHOD);
   const cashPaymetnMethodID = paymentMethodsStore.add(CASH_PAYMENT_METHOD);
   const cashAccount = getCashAccount(cashPaymetnMethodID);
   accountsStore.add(cashAccount);

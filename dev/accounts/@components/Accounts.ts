@@ -1,6 +1,6 @@
 import { Child, component, m } from "@mufw/maya";
 import { Button, Section } from "../../@libs/elements";
-import { goToNewAccountPage } from "../../@libs/common/utils";
+import { goToEditAccountPage } from "../../@libs/common/utils";
 import { AccountUI } from "../../@libs/common/models/core";
 import { trap } from "@cyftech/signal";
 
@@ -58,7 +58,7 @@ export const Accounts = component<AccountsProps>(({ accounts }) => {
         }),
       }),
       Button({
-        onTap: goToNewAccountPage,
+        onTap: goToEditAccountPage,
         cssClasses: "pv2 ph3",
         children: "Add new account",
       }),

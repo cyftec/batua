@@ -1,5 +1,6 @@
 export * from "./Button";
 export * from "./DialogActionButtons";
+export * from "./Divider";
 export * from "./DropDown";
 export * from "./Icon";
 export * from "./Label";

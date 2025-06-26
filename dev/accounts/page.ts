@@ -10,8 +10,8 @@ import {
 } from "../@libs/common/localstorage/stores";
 
 const ACCOUNTS_PAGE_TABS = [
-  "Accounts",
   "Payment Methods",
+  "Accounts",
 ] as const satisfies string[];
 const selectedTabIndex = signal(0);
 const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
@@ -32,8 +32,8 @@ export default HTMLPage({
         m.Switch({
           subject: selectedTabIndex,
           cases: {
-            0: Accounts({ accounts }),
-            1: PaymentMethods({ paymentMethods }),
+            0: PaymentMethods({ paymentMethods }),
+            1: Accounts({ accounts }),
           },
         }),
       ],

@@ -2,7 +2,7 @@ import { ID, NumBoolean } from "./common";
 
 export type PaymentMethod = {
   isPermanent: NumBoolean;
-  uniqueId?: string | number;
+  uniqueId?: string;
   name: string;
 };
 

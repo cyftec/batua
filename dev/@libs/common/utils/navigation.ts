@@ -1,4 +1,5 @@
 import { phase } from "@mufw/maya/utils";
+import { ID } from "../models/core";
 
 export const getQueryParamValue = (queryParamKey: string) => {
   if (!phase.currentIs("run")) return "";
@@ -7,7 +8,16 @@ export const getQueryParamValue = (queryParamKey: string) => {
   return urlParams.get(queryParamKey) || "";
 };
 
-export const goToHref = (href: string) => (location.href = href);
+export const goToHref = (href: string, params?: Record<string, string>) => {
+  const paramsString = params
+    ? Object.keys(params)
+        .reduce((pstr, key) => {
+          return `${pstr}${key}=${params[key]}&`;
+        }, "?")
+        .slice(0, -1)
+    : "";
+  location.href = `${href}${paramsString}`;
+};
 
 const APP = {
   href: "/",
@@ -16,12 +26,12 @@ const APP = {
   },
   ACCOUNTS: {
     href: "/accounts/",
-    NEW: {
+    EDIT: {
       ACCOUNT: {
-        href: "/accounts/new/account/",
+        href: "/accounts/edit/account/",
       },
       PAYMENT_METHOD: {
-        href: "/accounts/new/payment-method/",
+        href: "/accounts/edit/payment-method/",
       },
     },
   },
@@ -31,6 +41,16 @@ const APP = {
   },
 };
 export const goToHomePage = () => goToHref(APP.href);
-export const goToNewAccountPage = () => goToHref(APP.ACCOUNTS.NEW.ACCOUNT.href);
-export const goToNewPaymentMethodPage = () =>
-  goToHref(APP.ACCOUNTS.NEW.PAYMENT_METHOD.href);
+export const goToEditAccountPage = (accountId?: ID) =>
+  goToHref(
+    APP.ACCOUNTS.EDIT.ACCOUNT.href,
+    accountId ? { id: `${accountId}` } : undefined
+  );
+export const goToEditPaymentMethodPage = (paymentMethodId?: ID) => {
+  console.log(paymentMethodId);
+
+  goToHref(
+    APP.ACCOUNTS.EDIT.PAYMENT_METHOD.href,
+    paymentMethodId ? { id: `${paymentMethodId}` } : undefined
+  );
+};
