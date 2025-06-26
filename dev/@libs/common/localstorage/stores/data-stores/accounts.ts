@@ -1,33 +1,26 @@
-import {
-  Account,
-  ACCOUNT_TYPE,
-  AccountUI,
-  getTypeData,
-  ID,
-} from "../../../models/core";
+import { Account, AccountUI, ID } from "../../../models/core";
 import { getStore, parseObjectJsonString } from "../../core";
 import { PREFIX } from "./common";
-import { usersStore } from "./users";
+import { paymentMethodsStore } from "./payment-methods";
 
 const lsValueToAccount = (lsValueString: string | null): Account | undefined =>
-  parseObjectJsonString<Account>(lsValueString, "owner");
+  parseObjectJsonString<Account>(lsValueString, "balance");
 const accountToLsValue = (account: Account): string => JSON.stringify(account);
 const accountToAccountUI = (id: ID, account: Account): AccountUI => {
-  const accOwner = usersStore.get(account.owner);
-  if (!accOwner) throw `User not found for user id: ${account.owner}`;
+  const paymentMethods = paymentMethodsStore.getAll(account.methods);
+  if (account.methods.length && !paymentMethods.length)
+    throw `Payment methods not found for these ids: ${account.methods}`;
   const accountUI: AccountUI = {
     ...account,
     id,
-    type: getTypeData(ACCOUNT_TYPE, account.type),
-    owner: accOwner,
+    methods: paymentMethods,
   };
   return accountUI;
 };
 const accountUiToAccount = (accountUI: AccountUI): Account => {
   const accountRecord: Account = {
     ...accountUI,
-    type: accountUI.type.key,
-    owner: accountUI.owner.id,
+    methods: accountUI.methods.map((meth) => meth.id),
   };
   delete accountRecord["id"];
   return accountRecord;

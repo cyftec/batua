@@ -4,13 +4,12 @@ import {
   fetchAnalytics,
   updateAnalytics,
   getStorageSpaceData,
-  usersStore,
   accountsStore,
   txnsStore,
   paymentMethodsStore,
-  paymentModesStore,
 } from "./stores";
-import { getInitialUsers } from "../utils";
+import { Account, PaymentMethod } from "../models/core";
+import { CASH_PAYMENT_METHOD, getCashAccount, MARKET_ACCOUNT } from "../utils";
 
 /**
  *
@@ -52,38 +51,21 @@ export const getStorageData = (): StorageDetails => getStorageSpaceData();
  */
 
 export const isNewToApp = (): boolean => {
-  const usersStoreEmpty = usersStore.isEmpty();
   const accountsStoreEmpty = accountsStore.isEmpty();
   const pmethsStoreEmpty = paymentMethodsStore.isEmpty();
-  const pmodes = paymentModesStore.isEmpty();
   const txnsStoreEmpty = txnsStore.isEmpty();
 
-  const anyOneEmpty =
-    usersStoreEmpty ||
-    accountsStoreEmpty ||
-    pmethsStoreEmpty ||
-    pmodes ||
-    txnsStoreEmpty;
-  const allEmpty =
-    usersStoreEmpty &&
-    accountsStoreEmpty &&
-    pmethsStoreEmpty &&
-    pmodes &&
-    txnsStoreEmpty;
-
+  const anyOneEmpty = accountsStoreEmpty || pmethsStoreEmpty || txnsStoreEmpty;
+  const allEmpty = accountsStoreEmpty && pmethsStoreEmpty && txnsStoreEmpty;
   if (anyOneEmpty && !allEmpty)
     throw `Any one of the store is empty and/or corrupted`;
 
   return allEmpty;
 };
 
-export const populateInitialData = (
-  selfUserName: string,
-  selfUserEmail: string
-) => {
-  if (!selfUserName) throw `Name should not be empty`;
-  const users = getInitialUsers(selfUserName, selfUserEmail);
-  users.forEach((user) => {
-    usersStore.add(user);
-  });
+export const populateInitialData = () => {
+  const cashPaymetnMethodID = paymentMethodsStore.add(CASH_PAYMENT_METHOD);
+  const cashAccount = getCashAccount(cashPaymetnMethodID);
+  accountsStore.add(cashAccount);
+  accountsStore.add(MARKET_ACCOUNT);
 };

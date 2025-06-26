@@ -1,23 +1,22 @@
-import { ID, TransactionTitle, TransactionTitleUI } from "../../../models/core";
+import { ID, TxnTitle, TxnTitleUI } from "../../../models/core";
 import { getStore } from "../../core";
 import { PREFIX } from "./common";
 
 const lsValueToTxnTitle = (
   lsValueString: string | null
-): TransactionTitle | undefined => {
+): TxnTitle | undefined => {
   if (!lsValueString) return;
   return lsValueString;
 };
-const txnTitleToLsValue = (txnTitle: TransactionTitle): string => txnTitle;
-const txnTitleToTxnTitleUI = (
-  id: ID,
-  txnTitle: TransactionTitle
-): TransactionTitleUI => ({ id, text: txnTitle });
-const txnTitleUiToTxnTitle = (
-  txnTitleUI: TransactionTitleUI
-): TransactionTitle => txnTitleUI.text;
+const txnTitleToLsValue = (txnTitle: TxnTitle): string => txnTitle;
+const txnTitleToTxnTitleUI = (id: ID, txnTitle: TxnTitle): TxnTitleUI => ({
+  id,
+  text: txnTitle,
+});
+const txnTitleUiToTxnTitle = (txnTitleUI: TxnTitleUI): TxnTitle =>
+  txnTitleUI.text;
 
-export const txnTitlesStore = getStore<TransactionTitle, TransactionTitleUI>(
+export const txnTitlesStore = getStore<TxnTitle, TxnTitleUI>(
   PREFIX.TRANSACTION_TITLE,
   lsValueToTxnTitle,
   txnTitleToLsValue,

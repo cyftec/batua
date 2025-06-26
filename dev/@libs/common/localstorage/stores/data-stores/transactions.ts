@@ -1,12 +1,11 @@
 import {
   getTypeData,
   ID,
-  Payment,
   PaymentUI,
   TagUI,
-  Transaction,
   TRANSACTION_TYPE,
-  TransactionUI,
+  Txn,
+  TxnUI,
 } from "../../../models/core";
 import { getStore, parseObjectJsonString } from "../../core";
 import { PREFIX } from "./common";
@@ -14,10 +13,10 @@ import { paymentsStore } from "./payments";
 import { tagsStore } from "./tags";
 import { txnTitlesStore } from "./transaction-titles";
 
-const lsValueToTxn = (lsValueString: string | null): Transaction | undefined =>
-  parseObjectJsonString<Transaction>(lsValueString, "modifiedAt");
-const txnToLsValue = (txn: Transaction): string => JSON.stringify(txn);
-const txnToTxnUI = (id: ID, txn: Transaction): TransactionUI => {
+const lsValueToTxn = (lsValueString: string | null): Txn | undefined =>
+  parseObjectJsonString<Txn>(lsValueString, "modifiedAt");
+const txnToLsValue = (txn: Txn): string => JSON.stringify(txn);
+const txnToTxnUI = (id: ID, txn: Txn): TxnUI => {
   const payments: PaymentUI[] = paymentsStore.getAll(txn.payments);
   if (!payments.length)
     throw `Payments not found for these payment-ids - '${txn.payments}'`;
@@ -25,7 +24,7 @@ const txnToTxnUI = (id: ID, txn: Transaction): TransactionUI => {
   if (!tags.length) throw `Tags not found for these tag-ids - '${txn.tags}'`;
   const title = txnTitlesStore.get(txn.title);
   if (!title) throw `Title not found for title-id - '${txn.title}'`;
-  const txnUI: TransactionUI = {
+  const txnUI: TxnUI = {
     ...txn,
     id,
     payments,
@@ -35,8 +34,8 @@ const txnToTxnUI = (id: ID, txn: Transaction): TransactionUI => {
   };
   return txnUI;
 };
-const txnUiToTxn = (txnUI: TransactionUI): Transaction => {
-  const txnRecord: Transaction = {
+const txnUiToTxn = (txnUI: TxnUI): Txn => {
+  const txnRecord: Txn = {
     ...txnUI,
     payments: txnUI.payments.map((p) => p.id),
     tags: txnUI.tags.map((t) => t.id),
@@ -47,7 +46,7 @@ const txnUiToTxn = (txnUI: TransactionUI): Transaction => {
   return txnRecord;
 };
 
-export const txnsStore = getStore<Transaction, TransactionUI>(
+export const txnsStore = getStore<Txn, TxnUI>(
   PREFIX.TRANSACTION,
   lsValueToTxn,
   txnToLsValue,

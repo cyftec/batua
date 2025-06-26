@@ -1,26 +1,18 @@
-import { ID, NumBoolean, TypeData } from "./common";
-import { UserUI } from "./user";
+import { ID, NumBoolean } from "./common";
+import { PaymentMethodUI } from "./payment-method";
 
-export const ACCOUNT_TYPE = {
-  investment: "Investment Account (Stocks, Bonds, etc)",
-  loan: "Loan Account (Loan or Credit)",
-  savings: "Savings Account (Profits, Income, Piggybank or Savings)",
-  other: "Account of uncertain type",
-} as const;
-
-export type AccountType = keyof typeof ACCOUNT_TYPE;
-
-export type AccountBalance = {
-  amount: number;
-  type: "Exact" | "Approx";
-};
+export type MoneyType = "physical" | "digital" | "mixed";
+export type AccountType = "deposit" | "loan" | "friend" | "market";
+export type BalanceFigure = "Exact" | "Approx";
 
 export type Account = {
-  isDeletable: NumBoolean;
+  isPermanent: NumBoolean;
   name: string;
-  balance: AccountBalance;
+  balance: number;
+  vaultType: MoneyType;
+  figure: BalanceFigure;
   type: AccountType;
-  owner: UserUI["id"];
+  methods: PaymentMethodUI["id"][];
 };
 
 /**
@@ -28,27 +20,8 @@ export type Account = {
  *
  * UI Models
  */
-export type AccountTypeUI<K extends AccountType> = TypeData<
-  typeof ACCOUNT_TYPE,
-  K
->;
 
-export type AccountUI = Omit<Account, "type" | "owner"> & {
+export type AccountUI = Omit<Account, "methods"> & {
   id: ID;
-  type: AccountTypeUI<AccountType>;
-  owner: UserUI;
-};
-
-/**
- *
- *
- * Type Transforms
- */
-export const getAccountTypeUI = <AT extends AccountType>(
-  accountType: AT
-): AccountTypeUI<AT> => {
-  return {
-    key: accountType,
-    label: ACCOUNT_TYPE[accountType],
-  };
+  methods: PaymentMethodUI[];
 };

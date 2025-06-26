@@ -1,30 +1,28 @@
-import { CombinedTypeSeparator, ID, TypeData } from "./common";
-import { Payment, PaymentUI } from "./payment";
+import { ID, TypeData } from "./common";
+import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
+import { TxnTitleUI } from "./transaction-title";
 
 export const TRANSACTION_TYPE = {
-  spent: "paid in full for a purchase",
-  earned: "received as income, gift, profit or interest",
-  borrowed: "borrowed, loaned or took credit from others",
-  invested: "invested or lent money to others",
-  unsettled: "paid or owed partly in a group purchase",
-  settled: "paid or received unsettled money in part or full",
-  transferred: "transferred between same account types",
-  lost: "lost in investment, missing records or elsewhere",
+  expense: "paid in full for a purchase",
+  earning: "received as income, gift, profit or interest",
+  unsettled: "lend, borrow or a group purchase",
+  settlement: "paid or received in part or full for settlement",
+  transfer: "transferred between my accounts",
+  lost: "Financial or unaccounted loss, misplaced or stolen",
 } as const;
+export type TxnType = keyof typeof TRANSACTION_TYPE;
 
-export type TransactionType = keyof typeof TRANSACTION_TYPE;
+export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
 
-export type TransactionTitle = TransactionTitleUI["text"];
-
-export type Transaction = {
+export type Txn = {
   date: number;
   modifiedAt: number;
-  necessity: "Essential" | "Luxury" | "Mixed";
+  necessity: TxnNecessity;
   payments: PaymentUI["id"][];
   tags: TagUI["id"][];
-  title: TransactionTitleUI["id"];
-  type: TransactionType;
+  title: TxnTitleUI["id"];
+  type: TxnType;
 };
 
 /**
@@ -32,23 +30,12 @@ export type Transaction = {
  *
  * UI Models
  */
-export type TransactionTypeUI<K extends TransactionType> = TypeData<
-  typeof TRANSACTION_TYPE,
-  K
->;
+export type TxnTypeUI<K extends TxnType> = TypeData<typeof TRANSACTION_TYPE, K>;
 
-export type TransactionTitleUI = {
-  id: ID;
-  text: string;
-};
-
-export type TransactionUI = Omit<
-  Transaction,
-  "payments" | "tags" | "title" | "type"
-> & {
+export type TxnUI = Omit<Txn, "payments" | "tags" | "title" | "type"> & {
   id: ID;
   payments: PaymentUI[];
   tags: TagUI[];
-  title: TransactionTitleUI;
-  type: TransactionTypeUI<TransactionType>;
+  title: TxnTitleUI;
+  type: TxnTypeUI<TxnType>;
 };
