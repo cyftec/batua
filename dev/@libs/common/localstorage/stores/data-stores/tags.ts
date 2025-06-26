@@ -2,7 +2,7 @@ import { ID, Tag, TagUI } from "../../../models/core";
 import { getStore } from "../../core";
 import { PREFIX } from "./common";
 
-const getTagFromLsValue = (lsValueString: string | null): Tag | undefined => {
+const lsValueToTag = (lsValueString: string | null): Tag | undefined => {
   if (!lsValueString) return;
   return lsValueString;
 };
@@ -12,7 +12,7 @@ const tagUiToTag = (tagUI: TagUI): Tag => tagUI.name;
 
 export const tagsStore = getStore<Tag, TagUI>(
   PREFIX.TAG,
-  getTagFromLsValue,
+  lsValueToTag,
   tagToLsValue,
   tagToTagUI,
   tagUiToTag

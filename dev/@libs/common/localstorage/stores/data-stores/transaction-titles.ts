@@ -2,7 +2,7 @@ import { ID, TransactionTitle, TransactionTitleUI } from "../../../models/core";
 import { getStore } from "../../core";
 import { PREFIX } from "./common";
 
-const getTransactionTitleFromLsValue = (
+const lsValueToTxnTitle = (
   lsValueString: string | null
 ): TransactionTitle | undefined => {
   if (!lsValueString) return;
@@ -19,7 +19,7 @@ const txnTitleUiToTxnTitle = (
 
 export const txnTitlesStore = getStore<TransactionTitle, TransactionTitleUI>(
   PREFIX.TRANSACTION_TITLE,
-  getTransactionTitleFromLsValue,
+  lsValueToTxnTitle,
   txnTitleToLsValue,
   txnTitleToTxnTitleUI,
   txnTitleUiToTxnTitle

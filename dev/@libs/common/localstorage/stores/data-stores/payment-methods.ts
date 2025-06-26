@@ -2,7 +2,7 @@ import { ID, PaymentMethod, PaymentMethodUI } from "../../../models/core";
 import { getStore, parseObjectJsonString } from "../../core";
 import { PREFIX } from "./common";
 
-const getPaymentMethodFromLsValue = (
+const lsValueToPaymentMethod = (
   lsValueString: string | null
 ): PaymentMethod | undefined =>
   parseObjectJsonString<PaymentMethod>(lsValueString, "name");
@@ -25,7 +25,7 @@ const paymentMethodUiToPaymentMethod = (
 
 export const paymentMethodsStore = getStore<PaymentMethod, PaymentMethodUI>(
   PREFIX.PAYMENT_METHOD,
-  getPaymentMethodFromLsValue,
+  lsValueToPaymentMethod,
   paymentMethodToLsValue,
   paymentMethodToPaymentMethodUI,
   paymentMethodUiToPaymentMethod

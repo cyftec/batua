@@ -9,9 +9,7 @@ import { getStore, parseObjectJsonString } from "../../core";
 import { PREFIX } from "./common";
 import { usersStore } from "./users";
 
-const getAccountFromLsValue = (
-  lsValueString: string | null
-): Account | undefined =>
+const lsValueToAccount = (lsValueString: string | null): Account | undefined =>
   parseObjectJsonString<Account>(lsValueString, "owner");
 const accountToLsValue = (account: Account): string => JSON.stringify(account);
 const accountToAccountUI = (id: ID, account: Account): AccountUI => {
@@ -37,7 +35,7 @@ const accountUiToAccount = (accountUI: AccountUI): Account => {
 
 export const accountsStore = getStore<Account, AccountUI>(
   PREFIX.ACCOUNT,
-  getAccountFromLsValue,
+  lsValueToAccount,
   accountToLsValue,
   accountToAccountUI,
   accountUiToAccount

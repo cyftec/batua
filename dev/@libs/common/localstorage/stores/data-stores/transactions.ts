@@ -14,9 +14,7 @@ import { paymentsStore } from "./payments";
 import { tagsStore } from "./tags";
 import { txnTitlesStore } from "./transaction-titles";
 
-const getTransactionFromLsValue = (
-  lsValueString: string | null
-): Transaction | undefined =>
+const lsValueToTxn = (lsValueString: string | null): Transaction | undefined =>
   parseObjectJsonString<Transaction>(lsValueString, "modifiedAt");
 const txnToLsValue = (txn: Transaction): string => JSON.stringify(txn);
 const txnToTxnUI = (id: ID, txn: Transaction): TransactionUI => {
@@ -51,7 +49,7 @@ const txnUiToTxn = (txnUI: TransactionUI): Transaction => {
 
 export const txnsStore = getStore<Transaction, TransactionUI>(
   PREFIX.TRANSACTION,
-  getTransactionFromLsValue,
+  lsValueToTxn,
   txnToLsValue,
   txnToTxnUI,
   txnUiToTxn

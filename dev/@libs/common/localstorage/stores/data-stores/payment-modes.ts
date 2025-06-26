@@ -10,7 +10,7 @@ import { accountsStore } from "./accounts";
 import { PREFIX } from "./common";
 import { paymentMethodsStore } from "./payment-methods";
 
-const getPaymentModeFromLsValue = (
+const lsValueToPaymentMode = (
   lsValueString: string | null
 ): PaymentMode | undefined => {
   if (!lsValueString) return;
@@ -44,7 +44,7 @@ const paymentModeUiToPaymentMode = (
 
 export const paymentModesStore = getStore<PaymentMode, PaymentModeUI>(
   PREFIX.PAYMENT_MODE,
-  getPaymentModeFromLsValue,
+  lsValueToPaymentMode,
   paymentModeToLsValue,
   paymentModeToPaymentModeUI,
   paymentModeUiToPaymentMode

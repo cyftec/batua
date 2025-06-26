@@ -9,9 +9,7 @@ import { getStore, parseObjectJsonString } from "../../core";
 import { PREFIX } from "./common";
 import { paymentModesStore } from "./payment-modes";
 
-const getPaymentFromLsValue = (
-  lsValueString: string | null
-): Payment | undefined =>
+const lsValueToPayment = (lsValueString: string | null): Payment | undefined =>
   parseObjectJsonString<Payment>(lsValueString, "amount");
 const paymentToLsValue = (payment: Payment): string => JSON.stringify(payment);
 const paymentToPaymentUI = (id: ID, payment: Payment): PaymentUI => {
@@ -37,7 +35,7 @@ const paymentUiToPayment = (paymentUI: PaymentUI): Payment => {
 
 export const paymentsStore = getStore<Payment, PaymentUI>(
   PREFIX.PAYMENT,
-  getPaymentFromLsValue,
+  lsValueToPayment,
   paymentToLsValue,
   paymentToPaymentUI,
   paymentUiToPayment
