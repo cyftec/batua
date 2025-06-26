@@ -1,2 +1,2 @@
 export * from "./Accounts";
-export * from "./People";
+export * from "./PaymentMethods";

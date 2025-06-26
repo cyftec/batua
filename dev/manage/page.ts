@@ -2,8 +2,7 @@ import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
-import { Budget } from "./@components/Budget";
-import { Tags } from "./@components/Tags";
+import { Budget, Tags } from "./@components";
 
 const MANAGE_MONEY_TABS = ["Budget", "Tags"] as const satisfies string[];
 const selectedTabIndex = signal(0);

@@ -1,7 +1,6 @@
 import { component, m } from "@mufw/maya";
-import { Modal } from "../elements/Modal";
-import { Button } from "../elements";
 import { populateInitialData } from "../common/localstorage";
+import { Button, Modal } from "../elements";
 
 type AccountCreatorProps = {
   isOpen: boolean;
@@ -49,7 +48,7 @@ export const AccountCreator = component<AccountCreatorProps>(
                 onTap: onStartAfresh,
               }),
               Button({
-                cssClasses: "pv2 ph3 ml2 b app-theme-color",
+                cssClasses: "pv2 ph3 ml2 b themecol",
                 children: "Load backup",
                 onTap: onClose,
               }),

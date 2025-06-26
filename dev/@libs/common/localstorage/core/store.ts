@@ -52,7 +52,10 @@ export const createStore = <Record, RecordUI extends { id: ID } & object>(
       ids ||
       thisStore.getAllKeys().map((key) => {
         const id = getIDFromKey(recordKeyPrefix, key) || 0;
-        if (!id) throw `ID not found for key - '${key}'`;
+        if (!id) {
+          console.log(recordKeyPrefix, key, id);
+          throw `ID not found for key - '${key}'`;
+        }
         return id;
       });
     const records: RecordUI[] = [];

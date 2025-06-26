@@ -53,10 +53,9 @@ export const getStorageData = (): StorageDetails => getStorageSpaceData();
 export const isNewToApp = (): boolean => {
   const accountsStoreEmpty = accountsStore.isEmpty();
   const pmethsStoreEmpty = paymentMethodsStore.isEmpty();
-  const txnsStoreEmpty = txnsStore.isEmpty();
 
-  const anyOneEmpty = accountsStoreEmpty || pmethsStoreEmpty || txnsStoreEmpty;
-  const allEmpty = accountsStoreEmpty && pmethsStoreEmpty && txnsStoreEmpty;
+  const anyOneEmpty = accountsStoreEmpty || pmethsStoreEmpty;
+  const allEmpty = accountsStoreEmpty && pmethsStoreEmpty;
   if (anyOneEmpty && !allEmpty)
     throw `Any one of the store is empty and/or corrupted`;
 

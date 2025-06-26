@@ -8,11 +8,11 @@ const vibrateOnTap = () => {
 
 export const handleTap = (fn: ((...args: any[]) => any) | undefined) => {
   return (...args: any) => {
-    vibrateOnTap();
+    if (fn) vibrateOnTap();
     updateInteractionTime(new Date());
     return fn && fn(...args);
   };
 };
 
 export const parseNum = (str: string) =>
-  Number.isNaN(+str) ? +str : undefined;
+  Number.isNaN(+str) ? undefined : +str;

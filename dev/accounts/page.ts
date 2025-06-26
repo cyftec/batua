@@ -1,20 +1,40 @@
-import { signal } from "@cyftech/signal";
+import { DerivedSignal, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
-import { Accounts, People } from "./@components";
+import { Accounts, PaymentMethods } from "./@components";
+import { AccountUI, PaymentMethodUI } from "../@libs/common/models/core";
+import {
+  accountsStore,
+  paymentMethodsStore,
+} from "../@libs/common/localstorage/stores";
 
-const ACCOUNTS_PAGE_TABS = ["People", "Accounts"] as const satisfies string[];
+const ACCOUNTS_PAGE_TABS = [
+  "Accounts",
+  "Payment Methods",
+] as const satisfies string[];
 const selectedTabIndex = signal(0);
+const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
+const accounts = signal<AccountUI[]>([]);
+const paymentMethods = signal<PaymentMethodUI[]>([]);
+
+const onPageMount = () => {
+  accounts.value = accountsStore.getAll();
+  paymentMethods.value = paymentMethodsStore.getAll();
+};
 
 export default HTMLPage({
+  onMount: onPageMount,
   body: NavScaffold({
-    header: "People & Accounts",
+    header: header,
     content: m.Div({
       children: [
         m.Switch({
           subject: selectedTabIndex,
-          cases: [People({}), Accounts({})],
+          cases: {
+            0: Accounts({ accounts }),
+            1: PaymentMethods({ paymentMethods }),
+          },
         }),
       ],
     }),

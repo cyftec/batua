@@ -1,11 +1,11 @@
 import { tmpl } from "@cyftech/signal";
-import { Child, component, m } from "@mufw/maya";
+import { Child, Children, component, m } from "@mufw/maya";
 import { Scaffold } from "../elements";
 import { NavBar } from "./NavBar";
 
 type NavScaffoldProps = {
   cssClasses?: string;
-  header?: Child;
+  header?: Children;
   content: Child;
   navbarTop?: Child;
 };
@@ -13,7 +13,7 @@ type NavScaffoldProps = {
 export const NavScaffold = component<NavScaffoldProps>(
   ({ cssClasses, header, content, navbarTop }) => {
     return Scaffold({
-      cssClasses: tmpl`ph3 ${cssClasses}`,
+      cssClasses: tmpl`ph3 bg-white ${cssClasses}`,
       header: header,
       content: content,
       bottombar: [

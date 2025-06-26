@@ -40,8 +40,8 @@ type NavBarLinkProps = {
 
 export const NavBarLink = component<NavBarLinkProps>(
   ({ cssClasses, label, icon, isSelected, href }) => {
-    const fontColor = op(isSelected).ternary("app-theme-color b", "black");
-    const classes = tmpl`pointer noselect flex flex-column items-center justify-center pb2 ${fontColor} ${cssClasses}`;
+    const fontColor = op(isSelected).ternary("themecol b", "mid-gray");
+    const classes = tmpl`pointer noselect flex flex-column items-center justify-center pb2dot5 ${fontColor} ${cssClasses}`;
 
     return m.Div({
       onunmount: () => dispose(fontColor, classes),
@@ -49,7 +49,7 @@ export const NavBarLink = component<NavBarLinkProps>(
       onclick: handleTap(() => goToHref(href.value)),
       children: [
         Icon({ size: 22, iconName: icon }),
-        m.Div({ class: "f7", children: label }),
+        m.Div({ class: "f8 b pt1", children: label }),
       ],
     });
   }

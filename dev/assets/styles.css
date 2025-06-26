@@ -34,9 +34,10 @@ input::placeholder {
   font-style: italic;
 }
 
+.bw1 { border-width: 0.1rem; }
 .hide-scrollbar { scrollbar-color: transparent transparent; scrollbar-width: thin; }
-.app-theme-color { color: var(--themeColor); }
-.bg-app-theme-color { background-color: var(--themeColor); }
+.themecol { color: var(--themeColor); }
+.bg-themecol { background-color: var(--themeColor); }
 .overflow-break-word { overflow-wrap: break-word; }
 .f2dot33 { font-size: 2rem; }
 .f2dot66 { font-size: 1.75rem; }
@@ -46,6 +47,7 @@ input::placeholder {
 .top-3 { top: 4.25rem; }
 .bottom--1dot5 { bottom: -1.75rem; }
 .pa2dot5 { padding: 0.75rem; }
+.pb2dot5 { padding-bottom: 0.75rem; }
 .ph2dot5 { padding-left: 0.75rem; padding-right: 0.75rem; }
 .pv2dot5 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
 .pa05 { padding: 0.125rem; }

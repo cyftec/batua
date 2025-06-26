@@ -3,7 +3,7 @@ import { Child, Children, component, m } from "@mufw/maya";
 
 type ScaffoldProps = {
   cssClasses?: string;
-  header?: Child;
+  header?: Children;
   content: Child;
   bottombar?: Children;
 };

@@ -13,9 +13,16 @@ const APP = {
   href: "/",
   MANAGE: {
     href: "/manage/",
-    ACCOUNTS: {
-      href: "/manage/accounts/",
-      NEW: { href: "/manage/accounts/new" },
+  },
+  ACCOUNTS: {
+    href: "/accounts/",
+    NEW: {
+      ACCOUNT: {
+        href: "/accounts/new/account/",
+      },
+      PAYMENT_METHOD: {
+        href: "/accounts/new/payment-method/",
+      },
     },
   },
   SETTINGS: {
@@ -24,5 +31,6 @@ const APP = {
   },
 };
 export const goToHomePage = () => goToHref(APP.href);
-export const goToAccountCreatePage = () =>
-  goToHref(APP.MANAGE.ACCOUNTS.NEW.href);
+export const goToNewAccountPage = () => goToHref(APP.ACCOUNTS.NEW.ACCOUNT.href);
+export const goToNewPaymentMethodPage = () =>
+  goToHref(APP.ACCOUNTS.NEW.PAYMENT_METHOD.href);
