@@ -1,6 +1,5 @@
 import { ID, TxnTitle, TxnTitleUI } from "../../../models/core";
-import { getStore } from "../../core";
-import { PREFIX } from "./common";
+import { createStore } from "../../core";
 
 const lsValueToTxnTitle = (
   lsValueString: string | null
@@ -16,8 +15,8 @@ const txnTitleToTxnTitleUI = (id: ID, txnTitle: TxnTitle): TxnTitleUI => ({
 const txnTitleUiToTxnTitle = (txnTitleUI: TxnTitleUI): TxnTitle =>
   txnTitleUI.text;
 
-export const txnTitlesStore = getStore<TxnTitle, TxnTitleUI>(
-  PREFIX.TRANSACTION_TITLE,
+export const txnTitlesStore = createStore<TxnTitle, TxnTitleUI>(
+  "tt_",
   lsValueToTxnTitle,
   txnTitleToLsValue,
   txnTitleToTxnTitleUI,

@@ -8,7 +8,7 @@ export const CASH_PAYMENT_METHOD: PaymentMethod = {
 export const MARKET_ACCOUNT: Account = {
   isPermanent: 1,
   name: "Market",
-  balance: Infinity,
+  balance: Number.MAX_SAFE_INTEGER,
   vaultType: "mixed",
   figure: "Approx",
   type: "market",

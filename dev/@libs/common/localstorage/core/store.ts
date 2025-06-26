@@ -1,6 +1,6 @@
 import { phase } from "@mufw/maya/utils";
 import { ID } from "../../models/core";
-import { getNewNumberID, validLocalStorageKeys } from "./misc";
+import { LSID, validLocalStorageKeys } from "./misc";
 import { parseNum } from "../../utils";
 
 export type Store<Record, RecordUI> = {
@@ -20,8 +20,8 @@ const getIDFromKey = (recordKeyPrefix: string, key: string) => {
   return parseNum(recordIdStr);
 };
 
-export const getStore = <Record, RecordUI extends { id: ID } & object>(
-  recordKeyPrefix: string,
+export const createStore = <Record, RecordUI extends { id: ID } & object>(
+  recordKeyPrefix: `${string}_`,
   lsValueToRecord: (lsValueString: string | null) => Record | undefined,
   recordToLsValue: (record: Record) => string,
   recordToRecordUI: (id: ID, record: Record) => RecordUI,
@@ -74,12 +74,18 @@ export const getStore = <Record, RecordUI extends { id: ID } & object>(
     return recordUI;
   },
   add: function (record: Record) {
-    const recordID = getNewNumberID();
+    console.log(`adding new record - ${JSON.stringify(record)}`);
+
+    const recordID = LSID.getNewID();
     if (!phase.currentIs("run")) return recordID;
     const thisStore = this as Store<Record, RecordUI>;
     const recordKey = thisStore.getKey(recordID);
     const recordValue = recordToLsValue(record);
     localStorage.setItem(recordKey, recordValue);
+    LSID.setMaxID(recordID);
+    console.log(
+      `Record - ${JSON.stringify(record)} added. New maxID is ${recordID}`
+    );
     return recordID;
   },
   update: function (recordUI: RecordUI) {

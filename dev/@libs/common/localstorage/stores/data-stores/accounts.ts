@@ -1,6 +1,5 @@
 import { Account, AccountUI, ID } from "../../../models/core";
-import { getStore, parseObjectJsonString } from "../../core";
-import { PREFIX } from "./common";
+import { createStore, parseObjectJsonString } from "../../core";
 import { paymentMethodsStore } from "./payment-methods";
 
 const lsValueToAccount = (lsValueString: string | null): Account | undefined =>
@@ -26,8 +25,8 @@ const accountUiToAccount = (accountUI: AccountUI): Account => {
   return accountRecord;
 };
 
-export const accountsStore = getStore<Account, AccountUI>(
-  PREFIX.ACCOUNT,
+export const accountsStore = createStore<Account, AccountUI>(
+  "ac_",
   lsValueToAccount,
   accountToLsValue,
   accountToAccountUI,

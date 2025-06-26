@@ -1,5 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { Child, component, m } from "@mufw/maya";
+import { isNewToApp } from "../common/localstorage";
+import { AccountCreator } from "./AccountCreator";
 
 type HTMLPageProps = {
   cssClasses?: string;
@@ -11,9 +13,11 @@ type HTMLPageProps = {
 export const HTMLPage = component<HTMLPageProps>(
   ({ cssClasses, body, onMount, onUnMount }) => {
     const stylesRel = signal<"preload" | "stylesheet">("preload");
+    const modalOpen = signal(false);
 
     const onBodyMount = () => {
       stylesRel.value = "stylesheet";
+      if (isNewToApp()) modalOpen.value = true;
       if (onMount) onMount();
     };
 
@@ -54,7 +58,14 @@ export const HTMLPage = component<HTMLPageProps>(
           class: cssClasses,
           onmount: onBodyMount,
           onunmount: onUnMount,
-          children: [m.Script({ src: "main.js", defer: true }), body],
+          children: [
+            m.Script({ src: "main.js", defer: true }),
+            AccountCreator({
+              isOpen: modalOpen,
+              onClose: () => (modalOpen.value = false),
+            }),
+            body,
+          ],
         }),
       ],
     });

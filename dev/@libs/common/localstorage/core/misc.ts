@@ -1,7 +1,21 @@
 import { phase } from "@mufw/maya/utils";
 import { ID } from "../../models/core";
 
-export const getNewNumberID = (): ID => new Date().getTime();
+export const LSID = {
+  getCurrentID: function (): number {
+    let maxID = localStorage.getItem("maxID");
+    if (!maxID) localStorage.setItem("maxID", "0");
+    maxID = localStorage.getItem("maxID");
+    return +(maxID as string) as number;
+  },
+  getNewID: function (): ID {
+    return this.getCurrentID() + 1;
+  },
+  setMaxID: function (id: number): void {
+    if (id <= this.getCurrentID()) return;
+    localStorage.setItem("maxID", `${id}`);
+  },
+};
 
 export const parseObjectJsonString = <T extends Object>(
   objectJsonString: string | null | undefined,

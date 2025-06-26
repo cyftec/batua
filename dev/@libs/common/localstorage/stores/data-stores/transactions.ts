@@ -7,8 +7,7 @@ import {
   Txn,
   TxnUI,
 } from "../../../models/core";
-import { getStore, parseObjectJsonString } from "../../core";
-import { PREFIX } from "./common";
+import { createStore, parseObjectJsonString } from "../../core";
 import { paymentsStore } from "./payments";
 import { tagsStore } from "./tags";
 import { txnTitlesStore } from "./transaction-titles";
@@ -46,8 +45,8 @@ const txnUiToTxn = (txnUI: TxnUI): Txn => {
   return txnRecord;
 };
 
-export const txnsStore = getStore<Txn, TxnUI>(
-  PREFIX.TRANSACTION,
+export const txnsStore = createStore<Txn, TxnUI>(
+  "t_",
   lsValueToTxn,
   txnToLsValue,
   txnToTxnUI,

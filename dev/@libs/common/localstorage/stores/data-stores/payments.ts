@@ -1,7 +1,6 @@
-import { getTypeData, ID, Payment, PaymentUI } from "../../../models/core";
-import { getStore, parseObjectJsonString } from "../../core";
+import { ID, Payment, PaymentUI } from "../../../models/core";
+import { createStore, parseObjectJsonString } from "../../core";
 import { accountsStore } from "./accounts";
-import { PREFIX } from "./common";
 import { paymentMethodsStore } from "./payment-methods";
 
 const lsValueToPayment = (lsValueString: string | null): Payment | undefined =>
@@ -33,8 +32,8 @@ const paymentUiToPayment = (paymentUI: PaymentUI): Payment => {
   return paymentRecord;
 };
 
-export const paymentsStore = getStore<Payment, PaymentUI>(
-  PREFIX.PAYMENT,
+export const paymentsStore = createStore<Payment, PaymentUI>(
+  "p_",
   lsValueToPayment,
   paymentToLsValue,
   paymentToPaymentUI,
