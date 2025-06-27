@@ -53,7 +53,7 @@ const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
 const vaultType = signal<CurrencyType | undefined>("digital");
-const selfAccountType = signal<SelfAccountType>("positive");
+const selfAccountType = signal<SelfAccountType>("asset");
 const allPaymentMethods = signal<PaymentMethodUI[]>([]);
 const selectedPaymentMethods = signal<PaymentMethodUI[]>([]);
 const nonSelectedPaymentMethods = derive(() => {
@@ -172,10 +172,10 @@ export default HTMLPage({
               withBorder: true,
               options: SELF_ACCOUNT_TYPES,
               selectedOption: selfAccountType,
-              optionFormattor: (o) => `${capitalize(o)} Balance Account`,
+              optionFormattor: (o) => `${capitalize(o)} Account`,
               onChange: (o) => {
                 selfAccountType.value = o as SelfAccountType;
-                vaultType.value = o === "negative" ? undefined : "digital";
+                vaultType.value = o === "debt" ? undefined : "digital";
               },
             }),
             m.If({
@@ -208,45 +208,48 @@ export default HTMLPage({
             }),
           ],
         }),
-        Section({
-          title: "Payment methods",
-          children: [
-            m.Div({
-              class: "flex flex-wrap",
-              children: m.For({
-                subject: selectedPaymentMethods,
-                map: (pm) =>
-                  Tag({
-                    onClick: () => onTagTap(pm.id, false),
-                    cssClasses: "mr2 mt2",
-                    size: "large",
-                    state: "selected",
-                    label: pm.name,
-                  }),
+        m.If({
+          subject: vaultType,
+          isTruthy: Section({
+            title: "Payment methods",
+            children: [
+              m.Div({
+                class: "flex flex-wrap",
+                children: m.For({
+                  subject: selectedPaymentMethods,
+                  map: (pm) =>
+                    Tag({
+                      onClick: () => onTagTap(pm.id, false),
+                      cssClasses: "mr2 mt2",
+                      size: "large",
+                      state: "selected",
+                      label: pm.name,
+                    }),
+                }),
               }),
-            }),
-            m.If({
-              subject: trap(nonSelectedPaymentMethods).length,
-              isTruthy: m.Div({
-                class: "mt3 pt2 f7 silver",
-                children: "TAP TO SELECT METHODS FROM BELOW",
+              m.If({
+                subject: trap(nonSelectedPaymentMethods).length,
+                isTruthy: m.Div({
+                  class: "mt2 pt2 f7 silver",
+                  children: "TAP TO SELECT METHODS FROM BELOW",
+                }),
               }),
-            }),
-            m.Div({
-              class: "flex flex-wrap",
-              children: m.For({
-                subject: nonSelectedPaymentMethods,
-                map: (pm) =>
-                  Tag({
-                    onClick: () => onTagTap(pm.id, true),
-                    cssClasses: "mr2 mt2",
-                    size: "large",
-                    state: "unselected",
-                    label: pm.name,
-                  }),
+              m.Div({
+                class: "flex flex-wrap",
+                children: m.For({
+                  subject: nonSelectedPaymentMethods,
+                  map: (pm) =>
+                    Tag({
+                      onClick: () => onTagTap(pm.id, true),
+                      cssClasses: "mr2 mt2",
+                      size: "large",
+                      state: "unselected",
+                      label: pm.name,
+                    }),
+                }),
               }),
-            }),
-          ],
+            ],
+          }),
         }),
       ],
     }),

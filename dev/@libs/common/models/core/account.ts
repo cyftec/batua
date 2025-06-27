@@ -2,10 +2,7 @@ import { ID, NumBoolean } from "./common";
 import { CurrencyType } from "./currency";
 import { PaymentMethodUI } from "./payment-method";
 
-export const SELF_ACCOUNT_TYPES = [
-  "positive",
-  "negative",
-] as const satisfies string[];
+export const SELF_ACCOUNT_TYPES = ["asset", "debt"] as const satisfies string[];
 export type SelfAccountType = (typeof SELF_ACCOUNT_TYPES)[number];
 export const ACCOUNT_TYPES = [
   ...SELF_ACCOUNT_TYPES,

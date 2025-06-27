@@ -1,18 +1,16 @@
-import { Child, component, m } from "@mufw/maya";
-import { Button, Icon, Section } from "../../@libs/elements";
-import { goToEditAccountPage, handleTap } from "../../@libs/common/utils";
+import { component, m } from "@mufw/maya";
 import { AccountUI } from "../../@libs/common/models/core";
-import { trap } from "@cyftech/signal";
+import { goToEditAccountPage } from "../../@libs/common/utils";
+import { CardButton, Section } from "../../@libs/elements";
 import { AccountCard } from "./AccountCard";
 
 type AccountsProps = {
   marketAccounts: AccountUI[];
   myAccounts: AccountUI[];
-  friendsAccounts: AccountUI[];
 };
 
 export const Accounts = component<AccountsProps>(
-  ({ marketAccounts, myAccounts, friendsAccounts }) => {
+  ({ marketAccounts, myAccounts }) => {
     return m.Div({
       children: [
         Section({
@@ -31,13 +29,10 @@ export const Accounts = component<AccountsProps>(
           children: m.For({
             subject: myAccounts,
             n: Infinity,
-            nthChild: Button({
-              onTap: goToEditAccountPage,
-              cssClasses: "pv2 ph3 flex items-center",
-              children: [
-                Icon({ cssClasses: "mr2", iconName: "add_card" }),
-                "Add new account",
-              ],
+            nthChild: CardButton({
+              onTap: () => goToEditAccountPage(),
+              icon: "add_card",
+              label: "Add new account",
             }),
             map: (acc) =>
               AccountCard({
@@ -48,28 +43,6 @@ export const Accounts = component<AccountsProps>(
                 account: acc,
               }),
           }),
-        }),
-        Section({
-          title: "Friends as unsettled accounts",
-          children: m.Div(
-            m.For({
-              subject: friendsAccounts,
-              n: Infinity,
-              nthChild: Button({
-                onTap: goToEditAccountPage,
-                cssClasses: "pv2 ph3 flex items-center",
-                children: [
-                  Icon({ cssClasses: "mr2", iconName: "person_add" }),
-                  "Add friend",
-                ],
-              }),
-              map: (acc) =>
-                m.Div({
-                  class: "mb3",
-                  children: acc.name,
-                }),
-            })
-          ),
         }),
       ],
     });

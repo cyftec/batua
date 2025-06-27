@@ -1,11 +1,11 @@
 import { component, m } from "@mufw/maya";
-import { Button, Divider, Icon, Section } from "../../@libs/elements";
+import { PaymentMethodUI } from "../../@libs/common/models/core";
 import {
   capitalize,
   goToEditPaymentMethodPage,
   handleTap,
 } from "../../@libs/common/utils";
-import { PaymentMethodUI } from "../../@libs/common/models/core";
+import { CardButton, Icon, Section } from "../../@libs/elements";
 
 type PaymentMethodsProps = {
   paymentMethods: PaymentMethodUI[];
@@ -25,58 +25,48 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                 onclick: pm.isPermanent
                   ? undefined
                   : handleTap(() => goToEditPaymentMethodPage(pm.id)),
+                class: `mb3 pa3 ba b--light-gray br4 flex items-center justify-between`,
                 children: [
-                  m.Div({
-                    class: "mv3 flex items-center justify-between",
-                    children: [
-                      m.Div([
-                        m.Div({
-                          // class: "fw5",
-                          children: pm.name,
-                        }),
-                        m.If({
-                          subject: pm.uniqueId,
-                          isTruthy: m.Div({
-                            class: "mt2 f7 silver",
-                            children: pm.uniqueId,
-                          }),
-                        }),
-                        m.Div({
-                          class: "mt2 fw4 f6 flex items-center",
-                          children: [
-                            Icon({
-                              cssClasses: "mr2",
-                              iconName:
-                                pm.mode === "digital" ? "credit_card" : "paid",
-                            }),
-                            m.Span(capitalize(pm.mode)),
-                          ],
-                        }),
-                      ]),
-                      m.If({
-                        subject: pm.isPermanent,
-                        isFalsy: Icon({
-                          cssClasses: "ba b--light-silver br-100 pa2",
-                          iconName: "edit",
-                        }),
+                  m.Div([
+                    m.Div({
+                      // class: "fw5",
+                      children: pm.name,
+                    }),
+                    m.If({
+                      subject: pm.uniqueId,
+                      isTruthy: m.Div({
+                        class: "mt2 f7 fw4 black",
+                        children: pm.uniqueId,
                       }),
-                    ],
-                  }),
+                    }),
+                    m.Div({
+                      class: "mt2 fw4 f6 flex items-center light-silver",
+                      children: [
+                        Icon({
+                          cssClasses: "mr2",
+                          iconName:
+                            pm.mode === "digital" ? "credit_card" : "paid",
+                        }),
+                        m.Span(capitalize(pm.mode)),
+                      ],
+                    }),
+                  ]),
                   m.If({
-                    subject: i === paymentMethods.value.length - 1,
-                    isFalsy: Divider({ cssClasses: "mt3" }),
+                    subject: pm.isPermanent,
+                    isFalsy: Icon({
+                      cssClasses: "ba b--light-silver br-100 pa2",
+                      iconName: "edit",
+                    }),
                   }),
                 ],
               }),
           }),
         }),
-        Button({
-          onTap: goToEditPaymentMethodPage,
-          cssClasses: "mt0 pv2 ph3 flex items-center",
-          children: [
-            Icon({ cssClasses: "mr1", iconName: "add" }),
-            "Add new payment method",
-          ],
+        CardButton({
+          cssClasses: "nt3",
+          onTap: () => goToEditPaymentMethodPage(),
+          icon: "add_card",
+          label: "Add new payment method",
         }),
       ],
     });

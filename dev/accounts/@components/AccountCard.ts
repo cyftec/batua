@@ -58,7 +58,7 @@ export const AccountCard = component<AccountCardProps>(
               }),
               isFalsy: m.Div(
                 m.If({
-                  subject: op(type).equals("negative").truthy,
+                  subject: op(type).equals("debt").truthy,
                   isTruthy: m.Div({
                     class: "mv2 flex items-center f7 light-silver",
                     children: [

@@ -9,12 +9,14 @@ import {
   paymentMethodsStore,
 } from "../@libs/common/localstorage/stores";
 import { getQueryParamValue, goToAccountsPage } from "../@libs/common/utils";
+import { FriendsAccounts } from "./@components/FriendsAccounts";
 
 const ACCOUNTS_PAGE_TABS = [
+  "Methods",
   "Accounts",
-  "Payment Methods",
+  "Friends",
 ] as const satisfies string[];
-const selectedTabIndex = signal(0);
+const selectedTabIndex = signal(1);
 const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
 const paymentMethods = signal<PaymentMethodUI[]>([]);
 const accounts = signal<AccountUI[]>([]);
@@ -23,21 +25,22 @@ const marketAccounts = derive(() =>
 );
 const myAccounts = derive(() => {
   return accounts.value
-    .filter((acc) => ["positive", "negative"].includes(acc.type))
+    .filter((acc) => ["asset", "debt"].includes(acc.type))
     .sort((a, b) => b.isPermanent - a.isPermanent);
 });
 const friendsAccounts = derive(() =>
   accounts.value.filter((acc) => ["friend"].includes(acc.type))
 );
 const [_, othersAccounts] = trap(accounts).partition((acc) =>
-  ["positive", "negative"].includes(acc.type)
+  ["asset", "debt"].includes(acc.type)
 );
 const [__, ___] = trap(othersAccounts).partition(
   (acc) => acc.type === "friend"
 );
 
 const triggerPageDataRefresh = () => {
-  selectedTabIndex.value = +getQueryParamValue("tab");
+  const queryParamTabId = getQueryParamValue("tab") || "";
+  selectedTabIndex.value = queryParamTabId === "" ? 1 : +queryParamTabId;
   accounts.value = accountsStore.getAll();
   paymentMethods.value = paymentMethodsStore
     .getAll()
@@ -57,14 +60,16 @@ export default HTMLPage({
       children: [
         m.Switch({
           subject: selectedTabIndex,
-          cases: {
-            0: Accounts({
+          cases: [
+            PaymentMethods({ paymentMethods }),
+            Accounts({
               marketAccounts,
               myAccounts,
-              friendsAccounts,
             }),
-            1: PaymentMethods({ paymentMethods }),
-          },
+            FriendsAccounts({
+              accounts: friendsAccounts,
+            }),
+          ],
         }),
       ],
     }),

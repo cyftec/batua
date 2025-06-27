@@ -42,14 +42,17 @@ const APP = {
 };
 export const goToHomePage = () => goToHref(APP.href);
 export const goToAccountsPage = (tabIndex?: number) =>
-  goToHref(APP.ACCOUNTS.href, tabIndex ? { tab: `${tabIndex}` } : undefined);
+  goToHref(
+    APP.ACCOUNTS.href,
+    tabIndex === undefined ? undefined : { tab: `${tabIndex}` }
+  );
 export const goToEditAccountPage = (accountId?: ID) =>
   goToHref(
     APP.ACCOUNTS.EDIT.ACCOUNT.href,
-    accountId ? { id: `${accountId}` } : undefined
+    accountId === undefined ? undefined : { id: `${accountId}` }
   );
 export const goToEditPaymentMethodPage = (paymentMethodId?: ID) =>
   goToHref(
     APP.ACCOUNTS.EDIT.PAYMENT_METHOD.href,
-    paymentMethodId ? { id: `${paymentMethodId}` } : undefined
+    paymentMethodId === undefined ? undefined : { id: `${paymentMethodId}` }
   );

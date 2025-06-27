@@ -25,6 +25,6 @@ export const getCashAccount = (casPaymetnMethodID: ID): Account => ({
   name: "Cash in wallet",
   balance: 0,
   vault: "physical",
-  type: "positive",
+  type: "asset",
   methods: [casPaymetnMethodID],
 });
