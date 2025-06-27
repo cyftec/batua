@@ -1,20 +1,20 @@
 import { phase } from "@mufw/maya/utils";
 import { INITIAL_ANALYTICS, StorageDetails } from "../models";
 import {
-  fetchAnalytics,
-  updateAnalytics,
-  getStorageSpaceData,
-  accountsStore,
-  txnsStore,
-  paymentMethodsStore,
-} from "./stores";
-import { Account, PaymentMethod } from "../models/core";
-import {
   CASH_PAYMENT_METHOD,
   getCashAccount,
   MARKET_ACCOUNT,
   NET_BANKING_PAYMENT_METHOD,
+  TAGS,
 } from "../utils";
+import {
+  accountsStore,
+  fetchAnalytics,
+  getStorageSpaceData,
+  paymentMethodsStore,
+  tagsStore,
+  updateAnalytics,
+} from "./stores";
 
 /**
  *
@@ -73,4 +73,5 @@ export const populateInitialData = () => {
   const cashAccount = getCashAccount(cashPaymetnMethodID);
   accountsStore.add(cashAccount);
   accountsStore.add(MARKET_ACCOUNT);
+  TAGS.forEach((tag) => tagsStore.add(tag));
 };

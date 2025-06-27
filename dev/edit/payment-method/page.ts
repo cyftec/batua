@@ -1,18 +1,18 @@
 import { derive, effect, op, signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { paymentMethodsStore } from "../../../@libs/common/localstorage/stores";
+import { paymentMethodsStore } from "../../@libs/common/localstorage/stores";
 import {
   CURRENCY_TYPES,
   CurrencyType,
   ID,
-} from "../../../@libs/common/models/core";
+} from "../../@libs/common/models/core";
 import {
   capitalize,
   getQueryParamValue,
   nameRegex,
   uniqueIdRegex,
-} from "../../../@libs/common/utils";
-import { HTMLPage, NavScaffold } from "../../../@libs/components";
+} from "../../@libs/common/utils";
+import { HTMLPage, NavScaffold } from "../../@libs/components";
 import {
   DialogActionButtons,
   DropDown,
@@ -21,7 +21,7 @@ import {
   Link,
   Section,
   TextBox,
-} from "../../../@libs/elements";
+} from "../../@libs/elements";
 
 const error = signal("");
 const paymentMethodMode = signal<CurrencyType>("digital");

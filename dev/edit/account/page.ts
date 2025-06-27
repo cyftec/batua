@@ -6,8 +6,8 @@ import {
   PaymentMethodUI,
   SELF_ACCOUNT_TYPES,
   SelfAccountType,
-} from "../../../@libs/common/models/core";
-import { HTMLPage, NavScaffold, Tag } from "../../../@libs/components";
+} from "../../@libs/common/models/core";
+import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
 import {
   DialogActionButtons,
   DropDown,
@@ -16,7 +16,7 @@ import {
   Link,
   Section,
   TextBox,
-} from "../../../@libs/elements";
+} from "../../@libs/elements";
 import {
   derive,
   effect,
@@ -28,12 +28,12 @@ import {
 import {
   accountsStore,
   paymentMethodsStore,
-} from "../../../@libs/common/localstorage/stores";
+} from "../../@libs/common/localstorage/stores";
 import {
   capitalize,
   getQueryParamValue,
   nameRegex,
-} from "../../../@libs/common/utils";
+} from "../../@libs/common/utils";
 
 const accIdFromQuery = signal("");
 const editableAccount = derive(() => {

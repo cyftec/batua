@@ -21,19 +21,19 @@ export const goToHref = (href: string, params?: Record<string, string>) => {
 
 const APP = {
   href: "/",
+  EDIT: {
+    ACCOUNT: {
+      href: "/edit/account/",
+    },
+    PAYMENT_METHOD: {
+      href: "/edit/payment-method/",
+    },
+  },
   MANAGE: {
     href: "/manage/",
   },
   ACCOUNTS: {
     href: "/accounts/",
-    EDIT: {
-      ACCOUNT: {
-        href: "/accounts/edit/account/",
-      },
-      PAYMENT_METHOD: {
-        href: "/accounts/edit/payment-method/",
-      },
-    },
   },
   SETTINGS: {
     href: "/settings/",
@@ -48,11 +48,11 @@ export const goToAccountsPage = (tabIndex?: number) =>
   );
 export const goToEditAccountPage = (accountId?: ID) =>
   goToHref(
-    APP.ACCOUNTS.EDIT.ACCOUNT.href,
+    APP.EDIT.ACCOUNT.href,
     accountId === undefined ? undefined : { id: `${accountId}` }
   );
 export const goToEditPaymentMethodPage = (paymentMethodId?: ID) =>
   goToHref(
-    APP.ACCOUNTS.EDIT.PAYMENT_METHOD.href,
+    APP.EDIT.PAYMENT_METHOD.href,
     paymentMethodId === undefined ? undefined : { id: `${paymentMethodId}` }
   );

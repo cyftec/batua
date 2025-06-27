@@ -1,4 +1,4 @@
-import { Account, ID, PaymentMethod } from "../models/core";
+import { Account, ID, PaymentMethod, Tag } from "../models/core";
 
 export const NET_BANKING_PAYMENT_METHOD: PaymentMethod = {
   isPermanent: 1,
@@ -28,3 +28,40 @@ export const getCashAccount = (casPaymetnMethodID: ID): Account => ({
   type: "asset",
   methods: [casPaymetnMethodID],
 });
+
+export const TAGS: Tag[] = [
+  "uber",
+  "airbnb",
+  "bookingdotcom",
+  "decathlon",
+  "amazon",
+  "ikea",
+  "grocery",
+  "apparel",
+  "gadgets",
+  "furniture",
+  "grooming",
+  "gifting",
+  "jewellery",
+  "stationery",
+  "books",
+  "gardening",
+  "sportsnfitness",
+  "treatment",
+  "vehicle",
+  "outing",
+  "subscription",
+  "appliances",
+  "education",
+  "petsupplies",
+  "diningout",
+  "foodorder",
+  "homenkitchen",
+  "luggagenbags",
+  "toysngames",
+  "accessories",
+  "movies",
+  "standupshows",
+  "netflix",
+  "hotstar",
+];
