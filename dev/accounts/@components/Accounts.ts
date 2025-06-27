@@ -10,7 +10,7 @@ type AccountsProps = {
 
 export const Accounts = component<AccountsProps>(({ accounts }) => {
   const [myAccounts, othersAccounts] = trap(accounts).partition((acc) =>
-    ["deposit", "loan"].includes(acc.type)
+    ["savings", "loan"].includes(acc.type)
   );
   const [friendsAccounts, marketAccounts] = trap(othersAccounts).partition(
     (acc) => acc.type === "friend"

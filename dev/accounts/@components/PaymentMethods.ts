@@ -11,8 +11,9 @@ export const PaymentMethods = component<PaymentMethodsProps>(
   ({ paymentMethods }) => {
     return m.Div({
       children: [
-        m.Div({
-          class: "mt3",
+        Section({
+          contentCssClasses: "mt2 pt1",
+          title: "My payment methods",
           children: m.For({
             subject: paymentMethods,
             map: (pm, i) =>
@@ -26,7 +27,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                     children: [
                       m.Div([
                         m.Div({
-                          class: "fw6",
+                          class: "fw5",
                           children: pm.name,
                         }),
                         m.If({
@@ -56,8 +57,11 @@ export const PaymentMethods = component<PaymentMethodsProps>(
         }),
         Button({
           onTap: goToEditPaymentMethodPage,
-          cssClasses: "mt4 pv2 ph3",
-          children: "Add new payment method",
+          cssClasses: "mt0 pv2 ph3 flex items-center",
+          children: [
+            Icon({ cssClasses: "mr1", iconName: "add" }),
+            "Add new payment method",
+          ],
         }),
       ],
     });

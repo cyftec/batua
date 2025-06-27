@@ -12,7 +12,7 @@ export const getNavbarRoutes = (urlPath: string): NavbarLink[] => {
   return [
     {
       label: "Trnsxns",
-      icon: "swap_horiz",
+      icon: "swap_vert",
       isSelected: urlPath === "/",
       href: "/",
     },
@@ -30,7 +30,7 @@ export const getNavbarRoutes = (urlPath: string): NavbarLink[] => {
     },
     {
       label: "Accounts",
-      icon: "person",
+      icon: "credit_card_gear",
       isSelected: urlPath.startsWith("/accounts/"),
       href: "/accounts/",
     },

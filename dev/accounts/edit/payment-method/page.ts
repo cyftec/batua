@@ -1,4 +1,4 @@
-import { derive, effect, signal } from "@cyftech/signal";
+import { derive, effect, op, signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { paymentMethodsStore } from "../../../@libs/common/localstorage/stores";
 import { ID } from "../../../@libs/common/models/core";
@@ -28,6 +28,12 @@ const editablePaymentMethod = derive(() => {
   if (!pm) throw `Error fetching payment method for id - ${pmID}`;
   return pm;
 });
+const headerLabel = derive(() =>
+  editablePaymentMethod.value
+    ? `Edit '${editablePaymentMethod.value.name}'`
+    : `Add new payment method`
+);
+const commitBtnLabel = op(editablePaymentMethod).ternary("Save", "Add");
 
 effect(() => {
   if (!editablePaymentMethod.value) return;
@@ -89,7 +95,7 @@ const onPageMount = () => {
 export default HTMLPage({
   onMount: onPageMount,
   body: NavScaffold({
-    header: "Add new payment method",
+    header: headerLabel,
     content: m.Div({
       children: [
         Section({
@@ -139,7 +145,10 @@ export default HTMLPage({
         Icon({ cssClasses: "nl2 mr2", iconName: "arrow_back" }),
         "Cancel",
       ],
-      commitLabel: [Icon({ cssClasses: "nl3 mr2", iconName: "add" }), "Save"],
+      commitLabel: [
+        Icon({ cssClasses: "nl3 mr2", iconName: commitBtnLabel }),
+        commitBtnLabel,
+      ],
       onDiscard: discardAndGoBack,
       onCommit: savePaymentMethod,
     }),

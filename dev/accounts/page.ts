@@ -18,9 +18,16 @@ const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
 const accounts = signal<AccountUI[]>([]);
 const paymentMethods = signal<PaymentMethodUI[]>([]);
 
-const onPageMount = () => {
+const triggerPageDataRefresh = () => {
   accounts.value = accountsStore.getAll();
-  paymentMethods.value = paymentMethodsStore.getAll();
+  paymentMethods.value = paymentMethodsStore
+    .getAll()
+    .sort((a, b) => b.isPermanent - a.isPermanent);
+};
+
+const onPageMount = () => {
+  triggerPageDataRefresh();
+  window.addEventListener("pageshow", triggerPageDataRefresh);
 };
 
 export default HTMLPage({

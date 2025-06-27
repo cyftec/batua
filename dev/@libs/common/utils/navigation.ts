@@ -46,11 +46,8 @@ export const goToEditAccountPage = (accountId?: ID) =>
     APP.ACCOUNTS.EDIT.ACCOUNT.href,
     accountId ? { id: `${accountId}` } : undefined
   );
-export const goToEditPaymentMethodPage = (paymentMethodId?: ID) => {
-  console.log(paymentMethodId);
-
+export const goToEditPaymentMethodPage = (paymentMethodId?: ID) =>
   goToHref(
     APP.ACCOUNTS.EDIT.PAYMENT_METHOD.href,
     paymentMethodId ? { id: `${paymentMethodId}` } : undefined
   );
-};
