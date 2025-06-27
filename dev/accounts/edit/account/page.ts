@@ -13,6 +13,7 @@ import {
   DropDown,
   Icon,
   Label,
+  Link,
   Section,
   TextBox,
 } from "../../../@libs/elements";
@@ -50,6 +51,7 @@ const headerLabel = derive(() =>
 
 const error = signal("");
 const accountName = signal("");
+const accountUniqueId = signal("");
 const vaultType = signal<CurrencyType | undefined>("digital");
 const selfAccountType = signal<SelfAccountType>("positive");
 const allPaymentMethods = signal<PaymentMethodUI[]>([]);
@@ -65,8 +67,10 @@ const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
 effect(() => {
   if (!editableAccount.value) return;
   accountName.value = editableAccount.value.name;
-  vaultType.value = editableAccount.value.vault;
+  accountUniqueId.value = editableAccount.value.uniqueId || "";
   selfAccountType.value = editableAccount.value.type as SelfAccountType;
+  vaultType.value = editableAccount.value.vault;
+  selectedPaymentMethods.value = editableAccount.value.methods;
 });
 
 const onTagTap = (pmID: number, selectTag: boolean) => {
@@ -103,6 +107,9 @@ const savePaymentMethod = () => {
   validateForm();
   if (error.value) return;
   const vaultTypeObj = vaultType.value ? { vault: vaultType.value } : {};
+  const uniqueIdObj = accountUniqueId.value
+    ? { uniqueId: accountUniqueId.value }
+    : {};
 
   if (editableAccount.value) {
     accountsStore.update({
@@ -110,6 +117,7 @@ const savePaymentMethod = () => {
       name: accountName.value,
       type: selfAccountType.value,
       methods: selectedPaymentMethods.value,
+      ...uniqueIdObj,
       ...vaultTypeObj,
     });
   } else {
@@ -119,6 +127,7 @@ const savePaymentMethod = () => {
       name: accountName.value,
       type: selfAccountType.value,
       methods: selectedPaymentMethods.value.map((pm) => pm.id),
+      ...uniqueIdObj,
       ...vaultTypeObj,
     });
   }
@@ -142,6 +151,18 @@ export default HTMLPage({
     header: headerLabel,
     content: m.Div({
       children: [
+        m.If({
+          subject: editableAccount,
+          isTruthy: m.Div({
+            class: "mb4 red",
+            children: [
+              Link({
+                onClick: () => {},
+                children: "Delete this account",
+              }),
+            ],
+          }),
+        }),
         Section({
           title: "Account details",
           children: [
@@ -174,9 +195,16 @@ export default HTMLPage({
             Label({ text: "Name of account" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-              text: "",
+              text: accountName,
               placeholder: "Account name",
               onchange: (text) => (accountName.value = text.trim()),
+            }),
+            Label({ text: "Unique ID" }),
+            TextBox({
+              cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
+              text: accountUniqueId,
+              placeholder: "Unique ID (optional)",
+              onchange: (text) => (accountUniqueId.value = text.trim()),
             }),
           ],
         }),

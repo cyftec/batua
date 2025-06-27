@@ -19,6 +19,7 @@ export type Account = {
   name: string;
   balance: number;
   type: AccountType;
+  uniqueId?: string;
   vault?: CurrencyType;
   methods: PaymentMethodUI["id"][];
 };

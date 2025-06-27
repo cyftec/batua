@@ -1,8 +1,9 @@
 import { Child, component, m } from "@mufw/maya";
 import { Button, Icon, Section } from "../../@libs/elements";
-import { goToEditAccountPage } from "../../@libs/common/utils";
+import { goToEditAccountPage, handleTap } from "../../@libs/common/utils";
 import { AccountUI } from "../../@libs/common/models/core";
 import { trap } from "@cyftech/signal";
+import { AccountCard } from "./AccountCard";
 
 type AccountsProps = {
   marketAccounts: AccountUI[];
@@ -15,13 +16,13 @@ export const Accounts = component<AccountsProps>(
     return m.Div({
       children: [
         Section({
-          title: "World as an account",
+          title: "Market as an account",
           children: m.For({
             subject: marketAccounts,
             map: (acc) =>
-              m.Div({
-                class: "mb3",
-                children: acc.name,
+              AccountCard({
+                cssClasses: "mb3",
+                account: acc,
               }),
           }),
         }),
@@ -39,9 +40,12 @@ export const Accounts = component<AccountsProps>(
               ],
             }),
             map: (acc) =>
-              m.Div({
-                class: "mb3",
-                children: acc.name,
+              AccountCard({
+                onTap: acc.isPermanent
+                  ? undefined
+                  : () => goToEditAccountPage(acc.id),
+                cssClasses: "mb3",
+                account: acc,
               }),
           }),
         }),

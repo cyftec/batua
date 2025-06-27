@@ -23,7 +23,7 @@ export const MARKET_ACCOUNT: Account = {
 export const getCashAccount = (casPaymetnMethodID: ID): Account => ({
   isPermanent: 1,
   name: "Cash in wallet",
-  balance: 1000,
+  balance: 0,
   vault: "physical",
   type: "positive",
   methods: [casPaymetnMethodID],

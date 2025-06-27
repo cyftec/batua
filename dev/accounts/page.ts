@@ -1,4 +1,4 @@
-import { DerivedSignal, op, signal, trap } from "@cyftech/signal";
+import { derive, DerivedSignal, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
@@ -18,10 +18,21 @@ const selectedTabIndex = signal(0);
 const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
 const paymentMethods = signal<PaymentMethodUI[]>([]);
 const accounts = signal<AccountUI[]>([]);
-const [myAccounts, othersAccounts] = trap(accounts).partition((acc) =>
+const marketAccounts = derive(() =>
+  accounts.value.filter((acc) => ["market"].includes(acc.type))
+);
+const myAccounts = derive(() => {
+  return accounts.value
+    .filter((acc) => ["positive", "negative"].includes(acc.type))
+    .sort((a, b) => b.isPermanent - a.isPermanent);
+});
+const friendsAccounts = derive(() =>
+  accounts.value.filter((acc) => ["friend"].includes(acc.type))
+);
+const [_, othersAccounts] = trap(accounts).partition((acc) =>
   ["positive", "negative"].includes(acc.type)
 );
-const [friendsAccounts, marketAccounts] = trap(othersAccounts).partition(
+const [__, ___] = trap(othersAccounts).partition(
   (acc) => acc.type === "friend"
 );
 

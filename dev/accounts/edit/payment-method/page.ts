@@ -108,6 +108,18 @@ export default HTMLPage({
     header: headerLabel,
     content: m.Div({
       children: [
+        m.If({
+          subject: editablePaymentMethod,
+          isTruthy: m.Div({
+            class: "mb4 red",
+            children: [
+              Link({
+                onClick: () => {},
+                children: "Delete this payment method",
+              }),
+            ],
+          }),
+        }),
         Section({
           title: "Payment method details",
           children: [
@@ -133,18 +145,6 @@ export default HTMLPage({
               text: paymentMethodUniqueID,
               placeholder: "ID of the method",
               onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
-            }),
-            m.If({
-              subject: editablePaymentMethod,
-              isTruthy: m.Div({
-                class: "mt4 red",
-                children: [
-                  Link({
-                    onClick: () => {},
-                    children: "Delete this payment method",
-                  }),
-                ],
-              }),
             }),
             m.If({
               subject: error,
