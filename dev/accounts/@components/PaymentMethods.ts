@@ -1,6 +1,10 @@
 import { component, m } from "@mufw/maya";
 import { Button, Divider, Icon, Section } from "../../@libs/elements";
-import { goToEditPaymentMethodPage, handleTap } from "../../@libs/common/utils";
+import {
+  capitalize,
+  goToEditPaymentMethodPage,
+  handleTap,
+} from "../../@libs/common/utils";
 import { PaymentMethodUI } from "../../@libs/common/models/core";
 
 type PaymentMethodsProps = {
@@ -27,7 +31,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                     children: [
                       m.Div([
                         m.Div({
-                          class: "fw5",
+                          // class: "fw5",
                           children: pm.name,
                         }),
                         m.If({
@@ -36,6 +40,17 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                             class: "mt2 f7 silver",
                             children: pm.uniqueId,
                           }),
+                        }),
+                        m.Div({
+                          class: "mt2 fw4 f6 flex items-center",
+                          children: [
+                            Icon({
+                              cssClasses: "mr2",
+                              iconName:
+                                pm.mode === "digital" ? "credit_card" : "paid",
+                            }),
+                            m.Span(capitalize(pm.mode)),
+                          ],
                         }),
                       ]),
                       m.If({

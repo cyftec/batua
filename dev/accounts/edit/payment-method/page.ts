@@ -1,8 +1,13 @@
 import { derive, effect, op, signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { paymentMethodsStore } from "../../../@libs/common/localstorage/stores";
-import { ID } from "../../../@libs/common/models/core";
 import {
+  CURRENCY_TYPES,
+  CurrencyType,
+  ID,
+} from "../../../@libs/common/models/core";
+import {
+  capitalize,
   getQueryParamValue,
   nameRegex,
   uniqueIdRegex,
@@ -10,6 +15,7 @@ import {
 import { HTMLPage, NavScaffold } from "../../../@libs/components";
 import {
   DialogActionButtons,
+  DropDown,
   Icon,
   Label,
   Link,
@@ -18,6 +24,7 @@ import {
 } from "../../../@libs/elements";
 
 const error = signal("");
+const paymentMethodMode = signal<CurrencyType>("digital");
 const paymentMethodName = signal("");
 const paymentMethodUniqueID = signal("");
 const pmIdFromQuery = signal("");
@@ -37,6 +44,7 @@ const commitBtnLabel = op(editablePaymentMethod).ternary("Save", "Add");
 
 effect(() => {
   if (!editablePaymentMethod.value) return;
+  paymentMethodMode.value = editablePaymentMethod.value.mode;
   paymentMethodName.value = editablePaymentMethod.value.name;
   paymentMethodUniqueID.value = editablePaymentMethod.value.uniqueId || "";
 });
@@ -67,21 +75,23 @@ const discardAndGoBack = () => {
 const savePaymentMethod = () => {
   validateForm();
   if (error.value) return;
+  const uniqueIdObj = paymentMethodUniqueID.value
+    ? { uniqueId: paymentMethodUniqueID.value }
+    : {};
+
   if (editablePaymentMethod.value) {
     paymentMethodsStore.update({
       ...editablePaymentMethod.value,
       name: paymentMethodName.value,
-      ...(paymentMethodUniqueID.value
-        ? { uniqueId: paymentMethodUniqueID.value }
-        : {}),
+      mode: paymentMethodMode.value,
+      ...uniqueIdObj,
     });
   } else {
     paymentMethodsStore.add({
       isPermanent: 0,
       name: paymentMethodName.value,
-      ...(paymentMethodUniqueID.value
-        ? { uniqueId: paymentMethodUniqueID.value }
-        : {}),
+      mode: paymentMethodMode.value,
+      ...uniqueIdObj,
     });
   }
   history.back();
@@ -101,19 +111,28 @@ export default HTMLPage({
         Section({
           title: "Payment method details",
           children: [
+            Label({ text: "Payment mode" }),
+            DropDown({
+              cssClasses: "f6 pa2 br3",
+              withBorder: true,
+              options: CURRENCY_TYPES,
+              selectedOption: paymentMethodMode,
+              optionFormattor: (option) => capitalize(option),
+              onChange: (op) => (paymentMethodMode.value = op as CurrencyType),
+            }),
             Label({ text: "Name of the method" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: paymentMethodName,
               placeholder: "like GPay, PayPal, etc.",
-              onchange: (text) => (paymentMethodName.value = text),
+              onchange: (text) => (paymentMethodName.value = text.trim()),
             }),
             Label({ text: "Unique ID" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: paymentMethodUniqueID,
               placeholder: "ID of the method",
-              onchange: (text) => (paymentMethodUniqueID.value = text),
+              onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
             }),
             m.If({
               subject: editablePaymentMethod,

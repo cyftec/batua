@@ -1,53 +1,64 @@
 import { Child, component, m } from "@mufw/maya";
-import { Button, Section } from "../../@libs/elements";
+import { Button, Icon, Section } from "../../@libs/elements";
 import { goToEditAccountPage } from "../../@libs/common/utils";
 import { AccountUI } from "../../@libs/common/models/core";
 import { trap } from "@cyftech/signal";
 
 type AccountsProps = {
-  accounts: AccountUI[];
+  marketAccounts: AccountUI[];
+  myAccounts: AccountUI[];
+  friendsAccounts: AccountUI[];
 };
 
-export const Accounts = component<AccountsProps>(({ accounts }) => {
-  const [myAccounts, othersAccounts] = trap(accounts).partition((acc) =>
-    ["savings", "loan"].includes(acc.type)
-  );
-  const [friendsAccounts, marketAccounts] = trap(othersAccounts).partition(
-    (acc) => acc.type === "friend"
-  );
-
-  return m.Div({
-    children: [
-      Section({
-        title: "World as an account",
-        children: m.For({
-          subject: marketAccounts,
-          map: (acc) =>
-            m.Div({
-              class: "mb3",
-              children: acc.name,
-            }),
+export const Accounts = component<AccountsProps>(
+  ({ marketAccounts, myAccounts, friendsAccounts }) => {
+    return m.Div({
+      children: [
+        Section({
+          title: "World as an account",
+          children: m.For({
+            subject: marketAccounts,
+            map: (acc) =>
+              m.Div({
+                class: "mb3",
+                children: acc.name,
+              }),
+          }),
         }),
-      }),
-      Section({
-        title: "My accounts",
-        children: m.For({
-          subject: myAccounts,
-          map: (acc) =>
-            m.Div({
-              class: "mb3",
-              children: acc.name,
+        Section({
+          title: "My accounts",
+          children: m.For({
+            subject: myAccounts,
+            n: Infinity,
+            nthChild: Button({
+              onTap: goToEditAccountPage,
+              cssClasses: "pv2 ph3 flex items-center",
+              children: [
+                Icon({ cssClasses: "mr2", iconName: "add_card" }),
+                "Add new account",
+              ],
             }),
+            map: (acc) =>
+              m.Div({
+                class: "mb3",
+                children: acc.name,
+              }),
+          }),
         }),
-      }),
-      Section({
-        title: "Friends as unsettled accounts",
-        children: m.If({
-          subject: trap(friendsAccounts).length,
-          isFalsy: "None",
-          isTruthy: m.Div(
+        Section({
+          title: "Friends as unsettled accounts",
+          children: m.Div(
             m.For({
               subject: friendsAccounts,
+              n: Infinity,
+              nthChild: Button({
+                onTap: goToEditAccountPage,
+                cssClasses: "pv2 ph3 flex items-center",
+                children: [
+                  Icon({ cssClasses: "mr2", iconName: "person_add" }),
+                  "Add friend",
+                ],
+              }),
               map: (acc) =>
                 m.Div({
                   class: "mb3",
@@ -56,12 +67,7 @@ export const Accounts = component<AccountsProps>(({ accounts }) => {
             })
           ),
         }),
-      }),
-      Button({
-        onTap: goToEditAccountPage,
-        cssClasses: "pv2 ph3",
-        children: "Add new account",
-      }),
-    ],
-  });
-});
+      ],
+    });
+  }
+);

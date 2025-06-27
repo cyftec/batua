@@ -8,17 +8,25 @@ import {
   accountsStore,
   paymentMethodsStore,
 } from "../@libs/common/localstorage/stores";
+import { getQueryParamValue, goToAccountsPage } from "../@libs/common/utils";
 
 const ACCOUNTS_PAGE_TABS = [
-  "Payment Methods",
   "Accounts",
+  "Payment Methods",
 ] as const satisfies string[];
 const selectedTabIndex = signal(0);
 const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
-const accounts = signal<AccountUI[]>([]);
 const paymentMethods = signal<PaymentMethodUI[]>([]);
+const accounts = signal<AccountUI[]>([]);
+const [myAccounts, othersAccounts] = trap(accounts).partition((acc) =>
+  ["positive", "negative"].includes(acc.type)
+);
+const [friendsAccounts, marketAccounts] = trap(othersAccounts).partition(
+  (acc) => acc.type === "friend"
+);
 
 const triggerPageDataRefresh = () => {
+  selectedTabIndex.value = +getQueryParamValue("tab");
   accounts.value = accountsStore.getAll();
   paymentMethods.value = paymentMethodsStore
     .getAll()
@@ -39,8 +47,12 @@ export default HTMLPage({
         m.Switch({
           subject: selectedTabIndex,
           cases: {
-            0: PaymentMethods({ paymentMethods }),
-            1: Accounts({ accounts }),
+            0: Accounts({
+              marketAccounts,
+              myAccounts,
+              friendsAccounts,
+            }),
+            1: PaymentMethods({ paymentMethods }),
           },
         }),
       ],
@@ -49,7 +61,7 @@ export default HTMLPage({
       cssClasses: "mb2 nl2 nr2",
       tabs: ACCOUNTS_PAGE_TABS,
       selectedTabIndex: selectedTabIndex,
-      onTabChange: (tabIndex) => (selectedTabIndex.value = tabIndex),
+      onTabChange: (tabIndex) => goToAccountsPage(tabIndex),
     }),
   }),
 });

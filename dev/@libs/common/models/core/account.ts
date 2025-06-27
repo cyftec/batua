@@ -1,30 +1,25 @@
 import { ID, NumBoolean } from "./common";
+import { CurrencyType } from "./currency";
 import { PaymentMethodUI } from "./payment-method";
 
-export const MONEY_TYPES = [
-  "digital",
-  "physical",
-  "unknown",
+export const SELF_ACCOUNT_TYPES = [
+  "positive",
+  "negative",
 ] as const satisfies string[];
-export type MoneyType = (typeof MONEY_TYPES)[number];
-
+export type SelfAccountType = (typeof SELF_ACCOUNT_TYPES)[number];
 export const ACCOUNT_TYPES = [
-  "savings",
-  "loan",
+  ...SELF_ACCOUNT_TYPES,
   "friend",
   "market",
 ] as const satisfies string[];
 export type AccountType = (typeof ACCOUNT_TYPES)[number];
 
-export type BalanceFigure = "Exact" | "Approx";
-
 export type Account = {
   isPermanent: NumBoolean;
-  type: AccountType;
   name: string;
   balance: number;
-  vaultType: MoneyType;
-  figure: BalanceFigure;
+  type: AccountType;
+  vault?: CurrencyType;
   methods: PaymentMethodUI["id"][];
 };
 

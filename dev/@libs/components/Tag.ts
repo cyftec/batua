@@ -24,7 +24,7 @@ export const Tag = component<TagProps>(
       .ternary("light-silver", "black");
     const borderCss = op(state)
       .equals("selected")
-      .ternary("b--light-silver", "b--transparent");
+      .ternary("b--moon-gray", "b--transparent");
     const classes = tmpl`ba bw1 bg-near-white ${sizeCss} ${colorCss} ${borderCss} ${cssClasses}`;
 
     return m.Div({

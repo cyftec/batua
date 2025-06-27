@@ -34,7 +34,7 @@ export const config: KarmaConfig = {
       buildablePageFileName: projectFileNames.built.pageFile,
       buildableManifestFileName: projectFileNames.built.manifestFile,
       ignoreDelimiter: "@",
-      skipErrorAndBuildNext: false,
+      skipErrorAndBuildNext: true,
     },
     localServer: {
       port: 3000,

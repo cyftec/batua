@@ -172,3 +172,5 @@ export const CURRENCIES = [
 
 export type Currency = (typeof CURRENCIES)[number];
 export type CurrencyCode = Currency["code"];
+export type CurrencyType = "physical" | "digital";
+export const CURRENCY_TYPES: CurrencyType[] = ["physical", "digital"];
