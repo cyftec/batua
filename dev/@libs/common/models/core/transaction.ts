@@ -32,8 +32,13 @@ export type Txn = {
  */
 export type TxnTypeUI<K extends TxnType> = TypeData<typeof TRANSACTION_TYPE, K>;
 
-export type TxnUI = Omit<Txn, "payments" | "tags" | "title" | "type"> & {
+export type TxnUI = Omit<
+  Txn,
+  "date" | "modifiedAt" | "payments" | "tags" | "title" | "type"
+> & {
   id: ID;
+  date: Date;
+  modifiedAt: Date;
   payments: PaymentUI[];
   tags: TagUI[];
   title: TxnTitleUI;

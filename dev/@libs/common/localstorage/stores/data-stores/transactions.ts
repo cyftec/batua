@@ -26,6 +26,8 @@ const txnToTxnUI = (id: ID, txn: Txn): TxnUI => {
   const txnUI: TxnUI = {
     ...txn,
     id,
+    date: new Date(txn.date),
+    modifiedAt: new Date(txn.modifiedAt),
     payments,
     tags,
     title,
@@ -36,6 +38,8 @@ const txnToTxnUI = (id: ID, txn: Txn): TxnUI => {
 const txnUiToTxn = (txnUI: TxnUI): Txn => {
   const txnRecord: Txn = {
     ...txnUI,
+    date: txnUI.date.getTime(),
+    modifiedAt: txnUI.modifiedAt.getTime(),
     payments: txnUI.payments.map((p) => p.id),
     tags: txnUI.tags.map((t) => t.id),
     title: txnUI.title.id,
