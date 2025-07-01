@@ -14,7 +14,10 @@ export default HTMLPage({
       children: [
         m.Switch({
           subject: selectedTabIndex,
-          cases: [Budget({}), Tags({})],
+          cases: {
+            0: () => Budget({}),
+            1: () => Tags({}),
+          },
         }),
       ],
     }),

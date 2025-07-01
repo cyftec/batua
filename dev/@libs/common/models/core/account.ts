@@ -14,9 +14,9 @@ export type AccountType = (typeof ACCOUNT_TYPES)[number];
 export type Account = {
   isPermanent: NumBoolean;
   name: string;
+  uniqueId?: string;
   balance: number;
   type: AccountType;
-  uniqueId?: string;
   vault?: CurrencyType;
   methods: PaymentMethodUI["id"][];
 };

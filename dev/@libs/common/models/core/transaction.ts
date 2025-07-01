@@ -14,15 +14,17 @@ export const TRANSACTION_TYPE = {
 export type TxnType = keyof typeof TRANSACTION_TYPE;
 
 export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
+export const TXN_NECESSITIES = ["Essential", "Luxury", "Mixed"];
 
 export type Txn = {
+  type: TxnType;
   date: number;
-  modifiedAt: number;
+  created: number;
+  modified: number;
   necessity: TxnNecessity;
   payments: PaymentUI["id"][];
   tags: TagUI["id"][];
   title: TxnTitleUI["id"];
-  type: TxnType;
 };
 
 /**
@@ -34,13 +36,14 @@ export type TxnTypeUI<K extends TxnType> = TypeData<typeof TRANSACTION_TYPE, K>;
 
 export type TxnUI = Omit<
   Txn,
-  "date" | "modifiedAt" | "payments" | "tags" | "title" | "type"
+  "date" | "created" | "modified" | "payments" | "tags" | "title" | "type"
 > & {
   id: ID;
+  type: TxnTypeUI<TxnType>;
   date: Date;
-  modifiedAt: Date;
+  created: Date;
+  modified: Date;
   payments: PaymentUI[];
   tags: TagUI[];
   title: TxnTitleUI;
-  type: TxnTypeUI<TxnType>;
 };

@@ -1,4 +1,9 @@
+import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import {
+  accountsStore,
+  paymentMethodsStore,
+} from "../../@libs/common/localstorage/stores";
 import {
   CURRENCY_TYPES,
   CurrencyType,
@@ -7,33 +12,21 @@ import {
   SELF_ACCOUNT_TYPES,
   SelfAccountType,
 } from "../../@libs/common/models/core";
-import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
-import {
-  DialogActionButtons,
-  DropDown,
-  Icon,
-  Label,
-  Link,
-  Section,
-  TextBox,
-} from "../../@libs/elements";
-import {
-  derive,
-  effect,
-  op,
-  signal,
-  SourceSignal,
-  trap,
-} from "@cyftech/signal";
-import {
-  accountsStore,
-  paymentMethodsStore,
-} from "../../@libs/common/localstorage/stores";
 import {
   capitalize,
   getQueryParamValue,
   nameRegex,
 } from "../../@libs/common/utils";
+import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
+import {
+  DialogActionButtons,
+  Icon,
+  Label,
+  Link,
+  Section,
+  Select,
+  TextBox,
+} from "../../@libs/elements";
 
 const accIdFromQuery = signal("");
 const editableAccount = derive(() => {
@@ -153,44 +146,50 @@ export default HTMLPage({
       children: [
         m.If({
           subject: editableAccount,
-          isTruthy: m.Div({
-            class: "mb4 red",
-            children: [
-              Link({
-                onClick: () => {},
-                children: "Delete this account",
-              }),
-            ],
-          }),
+          isTruthy: () =>
+            m.Div({
+              class: "mb4 red",
+              children: [
+                Link({
+                  onClick: () => {},
+                  children: "Delete this account",
+                }),
+              ],
+            }),
         }),
         Section({
           title: "Account details",
           children: [
             Label({ text: "Type of account" }),
-            DropDown({
-              cssClasses: "f6 pa2 br3",
-              withBorder: true,
+            Select({
+              cssClasses: "f6 br3 pa2",
+              anchor: "left",
               options: SELF_ACCOUNT_TYPES,
-              selectedOption: selfAccountType,
+              selectedOptionIndex:
+                trap(SELF_ACCOUNT_TYPES).indexOf(selfAccountType),
+              targetFormattor: (o) => `${capitalize(o)} Account`,
               optionFormattor: (o) => `${capitalize(o)} Account`,
               onChange: (o) => {
-                selfAccountType.value = o as SelfAccountType;
-                vaultType.value = o === "debt" ? undefined : "digital";
+                selfAccountType.value = SELF_ACCOUNT_TYPES[o];
+                vaultType.value =
+                  SELF_ACCOUNT_TYPES[o] === "debt" ? undefined : "digital";
               },
             }),
             m.If({
               subject: vaultType,
-              isTruthy: m.Div([
-                Label({ text: "My money vault type" }),
-                DropDown({
-                  cssClasses: "f6 pa2 br3",
-                  withBorder: true,
-                  options: CURRENCY_TYPES,
-                  selectedOption: vaultType as SourceSignal<CurrencyType>,
-                  optionFormattor: (option) => capitalize(option),
-                  onChange: (op) => (vaultType.value = op as CurrencyType),
-                }),
-              ]),
+              isTruthy: (subject) =>
+                m.Div([
+                  Label({ text: "My money vault type" }),
+                  Select({
+                    cssClasses: "f6 br3 pa2",
+                    anchor: "left",
+                    options: CURRENCY_TYPES,
+                    selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
+                    targetFormattor: (option) => capitalize(option),
+                    optionFormattor: (option) => capitalize(option),
+                    onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
+                  }),
+                ]),
             }),
             Label({ text: "Name of account" }),
             TextBox({
@@ -210,46 +209,48 @@ export default HTMLPage({
         }),
         m.If({
           subject: vaultType,
-          isTruthy: Section({
-            title: "Payment methods",
-            children: [
-              m.Div({
-                class: "flex flex-wrap",
-                children: m.For({
-                  subject: selectedPaymentMethods,
-                  map: (pm) =>
-                    Tag({
-                      onClick: () => onTagTap(pm.id, false),
-                      cssClasses: "mr2 mt2",
-                      size: "large",
-                      state: "selected",
-                      label: pm.name,
+          isTruthy: () =>
+            Section({
+              title: "Payment methods",
+              children: [
+                m.Div({
+                  class: "flex flex-wrap",
+                  children: m.For({
+                    subject: selectedPaymentMethods,
+                    map: (pm) =>
+                      Tag({
+                        onClick: () => onTagTap(pm.id, false),
+                        cssClasses: "mr2 mt2",
+                        size: "large",
+                        state: "selected",
+                        label: pm.name,
+                      }),
+                  }),
+                }),
+                m.If({
+                  subject: trap(nonSelectedPaymentMethods).length,
+                  isTruthy: () =>
+                    m.Div({
+                      class: "mt2 pt2 f7 silver",
+                      children: "TAP TO SELECT METHODS FROM BELOW",
                     }),
                 }),
-              }),
-              m.If({
-                subject: trap(nonSelectedPaymentMethods).length,
-                isTruthy: m.Div({
-                  class: "mt2 pt2 f7 silver",
-                  children: "TAP TO SELECT METHODS FROM BELOW",
+                m.Div({
+                  class: "flex flex-wrap",
+                  children: m.For({
+                    subject: nonSelectedPaymentMethods,
+                    map: (pm) =>
+                      Tag({
+                        onClick: () => onTagTap(pm.id, true),
+                        cssClasses: "mr2 mt2",
+                        size: "large",
+                        state: "unselected",
+                        label: pm.name,
+                      }),
+                  }),
                 }),
-              }),
-              m.Div({
-                class: "flex flex-wrap",
-                children: m.For({
-                  subject: nonSelectedPaymentMethods,
-                  map: (pm) =>
-                    Tag({
-                      onClick: () => onTagTap(pm.id, true),
-                      cssClasses: "mr2 mt2",
-                      size: "large",
-                      state: "unselected",
-                      label: pm.name,
-                    }),
-                }),
-              }),
-            ],
-          }),
+              ],
+            }),
         }),
       ],
     }),

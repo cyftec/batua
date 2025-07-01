@@ -60,16 +60,18 @@ export default HTMLPage({
       children: [
         m.Switch({
           subject: selectedTabIndex,
-          cases: [
-            PaymentMethods({ paymentMethods }),
-            Accounts({
-              marketAccounts,
-              myAccounts,
-            }),
-            FriendsAccounts({
-              accounts: friendsAccounts,
-            }),
-          ],
+          cases: {
+            0: () => PaymentMethods({ paymentMethods }),
+            1: () =>
+              Accounts({
+                marketAccounts,
+                myAccounts,
+              }),
+            2: () =>
+              FriendsAccounts({
+                accounts: friendsAccounts,
+              }),
+          },
         }),
       ],
     }),

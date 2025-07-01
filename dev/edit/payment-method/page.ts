@@ -1,4 +1,4 @@
-import { derive, effect, op, signal } from "@cyftech/signal";
+import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { paymentMethodsStore } from "../../@libs/common/localstorage/stores";
 import {
@@ -15,11 +15,11 @@ import {
 import { HTMLPage, NavScaffold } from "../../@libs/components";
 import {
   DialogActionButtons,
-  DropDown,
   Icon,
   Label,
   Link,
   Section,
+  Select,
   TextBox,
 } from "../../@libs/elements";
 
@@ -110,27 +110,28 @@ export default HTMLPage({
       children: [
         m.If({
           subject: editablePaymentMethod,
-          isTruthy: m.Div({
-            class: "mb4 red",
-            children: [
-              Link({
-                onClick: () => {},
-                children: "Delete this payment method",
-              }),
-            ],
-          }),
+          isTruthy: () =>
+            m.Div({
+              class: "mb4 red",
+              children: [
+                Link({
+                  onClick: () => {},
+                  children: "Delete this payment method",
+                }),
+              ],
+            }),
         }),
         Section({
           title: "Payment method details",
           children: [
             Label({ text: "Payment mode" }),
-            DropDown({
-              cssClasses: "f6 pa2 br3",
-              withBorder: true,
+            Select({
+              cssClasses: "f6 br3 pa2",
               options: CURRENCY_TYPES,
-              selectedOption: paymentMethodMode,
+              selectedOptionIndex:
+                trap(CURRENCY_TYPES).indexOf(paymentMethodMode),
               optionFormattor: (option) => capitalize(option),
-              onChange: (op) => (paymentMethodMode.value = op as CurrencyType),
+              onChange: (o) => (paymentMethodMode.value = CURRENCY_TYPES[o]),
             }),
             Label({ text: "Name of the method" }),
             TextBox({
@@ -148,10 +149,11 @@ export default HTMLPage({
             }),
             m.If({
               subject: error,
-              isTruthy: m.Div({
-                class: "mt3 red",
-                children: error,
-              }),
+              isTruthy: () =>
+                m.Div({
+                  class: "mt3 red",
+                  children: error,
+                }),
             }),
           ],
         }),

@@ -13,7 +13,7 @@ import { tagsStore } from "./tags";
 import { txnTitlesStore } from "./transaction-titles";
 
 const lsValueToTxn = (lsValueString: string | null): Txn | undefined =>
-  parseObjectJsonString<Txn>(lsValueString, "modifiedAt");
+  parseObjectJsonString<Txn>(lsValueString, "modified");
 const txnToLsValue = (txn: Txn): string => JSON.stringify(txn);
 const txnToTxnUI = (id: ID, txn: Txn): TxnUI => {
   const payments: PaymentUI[] = paymentsStore.getAll(txn.payments);
@@ -27,7 +27,8 @@ const txnToTxnUI = (id: ID, txn: Txn): TxnUI => {
     ...txn,
     id,
     date: new Date(txn.date),
-    modifiedAt: new Date(txn.modifiedAt),
+    created: new Date(txn.created),
+    modified: new Date(txn.modified),
     payments,
     tags,
     title,
@@ -39,7 +40,8 @@ const txnUiToTxn = (txnUI: TxnUI): Txn => {
   const txnRecord: Txn = {
     ...txnUI,
     date: txnUI.date.getTime(),
-    modifiedAt: txnUI.modifiedAt.getTime(),
+    created: txnUI.created.getTime(),
+    modified: txnUI.modified.getTime(),
     payments: txnUI.payments.map((p) => p.id),
     tags: txnUI.tags.map((t) => t.id),
     title: txnUI.title.id,

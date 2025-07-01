@@ -20,11 +20,11 @@ export const NavScaffold = component<NavScaffoldProps>(
       bottombar: [
         m.If({
           subject: navbarTop,
-          isTruthy: navbarTop as Child,
+          isTruthy: (subject) => subject,
         }),
         m.If({
           subject: hideNavbar,
-          isFalsy: NavBar({ cssClasses: "nl3 nr3 ph3" }),
+          isFalsy: () => NavBar({ cssClasses: "nl3 nr3 ph3" }),
         }),
       ],
     });

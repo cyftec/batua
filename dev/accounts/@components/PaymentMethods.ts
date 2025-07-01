@@ -34,10 +34,11 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                     }),
                     m.If({
                       subject: pm.uniqueId,
-                      isTruthy: m.Div({
-                        class: "mt2 f7 fw4 black",
-                        children: pm.uniqueId,
-                      }),
+                      isTruthy: () =>
+                        m.Div({
+                          class: "mt2 f7 fw4 black",
+                          children: pm.uniqueId,
+                        }),
                     }),
                     m.Div({
                       class: "mt2 fw4 f6 flex items-center light-silver",
@@ -53,10 +54,11 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                   ]),
                   m.If({
                     subject: pm.isPermanent,
-                    isFalsy: Icon({
-                      cssClasses: "ba b--light-silver br-100 pa2",
-                      iconName: "edit",
-                    }),
+                    isFalsy: () =>
+                      Icon({
+                        cssClasses: "ba b--light-silver br-100 pa2",
+                        iconName: "edit",
+                      }),
                   }),
                 ],
               }),

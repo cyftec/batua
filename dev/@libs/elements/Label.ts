@@ -8,7 +8,7 @@ type LabelProps = {
 
 export const Label = component<LabelProps>(({ cssClasses, text }) => {
   return m.Div({
-    class: tmpl`mt2 pt1 mb1 ml1 f7 silver ${cssClasses}`,
+    class: tmpl`mt2 pt1 mb1 ml1 f7 moon-gray ${cssClasses}`,
     children: text,
   });
 });

@@ -29,48 +29,53 @@ export const AccountCard = component<AccountCardProps>(
                 m.Div(name),
                 m.If({
                   subject: isPermanent,
-                  isFalsy: Icon({
-                    cssClasses: "ml2 f8 silver",
-                    iconName: "edit",
-                  }),
+                  isFalsy: () =>
+                    Icon({
+                      cssClasses: "ml2 f8 silver",
+                      iconName: "edit",
+                    }),
                 }),
               ],
             }),
             m.If({
               subject: uniqueId,
-              isTruthy: m.Div({
-                class: "mv2 flex items-center f7 fw4 black",
-                children: uniqueId,
-              }),
+              isTruthy: () =>
+                m.Div({
+                  class: "mv2 flex items-center f7 fw4 black",
+                  children: uniqueId,
+                }),
             }),
             m.If({
               subject: vault,
-              isTruthy: m.Div({
-                class: "mv2 flex items-center f7 light-silver",
-                children: [
-                  Icon({
-                    cssClasses: "mr1",
-                    iconName:
-                      vault?.value === "digital" ? "credit_card" : "paid",
-                  }),
-                  m.Div(`${capitalize(vault?.value || "")} Asset`),
-                ],
-              }),
-              isFalsy: m.Div(
-                m.If({
-                  subject: op(type).equals("debt").truthy,
-                  isTruthy: m.Div({
-                    class: "mv2 flex items-center f7 light-silver",
-                    children: [
-                      Icon({
-                        cssClasses: "mr1",
-                        iconName: "credit_card_off",
+              isTruthy: () =>
+                m.Div({
+                  class: "mv2 flex items-center f7 light-silver",
+                  children: [
+                    Icon({
+                      cssClasses: "mr1",
+                      iconName:
+                        vault?.value === "digital" ? "credit_card" : "paid",
+                    }),
+                    m.Div(`${capitalize(vault?.value || "")} Asset`),
+                  ],
+                }),
+              isFalsy: () =>
+                m.Div(
+                  m.If({
+                    subject: op(type).equals("debt").truthy,
+                    isTruthy: () =>
+                      m.Div({
+                        class: "mv2 flex items-center f7 light-silver",
+                        children: [
+                          Icon({
+                            cssClasses: "mr1",
+                            iconName: "credit_card_off",
+                          }),
+                          m.Div(`Debt`),
+                        ],
                       }),
-                      m.Div(`Debt`),
-                    ],
-                  }),
-                })
-              ),
+                  })
+                ),
             }),
             m.Div({
               class: "flex flex-wrap",
@@ -81,7 +86,7 @@ export const AccountCard = component<AccountCardProps>(
                   class: "pt1 f8 light-silver",
                   children: m.If({
                     subject: trap(methods).length,
-                    isTruthy: "Pay via:",
+                    isTruthy: () => "Pay via:",
                   }),
                 }),
                 map: (pm) =>
