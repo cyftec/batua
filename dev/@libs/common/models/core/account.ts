@@ -1,33 +1,74 @@
-import { ID, NumBoolean } from "./common";
+import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
-import { PaymentMethodUI } from "./payment-method";
 
-export const SELF_ACCOUNT_TYPES = ["asset", "debt"] as const satisfies string[];
-export type SelfAccountType = (typeof SELF_ACCOUNT_TYPES)[number];
-export const ACCOUNT_TYPES = [
-  ...SELF_ACCOUNT_TYPES,
-  "friend",
-  "market",
-] as const satisfies string[];
-export type AccountType = (typeof ACCOUNT_TYPES)[number];
-
+export type MarketAccountType = "Debt" | "Investment";
+export type AccountType = Prettify<
+  "World" | "Expense" | "Friend" | MarketAccountType
+>;
+export type EditableAccountType = Prettify<Exclude<AccountType, "World">>;
 export type Account = {
   isPermanent: NumBoolean;
-  name: string;
   uniqueId?: string;
+  name: string;
   balance: number;
   type: AccountType;
   vault?: CurrencyType;
-  methods: PaymentMethodUI["id"][];
 };
+
+export type WorldAccount = Prettify<
+  Account & {
+    uniqueId: undefined;
+    type: "World";
+    vault: undefined;
+  }
+>;
+
+export type MarketAccount = Prettify<
+  Account & {
+    type: MarketAccountType;
+    vault: undefined;
+  }
+>;
+
+export type FriendAccount = Prettify<
+  Account & {
+    type: "Friend";
+    vault: undefined;
+  }
+>;
+
+export type ExpenseAccount = Prettify<
+  Account & {
+    type: "Expense";
+    vault: CurrencyType;
+  }
+>;
 
 /**
  *
  *
  * UI Models
  */
+export type AccountUI = Prettify<WithID<Account>>;
 
-export type AccountUI = Omit<Account, "methods"> & {
-  id: ID;
-  methods: PaymentMethodUI[];
-};
+export type WorldAccountUI = Prettify<WithID<WorldAccount>>;
+
+export type MarketAccountUI = Prettify<WithID<MarketAccount>>;
+
+export type FriendAccountUI = Prettify<WithID<FriendAccount>>;
+
+export type ExpenseAccountUI = Prettify<WithID<ExpenseAccount>>;
+
+/**
+ *
+ *
+ * CONSTANTS
+ */
+
+export const EDITABLE_ACCOUNT_TYPES: EditableAccountType[] = [
+  "Expense",
+  "Debt",
+  "Investment",
+  "Friend",
+];
+export const MARKET_ACCOUNT_TYPES: MarketAccountType[] = ["Debt", "Investment"];

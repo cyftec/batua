@@ -2,15 +2,18 @@ import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import {
   accountsStore,
+  accountUiToAccount,
   paymentMethodsStore,
+  paymentMethodUiToPaymentMethod,
 } from "../../@libs/common/localstorage/stores";
 import {
+  Account,
   CURRENCY_TYPES,
   CurrencyType,
+  EDITABLE_ACCOUNT_TYPES,
+  EditableAccountType,
   ID,
   PaymentMethodUI,
-  SELF_ACCOUNT_TYPES,
-  SelfAccountType,
 } from "../../@libs/common/models/core";
 import {
   capitalize,
@@ -46,40 +49,28 @@ const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
 const vaultType = signal<CurrencyType | undefined>("digital");
-const selfAccountType = signal<SelfAccountType>("asset");
-const allPaymentMethods = signal<PaymentMethodUI[]>([]);
-const selectedPaymentMethods = signal<PaymentMethodUI[]>([]);
-const nonSelectedPaymentMethods = derive(() => {
-  const selectedMethodNames = selectedPaymentMethods.value.map((pm) => pm.name);
-  return allPaymentMethods.value
-    .filter((pm) => !selectedMethodNames.includes(pm.name))
-    .sort((a, b) => b.isPermanent - a.isPermanent);
-});
+const editableAccountType = signal<EditableAccountType>("Expense");
+const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
+  []
+);
+const [selectedPaymentMethods, nonSelectedPaymentMethods] = trap(
+  allPaymentMethods
+).partition((pm) => pm.isSelected);
 const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
 
 effect(() => {
   if (!editableAccount.value) return;
   accountName.value = editableAccount.value.name;
   accountUniqueId.value = editableAccount.value.uniqueId || "";
-  selfAccountType.value = editableAccount.value.type as SelfAccountType;
+  editableAccountType.value = editableAccount.value.type as EditableAccountType;
   vaultType.value = editableAccount.value.vault;
-  selectedPaymentMethods.value = editableAccount.value.methods;
 });
 
 const onTagTap = (pmID: number, selectTag: boolean) => {
-  const updatedSelectedMethods = [...selectedPaymentMethods.value];
-  if (selectTag) {
-    const selectedMethod = allPaymentMethods.value.find(
-      (pm) => pm.id === pmID
-    ) as PaymentMethodUI;
-    updatedSelectedMethods.push(selectedMethod);
-  } else {
-    const i = updatedSelectedMethods.findIndex((pm) => pm.id === pmID);
-    if (i < 0)
-      throw `Method not found in selected methods list for id - ${pmID}`;
-    updatedSelectedMethods.splice(i, 1);
-  }
-  selectedPaymentMethods.value = updatedSelectedMethods;
+  allPaymentMethods.value = allPaymentMethods.value.map((pm) => {
+    if (pm.id === pmID) pm.isSelected = selectTag;
+    return pm;
+  });
 };
 
 const validateForm = () => {
@@ -103,34 +94,59 @@ const savePaymentMethod = () => {
   const uniqueIdObj = accountUniqueId.value
     ? { uniqueId: accountUniqueId.value }
     : {};
+  let newAccountID: ID | undefined;
 
   if (editableAccount.value) {
-    accountsStore.update({
+    const updatedAcc: Account = accountUiToAccount({
       ...editableAccount.value,
       name: accountName.value,
-      type: selfAccountType.value,
-      methods: selectedPaymentMethods.value,
+      type: editableAccountType.value,
       ...uniqueIdObj,
       ...vaultTypeObj,
     });
+    accountsStore.update(editableAccount.value.id, updatedAcc);
+    // First delete acc ID from all PMs, later add them again below
+    paymentMethodsStore.getAll().forEach((pm) => {
+      const updatedIDs = pm.accounts
+        .map((a) => a.id)
+        .filter((id) => id !== editableAccount.value?.id);
+      paymentMethodsStore.update(pm.id, {
+        ...paymentMethodUiToPaymentMethod(pm),
+        accounts: updatedIDs,
+      });
+    });
   } else {
-    accountsStore.add({
+    const newAccount: Account = {
       isPermanent: 0,
       balance: 0,
       name: accountName.value,
-      type: selfAccountType.value,
-      methods: selectedPaymentMethods.value.map((pm) => pm.id),
+      type: editableAccountType.value,
       ...uniqueIdObj,
       ...vaultTypeObj,
-    });
+    };
+    newAccountID = accountsStore.add(newAccount);
   }
+
+  selectedPaymentMethods.value.forEach((pm) => {
+    const fetchedPmUI = paymentMethodsStore.get(pm.id);
+    if (!fetchedPmUI) throw `Payment Method not found for id - '${pm.id}'`;
+    const fetchedPM = paymentMethodUiToPaymentMethod(fetchedPmUI);
+    const id = (newAccountID || editableAccount.value?.id) as number;
+    paymentMethodsStore.update(fetchedPmUI.id, {
+      ...fetchedPM,
+      accounts: [...fetchedPM.accounts, id],
+    });
+  });
   goBack();
 };
 
 const triggerPageDataRefresh = () => {
   const id = getQueryParamValue("id");
   if (id) accIdFromQuery.value = id;
-  allPaymentMethods.value = paymentMethodsStore.getAll();
+  allPaymentMethods.value = paymentMethodsStore.getAll().map((pm) => ({
+    ...pm,
+    isSelected: pm.accounts.map((a) => a.id).includes(+id),
+  }));
 };
 
 const onPageMount = () => {
@@ -164,15 +180,18 @@ export default HTMLPage({
             Select({
               cssClasses: "f6 br3 pa2",
               anchor: "left",
-              options: SELF_ACCOUNT_TYPES,
-              selectedOptionIndex:
-                trap(SELF_ACCOUNT_TYPES).indexOf(selfAccountType),
+              options: EDITABLE_ACCOUNT_TYPES,
+              selectedOptionIndex: trap(EDITABLE_ACCOUNT_TYPES).indexOf(
+                editableAccountType
+              ),
               targetFormattor: (o) => `${capitalize(o)} Account`,
               optionFormattor: (o) => `${capitalize(o)} Account`,
               onChange: (o) => {
-                selfAccountType.value = SELF_ACCOUNT_TYPES[o];
+                editableAccountType.value = EDITABLE_ACCOUNT_TYPES[o];
                 vaultType.value =
-                  SELF_ACCOUNT_TYPES[o] === "debt" ? undefined : "digital";
+                  EDITABLE_ACCOUNT_TYPES[o] === "Expense"
+                    ? "digital"
+                    : undefined;
               },
             }),
             m.If({

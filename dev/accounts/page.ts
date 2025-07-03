@@ -1,42 +1,63 @@
-import { derive, DerivedSignal, op, signal, trap } from "@cyftech/signal";
+import { effect, op, signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { HTMLPage, NavScaffold } from "../@libs/components";
-import { TabBar } from "../@libs/elements";
-import { Accounts, PaymentMethods } from "./@components";
-import { AccountUI, PaymentMethodUI } from "../@libs/common/models/core";
 import {
   accountsStore,
   paymentMethodsStore,
 } from "../@libs/common/localstorage/stores";
+import {
+  AccountUI,
+  ExpenseAccountUI,
+  FriendAccountUI,
+  MARKET_ACCOUNT_TYPES,
+  MarketAccountType,
+  MarketAccountUI,
+  PaymentMethodUI,
+  WorldAccountUI,
+} from "../@libs/common/models/core";
 import { getQueryParamValue, goToAccountsPage } from "../@libs/common/utils";
+import { HTMLPage, NavScaffold } from "../@libs/components";
+import { Section, TabBar } from "../@libs/elements";
+import { ExpenseAccounts, MarketAccounts, PaymentMethods } from "./@components";
+import { AccountCard } from "./@components/AccountCard";
 import { FriendsAccounts } from "./@components/FriendsAccounts";
 
 const ACCOUNTS_PAGE_TABS = [
-  "Methods",
-  "Accounts",
-  "Friends",
+  "Expense Accounts",
+  "Other Accounts",
 ] as const satisfies string[];
 const selectedTabIndex = signal(1);
-const header = trap(ACCOUNTS_PAGE_TABS).at(selectedTabIndex);
-const paymentMethods = signal<PaymentMethodUI[]>([]);
+const header = op(selectedTabIndex).ternary(
+  "My other accounts",
+  "My expense accounts & payment methods"
+);
 const accounts = signal<AccountUI[]>([]);
-const marketAccounts = derive(() =>
-  accounts.value.filter((acc) => ["market"].includes(acc.type))
-);
-const myAccounts = derive(() => {
-  return accounts.value
-    .filter((acc) => ["asset", "debt"].includes(acc.type))
-    .sort((a, b) => b.isPermanent - a.isPermanent);
+const worldAccounts = signal<WorldAccountUI[]>([]);
+const marketAccounts = signal<MarketAccountUI[]>([]);
+const friendsAccounts = signal<FriendAccountUI[]>([]);
+const expenseAccounts = signal<ExpenseAccountUI[]>([]);
+const paymentMethods = signal<PaymentMethodUI[]>([]);
+
+effect(() => {
+  const allWorldAccs: WorldAccountUI[] = [];
+  const allMarketAccs: MarketAccountUI[] = [];
+  const allFriendAccs: FriendAccountUI[] = [];
+  const allExpenseAccs: ExpenseAccountUI[] = [];
+  accounts.value.forEach((acc) => {
+    if (MARKET_ACCOUNT_TYPES.includes(acc.type as MarketAccountType)) {
+      allMarketAccs.push(acc as MarketAccountUI);
+    } else if (acc.type === "Friend") {
+      allFriendAccs.push(acc as FriendAccountUI);
+    } else if (acc.type === "Expense") {
+      allExpenseAccs.push(acc as ExpenseAccountUI);
+    } else {
+      allWorldAccs.push(acc as WorldAccountUI);
+    }
+  });
+  worldAccounts.value = allWorldAccs;
+  marketAccounts.value = allMarketAccs;
+  friendsAccounts.value = allFriendAccs;
+  expenseAccounts.value = allExpenseAccs;
 });
-const friendsAccounts = derive(() =>
-  accounts.value.filter((acc) => ["friend"].includes(acc.type))
-);
-const [_, othersAccounts] = trap(accounts).partition((acc) =>
-  ["asset", "debt"].includes(acc.type)
-);
-const [__, ___] = trap(othersAccounts).partition(
-  (acc) => acc.type === "friend"
-);
 
 const triggerPageDataRefresh = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
@@ -61,22 +82,33 @@ export default HTMLPage({
         m.Switch({
           subject: selectedTabIndex,
           cases: {
-            0: () => PaymentMethods({ paymentMethods }),
+            0: () =>
+              m.Div([
+                ExpenseAccounts({ expenseAccounts, paymentMethods }),
+                PaymentMethods({ paymentMethods }),
+              ]),
             1: () =>
-              Accounts({
-                marketAccounts,
-                myAccounts,
-              }),
-            2: () =>
-              FriendsAccounts({
-                accounts: friendsAccounts,
-              }),
+              m.Div([
+                Section({
+                  title: "World as an account",
+                  children: m.For({
+                    subject: worldAccounts,
+                    map: (acc) =>
+                      AccountCard({
+                        cssClasses: "mb3",
+                        account: acc,
+                      }),
+                  }),
+                }),
+                MarketAccounts({ marketAccounts }),
+                FriendsAccounts({ friendsAccounts }),
+              ]),
           },
         }),
       ],
     }),
     navbarTop: TabBar({
-      cssClasses: "mb2 nl2 nr2",
+      cssClasses: "mb1 nl2 nr2",
       tabs: ACCOUNTS_PAGE_TABS,
       selectedTabIndex: selectedTabIndex,
       onTabChange: (tabIndex) => goToAccountsPage(tabIndex),

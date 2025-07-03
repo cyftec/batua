@@ -1,10 +1,14 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { paymentMethodsStore } from "../../@libs/common/localstorage/stores";
+import {
+  paymentMethodsStore,
+  paymentMethodUiToPaymentMethod,
+} from "../../@libs/common/localstorage/stores";
 import {
   CURRENCY_TYPES,
   CurrencyType,
   ID,
+  PaymentMethod,
 } from "../../@libs/common/models/core";
 import {
   capitalize,
@@ -24,7 +28,7 @@ import {
 } from "../../@libs/elements";
 
 const error = signal("");
-const paymentMethodMode = signal<CurrencyType>("digital");
+const paymentMethodType = signal<CurrencyType>("digital");
 const paymentMethodName = signal("");
 const paymentMethodUniqueID = signal("");
 const pmIdFromQuery = signal("");
@@ -44,7 +48,7 @@ const commitBtnLabel = op(editablePaymentMethod).ternary("Save", "Add");
 
 effect(() => {
   if (!editablePaymentMethod.value) return;
-  paymentMethodMode.value = editablePaymentMethod.value.mode;
+  paymentMethodType.value = editablePaymentMethod.value.type;
   paymentMethodName.value = editablePaymentMethod.value.name;
   paymentMethodUniqueID.value = editablePaymentMethod.value.uniqueId || "";
 });
@@ -80,17 +84,20 @@ const savePaymentMethod = () => {
     : {};
 
   if (editablePaymentMethod.value) {
-    paymentMethodsStore.update({
+    const updatedPM: PaymentMethod = paymentMethodUiToPaymentMethod({
       ...editablePaymentMethod.value,
       name: paymentMethodName.value,
-      mode: paymentMethodMode.value,
+      type: paymentMethodType.value,
       ...uniqueIdObj,
     });
+    paymentMethodsStore.update(editablePaymentMethod.value.id, updatedPM);
   } else {
     paymentMethodsStore.add({
       isPermanent: 0,
       name: paymentMethodName.value,
-      mode: paymentMethodMode.value,
+      type: paymentMethodType.value,
+      slave: false,
+      accounts: [],
       ...uniqueIdObj,
     });
   }
@@ -124,14 +131,14 @@ export default HTMLPage({
         Section({
           title: "Payment method details",
           children: [
-            Label({ text: "Payment mode" }),
+            Label({ text: "Payment type" }),
             Select({
               cssClasses: "f6 br3 pa2",
               options: CURRENCY_TYPES,
               selectedOptionIndex:
-                trap(CURRENCY_TYPES).indexOf(paymentMethodMode),
+                trap(CURRENCY_TYPES).indexOf(paymentMethodType),
               optionFormattor: (option) => capitalize(option),
-              onChange: (o) => (paymentMethodMode.value = CURRENCY_TYPES[o]),
+              onChange: (o) => (paymentMethodType.value = CURRENCY_TYPES[o]),
             }),
             Label({ text: "Name of the method" }),
             TextBox({

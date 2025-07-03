@@ -1,5 +1,5 @@
-import { AccountUI } from "./account";
-import { ID } from "./common";
+import { Account, AccountUI, ExpenseAccountUI } from "./account";
+import { ID, Prettify } from "./common";
 import { PaymentMethodUI } from "./payment-method";
 
 export type Payment = {
@@ -14,8 +14,10 @@ export type Payment = {
  * UI Models
  */
 
-export type PaymentUI = Omit<Payment, "account" | "via"> & {
-  id: ID;
-  account: AccountUI;
-  via?: PaymentMethodUI;
-};
+export type PaymentUI = Prettify<
+  Omit<Payment, "account" | "via"> & {
+    id: ID;
+    account: AccountUI;
+    via?: PaymentMethodUI;
+  }
+>;

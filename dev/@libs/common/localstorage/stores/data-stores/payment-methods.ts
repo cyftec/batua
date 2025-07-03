@@ -1,23 +1,43 @@
-import { ID, PaymentMethod, PaymentMethodUI } from "../../../models/core";
+import {
+  ExpenseAccountUI,
+  ID,
+  PaymentMethod,
+  PaymentMethodUI,
+} from "../../../models/core";
 import { createStore, parseObjectJsonString } from "../../core";
+import { accountsStore } from "./accounts";
 
 const lsValueToPaymentMethod = (
   lsValueString: string | null
 ): PaymentMethod | undefined =>
   parseObjectJsonString<PaymentMethod>(lsValueString, "name");
+
 const paymentMethodToLsValue = (paymentMethod: PaymentMethod): string =>
   JSON.stringify(paymentMethod);
-const paymentMethodToPaymentMethodUI = (
+
+export const paymentMethodToPaymentMethodUI = (
   id: ID,
   paymentMethod: PaymentMethod
 ): PaymentMethodUI => {
-  const paymentMethodUI: PaymentMethodUI = { ...paymentMethod, id };
+  const accounts = accountsStore.getAll(paymentMethod.accounts);
+  const expenseAccounts = accounts.filter(
+    (acc) => acc.type === "Expense"
+  ) as ExpenseAccountUI[];
+  const paymentMethodUI: PaymentMethodUI = {
+    ...paymentMethod,
+    id,
+    accounts: expenseAccounts,
+  };
   return paymentMethodUI;
 };
-const paymentMethodUiToPaymentMethod = (
+
+export const paymentMethodUiToPaymentMethod = (
   paymentMethodUI: PaymentMethodUI
 ): PaymentMethod => {
-  const paymentMethodRecord: PaymentMethod = { ...paymentMethodUI };
+  const paymentMethodRecord: PaymentMethod = {
+    ...paymentMethodUI,
+    accounts: paymentMethodUI.accounts.map((acc) => acc.id),
+  };
   delete paymentMethodRecord["id"];
   return paymentMethodRecord;
 };

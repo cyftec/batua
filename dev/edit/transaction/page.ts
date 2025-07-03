@@ -16,7 +16,6 @@ import {
   NumberBox,
   Section,
   Select,
-  Tabs,
   TextBox,
 } from "../../@libs/elements";
 
@@ -158,8 +157,18 @@ export default HTMLPage({
         Section({
           title: "Payment details",
           children: [
+            Label({
+              cssClasses: "color-inherit",
+              text: "FROM",
+            }),
             m.Div({
+              class: "flex items-center",
               children: [
+                NumberBox({
+                  cssClasses: "w3 f4",
+                  num: 20,
+                  onchange: (value) => console.log("Function not implemented."),
+                }),
                 Select({
                   cssClasses: "f6 br3 pa2",
                   anchor: "left",
@@ -168,22 +177,10 @@ export default HTMLPage({
                   onChange: (option) =>
                     console.log("Function not implemented."),
                 }),
-                Select({
-                  cssClasses: "br3 di pa2",
-                  options: ["from", "to"],
-                  selectedOptionIndex: 0,
-                  onChange: (option) =>
-                    console.log("Function not implemented."),
-                }),
-                NumberBox({
-                  cssClasses: "w2",
-                  num: 20,
-                  onchange: (value) => console.log("Function not implemented."),
-                }),
                 m.Span("via"),
                 Select({
                   cssClasses: "f6 br3 pa2",
-                  anchor: "left",
+                  anchor: "right",
                   options: ["GPay", "ICICI Debitcard"],
                   selectedOptionIndex: 0,
                   onChange: (option) =>
@@ -193,6 +190,10 @@ export default HTMLPage({
             }),
             m.Div({
               children: "100 From Arindam Babu",
+            }),
+            Label({
+              cssClasses: "color-inherit",
+              text: "TO",
             }),
             m.Div({
               children: "120 to World Account",

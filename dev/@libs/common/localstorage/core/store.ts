@@ -11,8 +11,8 @@ export type Store<Record, RecordUI> = {
   getAll: (ids?: ID[]) => RecordUI[];
   get: (id: ID) => RecordUI | undefined;
   add: (record: Record) => ID;
-  update: (record: RecordUI) => void;
-  delete: (record: RecordUI) => void;
+  update: (id: ID, record: Record) => void;
+  delete: (recordID: ID) => void;
 };
 
 const getIDFromKey = (recordKeyPrefix: string, key: string) => {
@@ -91,18 +91,17 @@ export const createStore = <Record, RecordUI extends { id: ID } & object>(
     );
     return recordID;
   },
-  update: function (recordUI: RecordUI) {
+  update: function (id: ID, record: Record) {
     if (!phase.currentIs("run")) return;
     const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(recordUI.id);
-    const record = recordUIToRecord(recordUI);
+    const recordKey = thisStore.getKey(id);
     const recordValue = recordToLsValue(record);
     localStorage.setItem(recordKey, recordValue);
   },
-  delete: function (recordUI: RecordUI) {
+  delete: function (recordID: ID) {
     if (!phase.currentIs("run")) return;
     const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(recordUI.id);
+    const recordKey = thisStore.getKey(recordID);
     localStorage.removeItem(recordKey);
   },
 });

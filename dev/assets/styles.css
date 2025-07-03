@@ -65,11 +65,13 @@ input::placeholder {
 .h1dot1 { height: 1.1rem; }
 .h1dot2 { height: 1.2rem; }
 .h1dot5 { height: 1.5rem; }
+.w-48 { width: 48%; }
 .w1dot5 { width: 1.5rem; }
 .w4dot50 { width: 12rem; }
 .mnw5 { min-width: 16rem; }
 .mxh5 { max-height: 16rem; }
 .bw1dot5 { border-width: 0.1875rem; }
+.shadow-0 { box-shadow: 0 0 8px 0px rgba(0, 0, 0, 0.1); }
 
 @media screen and (min-width: 30em) {
   .w4dot25-ns { width: 10rem; }

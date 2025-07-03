@@ -12,7 +12,7 @@ type CardButtonProps = {
 
 export const CardButton = component<CardButtonProps>(
   ({ cssClasses, onTap, icon, label }) => {
-    const btnClasses = tmpl`pa3 ba b--light-silver br4 flex items-center justify-center ${cssClasses}`;
+    const btnClasses = tmpl`pa3 ba b--light-gray br4 flex items-center justify-center shadow-0 ${cssClasses}`;
 
     return m.Div({
       onunmount: () => dispose(btnClasses),
@@ -26,7 +26,7 @@ export const CardButton = component<CardButtonProps>(
             cssClasses: "mr2 mb2",
             iconName: icon,
           }),
-          label,
+          m.Span({ class: "tc", children: label }),
         ],
       }),
     });

@@ -1,11 +1,14 @@
-import { ID, NumBoolean } from "./common";
+import { ExpenseAccountUI } from "./account";
+import { ID, NumBoolean, Prettify } from "./common";
 import { CurrencyType } from "./currency";
 
 export type PaymentMethod = {
   isPermanent: NumBoolean;
   uniqueId?: string;
   name: string;
-  mode: CurrencyType;
+  type: CurrencyType;
+  slave: boolean;
+  accounts: ExpenseAccountUI["id"][];
 };
 
 /**
@@ -14,4 +17,9 @@ export type PaymentMethod = {
  * UI Models
  */
 
-export type PaymentMethodUI = PaymentMethod & { id: ID };
+export type PaymentMethodUI = Prettify<
+  Omit<PaymentMethod, "accounts"> & {
+    id: ID;
+    accounts: ExpenseAccountUI[];
+  }
+>;

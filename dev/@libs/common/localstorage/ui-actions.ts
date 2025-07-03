@@ -1,9 +1,9 @@
 import { phase } from "@mufw/maya/utils";
 import { INITIAL_ANALYTICS, StorageDetails } from "../models";
 import {
-  CASH_PAYMENT_METHOD,
-  getCashAccount,
-  MARKET_ACCOUNT,
+  CASH_EXPENSE_ACCOUNT,
+  getCashPaymentMethod,
+  WORLD_ACCOUNT,
   NET_BANKING_PAYMENT_METHOD,
   TAGS,
 } from "../utils";
@@ -68,10 +68,10 @@ export const isNewToApp = (): boolean => {
 };
 
 export const populateInitialData = () => {
+  accountsStore.add(WORLD_ACCOUNT);
+  const cashAccountID = accountsStore.add(CASH_EXPENSE_ACCOUNT);
+  const cashPaymentMethod = getCashPaymentMethod(cashAccountID);
+  paymentMethodsStore.add(cashPaymentMethod);
   paymentMethodsStore.add(NET_BANKING_PAYMENT_METHOD);
-  const cashPaymetnMethodID = paymentMethodsStore.add(CASH_PAYMENT_METHOD);
-  const cashAccount = getCashAccount(cashPaymetnMethodID);
-  accountsStore.add(cashAccount);
-  accountsStore.add(MARKET_ACCOUNT);
   TAGS.forEach((tag) => tagsStore.add(tag));
 };

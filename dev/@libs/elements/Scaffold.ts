@@ -1,4 +1,4 @@
-import { dispose, tmpl } from "@cyftech/signal";
+import { dispose, tmpl, value } from "@cyftech/signal";
 import { Child, Children, component, m } from "@mufw/maya";
 
 type ScaffoldProps = {
@@ -11,9 +11,13 @@ type ScaffoldProps = {
 export const Scaffold = component<ScaffoldProps>(
   ({ cssClasses, header, content, bottombar }) => {
     const classes = tmpl`w6-ns ${cssClasses}`;
+    const headerCss = tmpl`overflow-break-word sticky top-0 left-0 right-0 bg-inherit z-999 b pv3 mt2 ${() =>
+      typeof value(header) === "string" && (value(header) as string).length > 22
+        ? "f2dot66"
+        : "f2dot33"}`;
 
     return m.Div({
-      onunmount: () => dispose(classes),
+      onunmount: () => dispose(classes, headerCss),
       class: "flex-ns justify-center-ns",
       children: m.Div({
         class: classes,
@@ -22,7 +26,7 @@ export const Scaffold = component<ScaffoldProps>(
             subject: header,
             isTruthy: () =>
               m.Div({
-                class: `overflow-break-word sticky top-0 left-0 right-0 bg-inherit z-999 f2dot33 b pv3 mt2`,
+                class: headerCss,
                 children: header,
               }),
           }),

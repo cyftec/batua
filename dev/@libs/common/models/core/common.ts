@@ -4,6 +4,12 @@ export type NumBoolean = 0 | 1;
 export const COMBINED_TYPE_SEPARATOR = "##" as const satisfies string;
 export type CombinedTypeSeparator = typeof COMBINED_TYPE_SEPARATOR;
 
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+export type WithID<T extends object> = { id: ID } & T;
+
 export type TypeData<
   RootType extends Record<string, string>,
   K extends keyof RootType
