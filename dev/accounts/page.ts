@@ -61,7 +61,7 @@ effect(() => {
 
 const triggerPageDataRefresh = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
-  selectedTabIndex.value = queryParamTabId === "" ? 1 : +queryParamTabId;
+  selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   accounts.value = accountsStore.getAll();
   paymentMethods.value = paymentMethodsStore
     .getAll()

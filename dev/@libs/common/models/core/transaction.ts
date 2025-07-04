@@ -14,7 +14,15 @@ export const TRANSACTION_TYPE = {
 export type TxnType = keyof typeof TRANSACTION_TYPE;
 
 export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
-export const TXN_NECESSITIES = ["Essential", "Luxury", "Mixed"];
+export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Luxury", "Mixed"];
+export const TXN_NECESSITIES_WITH_ICONS: {
+  label: TxnNecessity;
+  icon: string;
+}[] = [
+  { label: "Essential", icon: "skillet" },
+  { label: "Mixed", icon: "sunny_snowing" },
+  { label: "Luxury", icon: "diamond_shine" },
+];
 
 export type Txn = {
   type: TxnType;

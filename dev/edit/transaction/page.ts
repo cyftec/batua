@@ -1,11 +1,16 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
-import { m } from "@mufw/maya";
-import { tagsStore, txnsStore } from "../../@libs/common/localstorage/stores";
+import { Child, m } from "@mufw/maya";
+import {
+  paymentMethodsStore,
+  tagsStore,
+  txnsStore,
+} from "../../@libs/common/localstorage/stores";
 import {
   ID,
+  PaymentMethodUI,
   TagUI,
   Txn,
-  TXN_NECESSITIES,
+  TXN_NECESSITIES_WITH_ICONS,
 } from "../../@libs/common/models/core";
 import { getQueryParamValue, nameRegex } from "../../@libs/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
@@ -16,6 +21,7 @@ import {
   NumberBox,
   Section,
   Select,
+  TabbedSelect,
   TextBox,
 } from "../../@libs/elements";
 
@@ -26,7 +32,13 @@ const txnDate = signal<Txn["date"]>(nowTime);
 const txnCreated = signal<Txn["created"]>(nowTime);
 const txnModified = signal<Txn["modified"]>(nowTime);
 const txnNecessity = signal<Txn["necessity"]>("Essential");
-const txns = signal<Txn["payments"]>([]);
+const selectedNecessityOptionIndex = derive(() =>
+  TXN_NECESSITIES_WITH_ICONS.findIndex(
+    (ness) => ness.label === txnNecessity.value
+  )
+);
+const allPaymentMethods = signal<PaymentMethodUI[]>([]);
+const txnPayments = signal<Txn["payments"]>([]);
 const txnTitle = signal<string>("");
 
 const allTags = signal<TagUI[]>([]);
@@ -60,7 +72,7 @@ effect(() => {
   txnCreated.value = editableTxn.value.created.getTime();
   txnModified.value = editableTxn.value.modified.getTime();
   txnNecessity.value = editableTxn.value.necessity;
-  txns.value = editableTxn.value.payments.map((p) => p.id);
+  txnPayments.value = editableTxn.value.payments.map((p) => p.id);
   selectedTags.value = editableTxn.value.tags;
   txnTitle.value = editableTxn.value.title.text;
 });
@@ -121,6 +133,7 @@ const onPageMount = () => {
   const id = getQueryParamValue("id");
   if (id) txnIdFromQuery.value = id;
   allTags.value = tagsStore.getAll();
+  allPaymentMethods.value = paymentMethodsStore.getAll();
 };
 
 export default HTMLPage({
@@ -129,76 +142,68 @@ export default HTMLPage({
     header: headerLabel,
     content: m.Div({
       children: [
-        Section({
-          title: "Transaction's basic details",
+        Label({ unpadded: true, text: "Necessity of transaction" }),
+        TabbedSelect({
+          cssClasses: "mh3 mb4",
+          options: TXN_NECESSITIES_WITH_ICONS,
+          labelPosition: "bottom",
+          selectedOptionIndex: selectedNecessityOptionIndex,
+          onChange: (optionIndex) => {
+            txnNecessity.value = TXN_NECESSITIES_WITH_ICONS[optionIndex].label;
+          },
+        }),
+        Label({ unpadded: true, text: "Time of transaction" }),
+        m.Div({
+          class:
+            "w-100 flex items-center justify-between ba br4 b--light-silver pa3 mb3",
+          children: "Today 5:15 PM",
+        }),
+        Label({ text: "Title of transaction" }),
+        TextBox({
+          cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 mb3 outline-0 w-100`,
+          text: txnTitle,
+          placeholder: "Title",
+          onchange: (text) => (txnTitle.value = text.trim()),
+        }),
+        Label({ text: "Payments list" }),
+        Label({
+          cssClasses: "color-inherit",
+          text: "FROM",
+        }),
+        m.Div({
+          class: "flex items-center",
           children: [
-            Label({ text: "Necessity of transaction" }),
-            m.Div({
-              class: "w-100 flex items-center justify-between",
-              children: m.For({
-                subject: TXN_NECESSITIES,
-                map: (ness) => m.Div(ness),
-              }),
+            NumberBox({
+              cssClasses: "w3 f4",
+              num: 20,
+              onchange: (value) => console.log("Function not implemented."),
             }),
-            Label({ text: "Time of transaction" }),
-            m.Div({
-              class: "w-100 flex items-center justify-between",
-              children: "Today 5:15 PM",
+            Select({
+              cssClasses: "f6 br3 pa2",
+              anchor: "left",
+              options: ["ICICI Savings", "Arindam Babu", "World"],
+              selectedOptionIndex: 0,
+              onChange: (option) => console.log("Function not implemented."),
             }),
-            Label({ text: "Title of transaction" }),
-            TextBox({
-              cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-              text: txnTitle,
-              placeholder: "Title",
-              onchange: (text) => (txnTitle.value = text.trim()),
+            m.Span("via"),
+            Select({
+              cssClasses: "f6 br3 pa2",
+              anchor: "right",
+              options: ["GPay", "ICICI Debitcard"],
+              selectedOptionIndex: 0,
+              onChange: (option) => console.log("Function not implemented."),
             }),
           ],
         }),
-        Section({
-          title: "Payment details",
-          children: [
-            Label({
-              cssClasses: "color-inherit",
-              text: "FROM",
-            }),
-            m.Div({
-              class: "flex items-center",
-              children: [
-                NumberBox({
-                  cssClasses: "w3 f4",
-                  num: 20,
-                  onchange: (value) => console.log("Function not implemented."),
-                }),
-                Select({
-                  cssClasses: "f6 br3 pa2",
-                  anchor: "left",
-                  options: ["ICICI Savings", "Arindam Babu", "World"],
-                  selectedOptionIndex: 0,
-                  onChange: (option) =>
-                    console.log("Function not implemented."),
-                }),
-                m.Span("via"),
-                Select({
-                  cssClasses: "f6 br3 pa2",
-                  anchor: "right",
-                  options: ["GPay", "ICICI Debitcard"],
-                  selectedOptionIndex: 0,
-                  onChange: (option) =>
-                    console.log("Function not implemented."),
-                }),
-              ],
-            }),
-            m.Div({
-              children: "100 From Arindam Babu",
-            }),
-            Label({
-              cssClasses: "color-inherit",
-              text: "TO",
-            }),
-            m.Div({
-              children: "120 to World Account",
-            }),
-          ],
+        m.Div({
+          children: "100 From Arindam Babu",
+        }),
+        Label({
+          cssClasses: "color-inherit",
+          text: "TO",
+        }),
+        m.Div({
+          children: "120 to World Account",
         }),
         Section({
           title: "Associated tags",

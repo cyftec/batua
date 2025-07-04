@@ -11,5 +11,6 @@ export * from "./Scaffold";
 export * from "./Section";
 export * from "./Select";
 export * from "./TabBar";
+export * from "./TabbedSelect";
 export * from "./Tabs";
 export * from "./Textbox";

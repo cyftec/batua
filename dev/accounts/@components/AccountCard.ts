@@ -24,93 +24,96 @@ export const AccountCard = component<AccountCardProps>(
 
     return m.Div({
       onclick: handleTap(onTap),
-      class: tmpl`ba b--light-gray br4 ph3 pt3 pb2 ${cssClasses}`,
+      class: tmpl`ba b--light-gray br4 pa2 flex flex-column justify-between ${cssClasses}`,
       children: [
-        m.Div({
-          class: "f5 fw6 black flex items-start justify-between",
-          children: [
-            m.Div(name),
-            m.If({
-              subject: isPermanent,
-              isFalsy: () =>
-                Icon({
-                  cssClasses: "ml1 f8 fw7 black",
-                  iconName: "edit",
-                }),
-            }),
-          ],
-        }),
-        m.If({
-          subject: uniqueId,
-          isTruthy: () =>
-            m.Div({
-              class: "mt1 mb2 flex items-center f7 fw4 black",
-              children: uniqueId,
-            }),
-        }),
-        m.If({
-          subject: vault,
-          isTruthy: () =>
-            m.Div({
-              class: "mt2 mb3",
-              children: [
-                m.Div({
-                  class: "f7 mb1 mig-gray flex items-center",
-                  children: [
-                    Icon({
-                      cssClasses: "mr1",
-                      size: 18,
-                      iconName:
-                        vault?.value === "digital" ? "credit_card" : "paid",
-                    }),
-                    m.Span("Pay via"),
-                  ],
-                }),
-                m.If({
-                  subject: trap(
-                    paymentMethods as MaybeSignalValue<PaymentMethodUI[]>
-                  ).length,
-                  isTruthy: () =>
-                    m.Div({
-                      class: "flex flex-wrap",
-                      children: m.For({
-                        subject: paymentMethods as MaybeSignalValue<
-                          PaymentMethodUI[]
-                        >,
-                        map: (pm) =>
-                          Tag({
-                            label: pm.name,
-                            size: "small",
-                            state: "selected",
-                          }),
-                      }),
-                    }),
-                  isFalsy: () =>
-                    m.Div({
-                      class: "f7",
-                      children: `No Payment Method added`,
-                    }),
-                }),
-              ],
-            }),
-          isFalsy: () =>
-            m.Div(
+        m.Div([
+          m.Div({
+            class: "f5 fw6 black flex items-start justify-between",
+            children: [
+              m.Div(name),
               m.If({
-                subject: op(type).equals("debt").truthy,
-                isTruthy: () =>
+                subject: isPermanent,
+                isFalsy: () =>
+                  Icon({
+                    cssClasses: "ml1 mt1 silver",
+                    size: 10,
+                    iconName: "edit",
+                  }),
+              }),
+            ],
+          }),
+          m.If({
+            subject: uniqueId,
+            isTruthy: () =>
+              m.Div({
+                class: "mt1 mb2 flex items-center f7 fw4 black",
+                children: uniqueId,
+              }),
+          }),
+          m.If({
+            subject: vault,
+            isTruthy: () =>
+              m.Div({
+                class: "mt2 mb3",
+                children: [
                   m.Div({
-                    class: "mv2 flex items-center f7 light-silver",
+                    class: "f7 mb1 mig-gray flex items-center",
                     children: [
                       Icon({
                         cssClasses: "mr1",
-                        iconName: "credit_card_off",
+                        size: 20,
+                        iconName:
+                          vault?.value === "digital" ? "credit_card" : "paid",
                       }),
-                      m.Div(`Debt`),
+                      m.Span("Pay via"),
                     ],
                   }),
-              })
-            ),
-        }),
+                  m.If({
+                    subject: trap(
+                      paymentMethods as MaybeSignalValue<PaymentMethodUI[]>
+                    ).length,
+                    isTruthy: () =>
+                      m.Div({
+                        class: "flex flex-wrap",
+                        children: m.For({
+                          subject: paymentMethods as MaybeSignalValue<
+                            PaymentMethodUI[]
+                          >,
+                          map: (pm) =>
+                            Tag({
+                              label: pm.name,
+                              size: "small",
+                              state: "selected",
+                            }),
+                        }),
+                      }),
+                    isFalsy: () =>
+                      m.Div({
+                        class: "f7",
+                        children: `No Payment Method added`,
+                      }),
+                  }),
+                ],
+              }),
+            isFalsy: () =>
+              m.Div(
+                m.If({
+                  subject: op(type).equals("debt").truthy,
+                  isTruthy: () =>
+                    m.Div({
+                      class: "mv2 flex items-center f7 light-silver",
+                      children: [
+                        Icon({
+                          cssClasses: "mr1",
+                          iconName: "credit_card_off",
+                        }),
+                        m.Div(`Debt`),
+                      ],
+                    }),
+                })
+              ),
+          }),
+        ]),
         m.Div({
           class: "f2dot66 flex items-start nt1",
           children: [
