@@ -1,5 +1,27 @@
 import { phase } from "@mufw/maya/utils";
-import { ID } from "../../models/core";
+import { parseNum } from "../../utils";
+
+export type DbUnsupportedType = "Date";
+export type IDKey = "id";
+export const ID_KEY: IDKey = "id";
+export type ID = number;
+export type TableKey = string;
+export type RecordKeyPrefix = `${TableKey}_`;
+export type LSRecordKey = `${RecordKeyPrefix}${ID}`;
+export type PlainRecordValueKey = "value";
+export const PLAIN_RECORD_VALUE_KEY: PlainRecordValueKey = "value";
+export type PlainExtendedRecord<Record> = Record extends object
+  ? never
+  : {
+      [ID_KEY]: ID;
+      [PLAIN_RECORD_VALUE_KEY]: Record;
+    };
+export type ObjectExtendedRecord<Record> = Record extends object
+  ? object & { [ID_KEY]: ID }
+  : never;
+export type Extended<RawRecord> = RawRecord extends object
+  ? ObjectExtendedRecord<RawRecord>
+  : PlainExtendedRecord<RawRecord>;
 
 export const LSID = {
   getCurrentID: function (): number {
@@ -17,19 +39,39 @@ export const LSID = {
   },
 };
 
+export const getRecordKeyPrefix = (tableKey: TableKey): RecordKeyPrefix =>
+  `${tableKey}_`;
+
+export const getIDFromLSKey = (
+  tableKey: TableKey,
+  lsKey: string
+): ID | undefined => {
+  const recordKeyPrefix = getRecordKeyPrefix(tableKey);
+  if (!lsKey.startsWith(recordKeyPrefix)) return;
+
+  const recordIdStr = lsKey.split(recordKeyPrefix)[1] || "";
+  return parseNum(recordIdStr);
+};
+
+export const getLSKeyFromID = (tableKey: TableKey, id: ID): LSRecordKey => {
+  const recordKeyPrefix = getRecordKeyPrefix(tableKey);
+  return `${recordKeyPrefix}${id}`;
+};
+
 export const parseObjectJsonString = <T extends Object>(
   objectJsonString: string | null | undefined,
-  uniquePropKey: string,
-  nonNullUniquePropValue?: any
+  nonNullPropKey: string
 ): T | undefined => {
-  const obj: T = JSON.parse(objectJsonString || "{}");
+  const obj = JSON.parse(objectJsonString || "{}");
   const isObject = obj && typeof obj === "object";
-  const uniquePropValue = obj[uniquePropKey];
-  const matchesSignature = nonNullUniquePropValue
-    ? uniquePropValue === nonNullUniquePropValue
-    : uniquePropKey in obj;
+  if (!isObject) return;
+  const propValue = obj[nonNullPropKey];
+  if (propValue === null || propValue === undefined) {
+    console.log(objectJsonString, nonNullPropKey);
 
-  if (!isObject || !matchesSignature) return;
+    throw `The value for nonNullPropKey '${nonNullPropKey}' should not be null or undefined`;
+  }
+
   return obj;
 };
 

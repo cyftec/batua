@@ -1,13 +1,8 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import {
-  paymentMethodsStore,
-  paymentMethodUiToPaymentMethod,
-} from "../../@libs/common/localstorage/stores";
-import {
   CURRENCY_TYPES,
   CurrencyType,
-  ID,
   PaymentMethod,
 } from "../../@libs/common/models/core";
 import {
@@ -26,6 +21,8 @@ import {
   Select,
   TextBox,
 } from "../../@libs/elements";
+import { db } from "../../@libs/common/localstorage/stores";
+import { ID } from "../../@libs/common/localstorage/core";
 
 const error = signal("");
 const paymentMethodType = signal<CurrencyType>("digital");
@@ -35,7 +32,7 @@ const pmIdFromQuery = signal("");
 const editablePaymentMethod = derive(() => {
   if (!pmIdFromQuery.value) return;
   const pmID: ID = +pmIdFromQuery.value;
-  const pm = paymentMethodsStore.get(pmID);
+  const pm = db.paymentMethods.get(pmID);
   if (!pm) throw `Error fetching payment method for id - ${pmID}`;
   return pm;
 });
@@ -84,20 +81,18 @@ const savePaymentMethod = () => {
     : {};
 
   if (editablePaymentMethod.value) {
-    const updatedPM: PaymentMethod = paymentMethodUiToPaymentMethod({
-      ...editablePaymentMethod.value,
+    const updates: Partial<PaymentMethod> = {
       name: paymentMethodName.value,
       type: paymentMethodType.value,
       ...uniqueIdObj,
-    });
-    paymentMethodsStore.update(editablePaymentMethod.value.id, updatedPM);
+    };
+    db.paymentMethods.update(editablePaymentMethod.value.id, updates);
   } else {
-    paymentMethodsStore.add({
+    db.paymentMethods.add({
       isPermanent: 0,
       name: paymentMethodName.value,
       type: paymentMethodType.value,
       slave: false,
-      accounts: [],
       ...uniqueIdObj,
     });
   }

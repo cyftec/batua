@@ -1,3 +1,3 @@
 export * from "./analytics";
-export * from "./data-stores";
+export * from "./db";
 export * from "./settings";

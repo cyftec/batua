@@ -1,11 +1,12 @@
-import { Account, AccountUI, ExpenseAccountUI } from "./account";
-import { ID, Prettify } from "./common";
+import { ID, IDKey } from "../../localstorage/core";
+import { ExpenseAccountUI } from "./account";
+import { Prettify } from "./common";
 import { PaymentMethodUI } from "./payment-method";
 
 export type Payment = {
   amount: number;
-  account: AccountUI["id"];
-  via?: PaymentMethodUI["id"];
+  account: ExpenseAccountUI[IDKey];
+  via?: PaymentMethodUI[IDKey];
 };
 
 /**
@@ -17,7 +18,7 @@ export type Payment = {
 export type PaymentUI = Prettify<
   Omit<Payment, "account" | "via"> & {
     id: ID;
-    account: AccountUI;
+    account: ExpenseAccountUI;
     via?: PaymentMethodUI;
   }
 >;

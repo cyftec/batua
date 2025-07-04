@@ -1,13 +1,17 @@
-import { ID } from "./common";
+import { PlainExtendedRecord } from "../../localstorage/core";
 
-export type TxnTitle = TxnTitleUI["text"];
+export type TxnTitle = string;
 
 /**
  *
  *
  * UI Models
  */
-export type TxnTitleUI = {
-  id: ID;
-  text: string;
-};
+export type TxnTitleUI = PlainExtendedRecord<TxnTitle>;
+
+/**
+ *
+ *
+ * DATABASE's INITIAL DATA CONSTANTS
+ */
+export const INITIAL_TXN_TITLES: TxnTitle[] = ["Record first account balance"];

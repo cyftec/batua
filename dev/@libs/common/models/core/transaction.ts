@@ -1,4 +1,5 @@
-import { ID, TypeData } from "./common";
+import { ID } from "../../localstorage/core";
+import { TypeData } from "./common";
 import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
@@ -44,10 +45,9 @@ export type TxnTypeUI<K extends TxnType> = TypeData<typeof TRANSACTION_TYPE, K>;
 
 export type TxnUI = Omit<
   Txn,
-  "date" | "created" | "modified" | "payments" | "tags" | "title" | "type"
+  "date" | "created" | "modified" | "payments" | "tags" | "title"
 > & {
   id: ID;
-  type: TxnTypeUI<TxnType>;
   date: Date;
   created: Date;
   modified: Date;

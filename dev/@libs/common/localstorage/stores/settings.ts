@@ -2,7 +2,6 @@ import { phase } from "@mufw/maya/utils";
 import {
   AppSettings,
   AS_SETTINGS_ID_KEY,
-  AS_SETTINGS_ID_VALUE,
   AS_SETTINGS_KEY,
   INITIAL_SETTINGS,
   INITIAL_STORAGE_DATA,
@@ -19,10 +18,10 @@ export const fetchSettings = (): AppSettings => {
 
   const getSettingsFromStore = () => {
     const settingsString = localStorage.getItem(AS_SETTINGS_KEY);
+    if (!settingsString) return;
     const settingsObject = parseObjectJsonString<AppSettings>(
       settingsString,
-      AS_SETTINGS_ID_KEY,
-      AS_SETTINGS_ID_VALUE
+      AS_SETTINGS_ID_KEY
     );
     return settingsObject;
   };

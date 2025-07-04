@@ -2,7 +2,6 @@ import { phase } from "@mufw/maya/utils";
 import {
   Analytics,
   AS_ANALYTICS_ID_KEY,
-  AS_ANALYTICS_ID_VALUE,
   AS_ANALYTICS_KEY,
   INITIAL_ANALYTICS,
 } from "../../models";
@@ -19,10 +18,10 @@ export const fetchAnalytics = (): Analytics => {
 
   const getAnalyticsFromStore = () => {
     const analyticsString = localStorage.getItem(AS_ANALYTICS_KEY);
+    if (!analyticsString) return;
     const analyticsObject = parseObjectJsonString<Analytics>(
       analyticsString,
-      AS_ANALYTICS_ID_KEY,
-      AS_ANALYTICS_ID_VALUE
+      AS_ANALYTICS_ID_KEY
     );
     return analyticsObject;
   };

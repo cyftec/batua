@@ -1,64 +1,112 @@
 import { phase } from "@mufw/maya/utils";
-import { ID } from "../../models/core";
-import { LSID, validLocalStorageKeys } from "./misc";
-import { parseNum } from "../../utils";
+import {
+  DbUnsupportedType,
+  Extended,
+  getIDFromLSKey,
+  getLSKeyFromID,
+  ID,
+  ID_KEY,
+  LSID,
+  PLAIN_RECORD_VALUE_KEY,
+  TableKey,
+  validLocalStorageKeys,
+} from "./misc";
 
-export type Store<Record, RecordUI> = {
+export type Table<RawRecord, ExtendedRecord extends Extended<RawRecord>> = {
   isEmpty: () => boolean;
-  keyIsValid: (key: string) => boolean;
-  getAllKeys: () => string[];
-  getKey: (id: ID) => string;
-  getAll: (ids?: ID[]) => RecordUI[];
-  get: (id: ID) => RecordUI | undefined;
-  add: (record: Record) => ID;
-  update: (id: ID, record: Record) => void;
+  getAllIDs: () => ID[];
+  getRaw: (id: ID) => RawRecord | undefined;
+  get: (id: ID) => ExtendedRecord | undefined;
+  getAll: (ids?: ID[]) => ExtendedRecord[];
+  add: (record: RawRecord) => ID;
+  update: (
+    id: ID,
+    newOrPartiallyNewRecord: RawRecord extends object
+      ? Partial<RawRecord>
+      : RawRecord
+  ) => void;
   delete: (recordID: ID) => void;
 };
 
-const getIDFromKey = (recordKeyPrefix: string, key: string) => {
-  const recordIdStr = key.split(recordKeyPrefix)[1] || "";
-  return parseNum(recordIdStr);
-};
-
-export const createStore = <Record, RecordUI extends { id: ID } & object>(
-  recordKeyPrefix: `${string}_`,
-  lsValueToRecord: (lsValueString: string | null) => Record | undefined,
-  recordToLsValue: (record: Record) => string,
-  recordToRecordUI: (id: ID, record: Record) => RecordUI,
-  recordUIToRecord: (recordUI: RecordUI) => Record
-): Store<Record, RecordUI> => ({
+export const createTable = <
+  RawRecord,
+  ExtendedRecord extends Extended<RawRecord>
+>(
+  tableKey: TableKey,
+  foreignKeyMappings?: Partial<{ [k in keyof RawRecord]: Table<any, any> }>,
+  dbToJsTypeMappings?: Partial<{ [k in keyof RawRecord]: DbUnsupportedType }>
+): Table<RawRecord, ExtendedRecord> => ({
   isEmpty: function () {
-    const thisStore = this as Store<Record, RecordUI>;
-    const validKeys = thisStore.getAllKeys();
+    const thisStore = this as Table<RawRecord, ExtendedRecord>;
+    const validKeys = thisStore.getAllIDs();
     return validKeys.length === 0;
   },
-  keyIsValid: function (key: string) {
-    return key.startsWith(recordKeyPrefix);
-  },
-  getAllKeys: function () {
-    const validKeys: string[] = [];
-    const thisStore = this as Store<Record, RecordUI>;
+  getAllIDs: function () {
+    const validIDs: ID[] = [];
     for (const lsKey of validLocalStorageKeys()) {
-      if (thisStore.keyIsValid(lsKey)) validKeys.push(lsKey);
+      const validTableRecordID = getIDFromLSKey(tableKey, lsKey);
+      if (validTableRecordID === undefined) continue;
+      validIDs.push(validTableRecordID);
     }
-    return validKeys;
+    return validIDs;
   },
-  getKey: function (id: ID) {
-    return `${recordKeyPrefix}${id}`;
+  getRaw: function (id: ID) {
+    if (!phase.currentIs("run")) return;
+    const key = getLSKeyFromID(tableKey, id);
+    const recordString = localStorage.getItem(key);
+    if (recordString === null) return;
+    const record = JSON.parse(recordString);
+    return record as RawRecord;
+  },
+  get: function (id: ID) {
+    if (!phase.currentIs("run")) return;
+    const thisStore = this as Table<RawRecord, ExtendedRecord>;
+    const record = thisStore.getRaw(id);
+
+    if (!record) return;
+
+    if (typeof record !== "object") {
+      return {
+        [ID_KEY]: id,
+        [PLAIN_RECORD_VALUE_KEY]: record as RawRecord,
+      } as unknown as ExtendedRecord;
+    }
+
+    if (foreignKeyMappings) {
+      Object.entries(foreignKeyMappings).forEach(([key, foreignStore]) => {
+        // rawPropValue can only be undefined | ID | ID[]
+        const rawPropValue = record[key];
+
+        if (typeof rawPropValue === "number") {
+          record[key] = (foreignStore as Table<any, any>).get(
+            rawPropValue as ID
+          );
+        }
+
+        if (Array.isArray(rawPropValue)) {
+          record[key] = (foreignStore as Table<any, any>).getAll(
+            rawPropValue as ID[]
+          );
+        }
+      });
+    }
+
+    if (dbToJsTypeMappings) {
+      Object.entries(dbToJsTypeMappings).forEach(([key, jsType]) => {
+        // rawPropValue can only be one of DbUnsupportedType
+        const rawPropValue = record[key];
+        if (typeof rawPropValue === "number" && jsType === "Date") {
+          record[key] = new Date(rawPropValue);
+        }
+      });
+    }
+
+    return { id, ...record } as unknown as ExtendedRecord;
   },
   getAll: function (ids?: ID[]) {
-    const thisStore = this as Store<Record, RecordUI>;
-    const validIDs: ID[] =
-      ids ||
-      thisStore.getAllKeys().map((key) => {
-        const id = getIDFromKey(recordKeyPrefix, key) || 0;
-        if (!id) {
-          console.log(recordKeyPrefix, key, id);
-          throw `ID not found for key - '${key}'`;
-        }
-        return id;
-      });
-    const records: RecordUI[] = [];
+    const thisStore = this as Table<RawRecord, ExtendedRecord>;
+    const validIDs: ID[] = ids || thisStore.getAllIDs();
+    const records: ExtendedRecord[] = [];
     for (const recordID of validIDs) {
       const record = thisStore.get(recordID);
       if (!record) continue;
@@ -66,42 +114,42 @@ export const createStore = <Record, RecordUI extends { id: ID } & object>(
     }
     return records;
   },
-  get: function (id: ID) {
-    if (!phase.currentIs("run")) return;
-    const thisStore = this as Store<Record, RecordUI>;
-    const key = thisStore.getKey(id);
-    const recordString = localStorage.getItem(key);
-    const record = lsValueToRecord(recordString);
-    if (!record) return;
-    const recordUI = recordToRecordUI(id, record);
-    return recordUI;
-  },
-  add: function (record: Record) {
-    console.log(`adding new record - ${JSON.stringify(record)}`);
-
+  add: function (record: RawRecord) {
     const recordID = LSID.getNewID();
     if (!phase.currentIs("run")) return recordID;
-    const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(recordID);
-    const recordValue = recordToLsValue(record);
+    const recordKey = getLSKeyFromID(tableKey, recordID);
+    const recordValue = JSON.stringify(record);
     localStorage.setItem(recordKey, recordValue);
     LSID.setMaxID(recordID);
-    console.log(
-      `Record - ${JSON.stringify(record)} added. New maxID is ${recordID}`
-    );
     return recordID;
   },
-  update: function (id: ID, record: Record) {
+  update: function (
+    id: ID,
+    newOrPartiallyNewRecord: RawRecord extends object
+      ? Partial<RawRecord>
+      : RawRecord
+  ) {
     if (!phase.currentIs("run")) return;
-    const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(id);
-    const recordValue = recordToLsValue(record);
-    localStorage.setItem(recordKey, recordValue);
+    const thisStore = this as Table<RawRecord, ExtendedRecord>;
+    const recordKey = getLSKeyFromID(tableKey, id);
+    const prevStateRecord = thisStore.getRaw(id);
+    if (prevStateRecord === undefined) throw `No record found for id - '${id}'`;
+
+    let newRecordValue: string;
+    if (typeof prevStateRecord === "object") {
+      newRecordValue = JSON.stringify({
+        ...prevStateRecord,
+        ...newOrPartiallyNewRecord,
+      });
+    } else {
+      newRecordValue = JSON.stringify(newOrPartiallyNewRecord);
+    }
+
+    localStorage.setItem(recordKey, newRecordValue);
   },
   delete: function (recordID: ID) {
     if (!phase.currentIs("run")) return;
-    const thisStore = this as Store<Record, RecordUI>;
-    const recordKey = thisStore.getKey(recordID);
+    const recordKey = getLSKeyFromID(tableKey, recordID);
     localStorage.removeItem(recordKey);
   },
 });

@@ -1,12 +1,6 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { Child, m } from "@mufw/maya";
 import {
-  paymentMethodsStore,
-  tagsStore,
-  txnsStore,
-} from "../../@libs/common/localstorage/stores";
-import {
-  ID,
   PaymentMethodUI,
   TagUI,
   Txn,
@@ -24,6 +18,11 @@ import {
   TabbedSelect,
   TextBox,
 } from "../../@libs/elements";
+import {
+  ID,
+  PLAIN_RECORD_VALUE_KEY,
+} from "../../@libs/common/localstorage/core";
+import { db } from "../../@libs/common/localstorage/stores";
 
 const nowTime = new Date().getTime();
 const error = signal("");
@@ -44,37 +43,42 @@ const txnTitle = signal<string>("");
 const allTags = signal<TagUI[]>([]);
 const selectedTags = signal<TagUI[]>([]);
 const nonSelectedTags = derive(() => {
-  const selectedTagNames = selectedTags.value.map((tg) => tg.name);
+  const selectedTagNames = selectedTags.value.map(
+    (tg) => tg[PLAIN_RECORD_VALUE_KEY]
+  );
   return allTags.value
-    .filter((tg) => !selectedTagNames.includes(tg.name))
-    .sort((a, b) => (b.name as any) - (a.name as any));
+    .filter((tg) => !selectedTagNames.includes(tg[PLAIN_RECORD_VALUE_KEY]))
+    .sort(
+      (a, b) =>
+        (b[PLAIN_RECORD_VALUE_KEY] as any) - (a[PLAIN_RECORD_VALUE_KEY] as any)
+    );
 });
 
 const txnIdFromQuery = signal("");
 const editableTxn = derive(() => {
   if (!txnIdFromQuery.value) return;
   const txnID: ID = +txnIdFromQuery.value;
-  const txn = txnsStore.get(txnID);
+  const txn = db.txns.get(txnID);
   if (!txn) throw `Error fetching transaction for id - ${txnID}`;
   return txn;
 });
 const headerLabel = derive(() =>
   editableTxn.value
-    ? `Edit '${editableTxn.value.title.text}'`
+    ? `Edit '${editableTxn.value.title[PLAIN_RECORD_VALUE_KEY]}'`
     : `Add new transaction`
 );
 const commitBtnLabel = op(editableTxn).ternary("Save", "Add");
 
 effect(() => {
   if (!editableTxn.value) return;
-  txnType.value = editableTxn.value.type.key;
+  txnType.value = editableTxn.value.type;
   txnDate.value = editableTxn.value.date.getTime();
   txnCreated.value = editableTxn.value.created.getTime();
   txnModified.value = editableTxn.value.modified.getTime();
   txnNecessity.value = editableTxn.value.necessity;
   txnPayments.value = editableTxn.value.payments.map((p) => p.id);
   selectedTags.value = editableTxn.value.tags;
-  txnTitle.value = editableTxn.value.title.text;
+  txnTitle.value = editableTxn.value.title[PLAIN_RECORD_VALUE_KEY];
 });
 
 const onTagTap = (tagID: ID, selectTag: boolean) => {
@@ -132,8 +136,8 @@ const saveTxn = () => {
 const onPageMount = () => {
   const id = getQueryParamValue("id");
   if (id) txnIdFromQuery.value = id;
-  allTags.value = tagsStore.getAll();
-  allPaymentMethods.value = paymentMethodsStore.getAll();
+  allTags.value = db.tags.getAll();
+  allPaymentMethods.value = db.paymentMethods.getAll();
 };
 
 export default HTMLPage({
@@ -181,7 +185,7 @@ export default HTMLPage({
             Select({
               cssClasses: "f6 br3 pa2",
               anchor: "left",
-              options: ["ICICI Savings", "Arindam Babu", "World"],
+              options: ["ICICI Savings", "Arindam Babu", "Unknown"],
               selectedOptionIndex: 0,
               onChange: (option) => console.log("Function not implemented."),
             }),
@@ -203,7 +207,7 @@ export default HTMLPage({
           text: "TO",
         }),
         m.Div({
-          children: "120 to World Account",
+          children: "120 to Unknown Account",
         }),
         Section({
           title: "Associated tags",
@@ -218,7 +222,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "selected",
-                    label: tg.name,
+                    label: tg[PLAIN_RECORD_VALUE_KEY],
                   }),
               }),
             }),
@@ -240,7 +244,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "unselected",
-                    label: tg.name,
+                    label: tg[PLAIN_RECORD_VALUE_KEY],
                   }),
               }),
             }),

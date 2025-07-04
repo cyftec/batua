@@ -1,15 +1,20 @@
-import { Child, component, m } from "@mufw/maya";
-import { AccountUI, PaymentMethodUI } from "../../@libs/common/models/core";
-import { capitalize, handleTap } from "../../@libs/common/utils";
-import { MaybeSignalValue, op, tmpl, trap } from "@cyftech/signal";
-import { Icon } from "../../@libs/elements";
+import { derive, op, tmpl, trap } from "@cyftech/signal";
+import { component, m } from "@mufw/maya";
+import {
+  CapitalAccountUI,
+  CurrencyType,
+  ExpenseAccountUI,
+  PaymentMethodUI,
+  PeopleOrShopAccountUI,
+} from "../../@libs/common/models/core";
+import { handleTap } from "../../@libs/common/utils";
 import { Tag } from "../../@libs/components";
+import { Icon } from "../../@libs/elements";
 
 type AccountCardProps = {
   onTap?: () => void;
   cssClasses?: string;
-  account: AccountUI;
-  paymentMethods?: PaymentMethodUI[];
+  account: ExpenseAccountUI | CapitalAccountUI | PeopleOrShopAccountUI;
 };
 
 const getRandomBalance = () =>
@@ -18,9 +23,17 @@ const getRandomBalance = () =>
   });
 
 export const AccountCard = component<AccountCardProps>(
-  ({ onTap, cssClasses, account, paymentMethods }) => {
-    const { isPermanent, name, uniqueId, balance, type, vault } =
-      trap(account).props;
+  ({ onTap, cssClasses, account }) => {
+    const { isPermanent, name, uniqueId, balance, type } = trap(account).props;
+    const vault = derive(
+      () =>
+        (account.value as ExpenseAccountUI).vault as CurrencyType | undefined
+    );
+    const paymentMethods = derive(
+      () =>
+        ((account.value as ExpenseAccountUI).paymentMethods ||
+          []) as PaymentMethodUI[]
+    );
 
     return m.Div({
       onclick: handleTap(onTap),
@@ -52,7 +65,7 @@ export const AccountCard = component<AccountCardProps>(
           }),
           m.If({
             subject: vault,
-            isTruthy: () =>
+            isTruthy: (subject) =>
               m.Div({
                 class: "mt2 mb3",
                 children: [
@@ -63,22 +76,18 @@ export const AccountCard = component<AccountCardProps>(
                         cssClasses: "mr1",
                         size: 20,
                         iconName:
-                          vault?.value === "digital" ? "credit_card" : "paid",
+                          subject.value === "digital" ? "credit_card" : "paid",
                       }),
                       m.Span("Pay via"),
                     ],
                   }),
                   m.If({
-                    subject: trap(
-                      paymentMethods as MaybeSignalValue<PaymentMethodUI[]>
-                    ).length,
+                    subject: trap(paymentMethods).length,
                     isTruthy: () =>
                       m.Div({
                         class: "flex flex-wrap",
                         children: m.For({
-                          subject: paymentMethods as MaybeSignalValue<
-                            PaymentMethodUI[]
-                          >,
+                          subject: paymentMethods,
                           map: (pm) =>
                             Tag({
                               label: pm.name,
@@ -98,7 +107,7 @@ export const AccountCard = component<AccountCardProps>(
             isFalsy: () =>
               m.Div(
                 m.If({
-                  subject: op(type).equals("debt").truthy,
+                  subject: op(type).equals("Loan").truthy,
                   isTruthy: () =>
                     m.Div({
                       class: "mv2 flex items-center f7 light-silver",
@@ -107,7 +116,7 @@ export const AccountCard = component<AccountCardProps>(
                           cssClasses: "mr1",
                           iconName: "credit_card_off",
                         }),
-                        m.Div(`Debt`),
+                        m.Div(`Loan`),
                       ],
                     }),
                 })
@@ -127,7 +136,7 @@ export const AccountCard = component<AccountCardProps>(
               ],
             }),
             m.Div(
-              op(type).equals("World").ternary("&infin;", getRandomBalance()) //trap(balance).toLocaleString()
+              op(type).equals("Unknown").ternary("&infin;", getRandomBalance()) //trap(balance).toLocaleString()
             ),
           ],
         }),

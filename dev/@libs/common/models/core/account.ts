@@ -1,46 +1,60 @@
+import { IDKey } from "../../localstorage/core";
 import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
+import { PaymentMethodUI } from "./payment-method";
 
-export type MarketAccountType = "Debt" | "Investment";
-export type AccountType = Prettify<
-  "World" | "Expense" | "Friend" | MarketAccountType
->;
-export type EditableAccountType = Prettify<Exclude<AccountType, "World">>;
-export type Account = {
+export type ExpenseAccountType = "Expense";
+export type PeopleAccountType = "People";
+export type ShopAccountType = "Shop";
+export type PeopleOrShopAccountType = PeopleAccountType | ShopAccountType;
+export type LoanAccountType = "Loan";
+export type InvestmentAccountType = "Investment";
+export type CapitalAccountType = LoanAccountType | InvestmentAccountType;
+
+export type BaseAccount = {
   isPermanent: NumBoolean;
   uniqueId?: string;
   name: string;
   balance: number;
-  type: AccountType;
-  vault?: CurrencyType;
 };
-
-export type WorldAccount = Prettify<
-  Account & {
-    uniqueId: undefined;
-    type: "World";
-    vault: undefined;
-  }
->;
-
-export type MarketAccount = Prettify<
-  Account & {
-    type: MarketAccountType;
-    vault: undefined;
-  }
->;
-
-export type FriendAccount = Prettify<
-  Account & {
-    type: "Friend";
-    vault: undefined;
-  }
->;
-
 export type ExpenseAccount = Prettify<
-  Account & {
-    type: "Expense";
+  BaseAccount & {
+    isPermanent: 0;
+    type: ExpenseAccountType;
     vault: CurrencyType;
+    paymentMethods: PaymentMethodUI[IDKey][];
+  }
+>;
+export type CapitalAccount = Prettify<
+  BaseAccount & {
+    isPermanent: 0;
+    type: CapitalAccountType;
+  }
+>;
+export type LoanAccount = Prettify<
+  Omit<CapitalAccount, "type"> & {
+    type: LoanAccountType;
+  }
+>;
+export type InvestmentAccount = Prettify<
+  Omit<CapitalAccount, "type"> & {
+    type: InvestmentAccountType;
+  }
+>;
+export type PeopleOrShopAccount = Prettify<
+  BaseAccount & {
+    type: PeopleOrShopAccountType;
+  }
+>;
+export type PeopleAccount = Prettify<
+  Omit<PeopleOrShopAccount, "type"> & {
+    isPermanent: 0;
+    type: PeopleAccountType;
+  }
+>;
+export type ShopAccount = Prettify<
+  Omit<PeopleOrShopAccount, "type"> & {
+    type: ShopAccountType;
   }
 >;
 
@@ -49,26 +63,67 @@ export type ExpenseAccount = Prettify<
  *
  * UI Models
  */
-export type AccountUI = Prettify<WithID<Account>>;
 
-export type WorldAccountUI = Prettify<WithID<WorldAccount>>;
-
-export type MarketAccountUI = Prettify<WithID<MarketAccount>>;
-
-export type FriendAccountUI = Prettify<WithID<FriendAccount>>;
-
-export type ExpenseAccountUI = Prettify<WithID<ExpenseAccount>>;
+export type BaseAccountUI = Prettify<WithID<BaseAccount>>;
+export type ExpenseAccountUI = Prettify<
+  WithID<
+    Omit<ExpenseAccount, "paymentMethods"> & {
+      paymentMethods: PaymentMethodUI[];
+    }
+  >
+>;
+export type CapitalAccountUI = Prettify<WithID<CapitalAccount>>;
+export type LoanAccountUI = Prettify<WithID<LoanAccount>>;
+export type InvestmentAccountUI = Prettify<WithID<InvestmentAccount>>;
+export type PeopleOrShopAccountUI = Prettify<WithID<PeopleOrShopAccount>>;
+export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
+export type ShopAccountUI = Prettify<WithID<ShopAccount>>;
 
 /**
  *
  *
- * CONSTANTS
+ * COMMON CONSTANTS
  */
 
-export const EDITABLE_ACCOUNT_TYPES: EditableAccountType[] = [
-  "Expense",
-  "Debt",
-  "Investment",
-  "Friend",
-];
-export const MARKET_ACCOUNT_TYPES: MarketAccountType[] = ["Debt", "Investment"];
+export const CAPITAL_ACCOUNT_TYPES: Record<
+  CapitalAccountType,
+  CapitalAccountType
+> = {
+  Loan: "Loan",
+  Investment: "Investment",
+};
+export const CAPITAL_ACCOUNT_TYPES_LIST: CapitalAccountType[] = Object.values(
+  CAPITAL_ACCOUNT_TYPES
+);
+
+export const PERSON_OR_SHOP_ACCOUNT_TYPES: Record<
+  PeopleOrShopAccountType,
+  PeopleOrShopAccountType
+> = {
+  People: "People",
+  Shop: "Shop",
+};
+export const PERSON_OR_SHOP_ACCOUNT_TYPES_LIST: PeopleOrShopAccountType[] =
+  Object.values(PERSON_OR_SHOP_ACCOUNT_TYPES);
+
+/**
+ *
+ *
+ * DATABASE's INITIAL DATA CONSTANTS
+ */
+
+export const CASH_EXPENSE_ACCOUNT: ExpenseAccount = {
+  isPermanent: 0,
+  name: "Cash in wallet",
+  balance: 0,
+  vault: "physical",
+  type: "Expense",
+  paymentMethods: [],
+};
+
+export const UNKNOWN_SHOP: ShopAccount = {
+  isPermanent: 1,
+  name: "Unknown Shops",
+  balance: Number.MAX_SAFE_INTEGER,
+  type: "Shop",
+};

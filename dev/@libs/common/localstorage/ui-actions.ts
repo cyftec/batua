@@ -1,20 +1,18 @@
 import { phase } from "@mufw/maya/utils";
 import { INITIAL_ANALYTICS, StorageDetails } from "../models";
 import {
-  CASH_EXPENSE_ACCOUNT,
-  getCashPaymentMethod,
-  WORLD_ACCOUNT,
-  NET_BANKING_PAYMENT_METHOD,
-  TAGS,
-} from "../utils";
-import {
-  accountsStore,
+  db,
   fetchAnalytics,
   getStorageSpaceData,
-  paymentMethodsStore,
-  tagsStore,
   updateAnalytics,
 } from "./stores";
+import {
+  CASH_EXPENSE_ACCOUNT,
+  CASH_PAYMENT_METHOD,
+  INITIAL_TAGS,
+  NET_BANKING_PAYMENT_METHOD,
+  UNKNOWN_SHOP,
+} from "../models/core";
 
 /**
  *
@@ -56,8 +54,11 @@ export const getStorageData = (): StorageDetails => getStorageSpaceData();
  */
 
 export const isNewToApp = (): boolean => {
-  const accountsStoreEmpty = accountsStore.isEmpty();
-  const pmethsStoreEmpty = paymentMethodsStore.isEmpty();
+  const accountsStoreEmpty =
+    db.accounts.expenseAccounts.isEmpty() &&
+    db.accounts.capitalAccounts.isEmpty() &&
+    db.accounts.peopleOrShopAccounts.isEmpty();
+  const pmethsStoreEmpty = db.paymentMethods.isEmpty();
 
   const anyOneEmpty = accountsStoreEmpty || pmethsStoreEmpty;
   const allEmpty = accountsStoreEmpty && pmethsStoreEmpty;
@@ -68,10 +69,14 @@ export const isNewToApp = (): boolean => {
 };
 
 export const populateInitialData = () => {
-  accountsStore.add(WORLD_ACCOUNT);
-  const cashAccountID = accountsStore.add(CASH_EXPENSE_ACCOUNT);
-  const cashPaymentMethod = getCashPaymentMethod(cashAccountID);
-  paymentMethodsStore.add(cashPaymentMethod);
-  paymentMethodsStore.add(NET_BANKING_PAYMENT_METHOD);
-  TAGS.forEach((tag) => tagsStore.add(tag));
+  INITIAL_TAGS.forEach((tag) => db.tags.add(tag));
+  db.paymentMethods.add(NET_BANKING_PAYMENT_METHOD);
+  const cashPmID = db.paymentMethods.add(CASH_PAYMENT_METHOD);
+  const cashAccID = db.accounts.expenseAccounts.add(CASH_EXPENSE_ACCOUNT);
+  db.accounts.peopleOrShopAccounts.add(UNKNOWN_SHOP);
+  // Add Notes & Coins payment method to Cash account
+  db.accounts.expenseAccounts.update(cashAccID, {
+    ...CASH_EXPENSE_ACCOUNT,
+    paymentMethods: [cashPmID],
+  });
 };

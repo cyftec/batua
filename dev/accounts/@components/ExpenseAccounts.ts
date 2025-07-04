@@ -10,11 +10,10 @@ import { trap } from "@cyftech/signal";
 
 type ExpenseAccountsProps = {
   expenseAccounts: ExpenseAccountUI[];
-  paymentMethods: PaymentMethodUI[];
 };
 
 export const ExpenseAccounts = component<ExpenseAccountsProps>(
-  ({ expenseAccounts, paymentMethods }) => {
+  ({ expenseAccounts }) => {
     return Section({
       contentCssClasses: "flex flex-wrap justify-between",
       title: "Expense accounts",
@@ -34,9 +33,6 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
               : () => goToEditAccountPage(acc.id),
             cssClasses: "mb3 w-48",
             account: acc,
-            paymentMethods: trap(paymentMethods).filter((pm) =>
-              pm.accounts.map((p) => p.id).includes(acc.id)
-            ),
           }),
       }),
     });

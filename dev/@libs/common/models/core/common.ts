@@ -1,4 +1,5 @@
-export type ID = number;
+import { ID, ID_KEY } from "../../localstorage/core";
+
 export type NumBoolean = 0 | 1;
 
 export const COMBINED_TYPE_SEPARATOR = "##" as const satisfies string;
@@ -8,7 +9,7 @@ export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
-export type WithID<T extends object> = { id: ID } & T;
+export type WithID<T extends object> = { [ID_KEY]: ID } & T;
 
 export type TypeData<
   RootType extends Record<string, string>,

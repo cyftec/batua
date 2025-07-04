@@ -1,18 +1,9 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import {
-  accountsStore,
-  accountUiToAccount,
-  paymentMethodsStore,
-  paymentMethodUiToPaymentMethod,
-} from "../../@libs/common/localstorage/stores";
-import {
-  Account,
   CURRENCY_TYPES,
   CurrencyType,
-  EDITABLE_ACCOUNT_TYPES,
-  EditableAccountType,
-  ID,
+  ExpenseAccount,
   PaymentMethodUI,
 } from "../../@libs/common/models/core";
 import {
@@ -30,12 +21,14 @@ import {
   Select,
   TextBox,
 } from "../../@libs/elements";
+import { ID } from "../../@libs/common/localstorage/core";
+import { db } from "../../@libs/common/localstorage/stores";
 
 const accIdFromQuery = signal("");
 const editableAccount = derive(() => {
   if (!accIdFromQuery.value) return;
   const accID: ID = +accIdFromQuery.value;
-  const acc = accountsStore.get(accID);
+  const acc = db.accounts.expenseAccounts.get(accID);
   if (!acc) throw `Error fetching account for id - ${accID}`;
   return acc;
 });
@@ -48,8 +41,7 @@ const headerLabel = derive(() =>
 const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
-const vaultType = signal<CurrencyType | undefined>("digital");
-const editableAccountType = signal<EditableAccountType>("Expense");
+const vaultType = signal<CurrencyType>("digital");
 const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
   []
 );
@@ -62,7 +54,6 @@ effect(() => {
   if (!editableAccount.value) return;
   accountName.value = editableAccount.value.name;
   accountUniqueId.value = editableAccount.value.uniqueId || "";
-  editableAccountType.value = editableAccount.value.type as EditableAccountType;
   vaultType.value = editableAccount.value.vault;
 });
 
@@ -90,62 +81,44 @@ const goBack = () => history.back();
 const savePaymentMethod = () => {
   validateForm();
   if (error.value) return;
-  const vaultTypeObj = vaultType.value ? { vault: vaultType.value } : {};
   const uniqueIdObj = accountUniqueId.value
     ? { uniqueId: accountUniqueId.value }
     : {};
   let newAccountID: ID | undefined;
+  const updates: Pick<
+    ExpenseAccount,
+    "name" | "paymentMethods" | "vault" | "uniqueId"
+  > = {
+    name: accountName.value,
+    paymentMethods: selectedPaymentMethods.value.map((pm) => pm.id),
+    vault: vaultType.value,
+    ...uniqueIdObj,
+  };
 
   if (editableAccount.value) {
-    const updatedAcc: Account = accountUiToAccount({
-      ...editableAccount.value,
-      name: accountName.value,
-      type: editableAccountType.value,
-      ...uniqueIdObj,
-      ...vaultTypeObj,
-    });
-    accountsStore.update(editableAccount.value.id, updatedAcc);
-    // First delete acc ID from all PMs, later add them again below
-    paymentMethodsStore.getAll().forEach((pm) => {
-      const updatedIDs = pm.accounts
-        .map((a) => a.id)
-        .filter((id) => id !== editableAccount.value?.id);
-      paymentMethodsStore.update(pm.id, {
-        ...paymentMethodUiToPaymentMethod(pm),
-        accounts: updatedIDs,
-      });
-    });
+    db.accounts.expenseAccounts.update(editableAccount.value.id, updates);
   } else {
-    const newAccount: Account = {
+    const newAccount: ExpenseAccount = {
       isPermanent: 0,
       balance: 0,
-      name: accountName.value,
-      type: editableAccountType.value,
-      ...uniqueIdObj,
-      ...vaultTypeObj,
+      type: "Expense",
+      ...updates,
     };
-    newAccountID = accountsStore.add(newAccount);
+    newAccountID = db.accounts.expenseAccounts.add(newAccount);
   }
-
-  selectedPaymentMethods.value.forEach((pm) => {
-    const fetchedPmUI = paymentMethodsStore.get(pm.id);
-    if (!fetchedPmUI) throw `Payment Method not found for id - '${pm.id}'`;
-    const fetchedPM = paymentMethodUiToPaymentMethod(fetchedPmUI);
-    const id = (newAccountID || editableAccount.value?.id) as number;
-    paymentMethodsStore.update(fetchedPmUI.id, {
-      ...fetchedPM,
-      accounts: [...fetchedPM.accounts, id],
-    });
-  });
   goBack();
 };
 
 const triggerPageDataRefresh = () => {
   const id = getQueryParamValue("id");
   if (id) accIdFromQuery.value = id;
-  allPaymentMethods.value = paymentMethodsStore.getAll().map((pm) => ({
+  const initialSelectendPmIDs = editableAccount.value
+    ? editableAccount.value.paymentMethods.map((pm) => pm.id)
+    : [];
+  const fetchedPMs = db.paymentMethods.getAll();
+  allPaymentMethods.value = fetchedPMs.map((pm) => ({
     ...pm,
-    isSelected: pm.accounts.map((a) => a.id).includes(+id),
+    isSelected: initialSelectendPmIDs.includes(pm.id),
   }));
 };
 
@@ -176,24 +149,6 @@ export default HTMLPage({
         Section({
           title: "Account details",
           children: [
-            Label({ text: "Type of account" }),
-            Select({
-              cssClasses: "f6 br3 pa2",
-              anchor: "left",
-              options: EDITABLE_ACCOUNT_TYPES,
-              selectedOptionIndex: trap(EDITABLE_ACCOUNT_TYPES).indexOf(
-                editableAccountType
-              ),
-              targetFormattor: (o) => `${capitalize(o)} Account`,
-              optionFormattor: (o) => `${capitalize(o)} Account`,
-              onChange: (o) => {
-                editableAccountType.value = EDITABLE_ACCOUNT_TYPES[o];
-                vaultType.value =
-                  EDITABLE_ACCOUNT_TYPES[o] === "Expense"
-                    ? "digital"
-                    : undefined;
-              },
-            }),
             m.If({
               subject: vaultType,
               isTruthy: (subject) =>
