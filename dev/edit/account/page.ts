@@ -1,6 +1,6 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { TableRecordID } from "../../@libs/common/kvdb";
+import { TableRecordID } from "../../@libs/kvdb";
 import { db } from "../../@libs/common/localstorage/stores";
 import {
   Account,

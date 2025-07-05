@@ -1,30 +1,17 @@
-import { KVStore } from "./kv-store";
+import { getKVStoreIDManager } from "./kvs-id-manager";
 import {
   DbUnsupportedType,
-  getTableRecordIDFromKVSRecordID,
-  getKVSRecordIDFromTableRecordID,
-  TableRecordID,
+  Extend,
   ID_KEY,
+  KVStore,
+  PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableID,
+  TableRecordID,
+} from "./models";
+import {
+  getKVSRecordIDFromTableRecordID,
+  getTableRecordIDFromKVSRecordID,
 } from "./utils";
-import { getKVStoreIDManager } from "./kvs-id-manager";
-
-export type PrimitiveExtendedRecordValueKey = "value";
-export const PLAIN_EXTENDED_RECORD_VALUE_KEY: PrimitiveExtendedRecordValueKey =
-  "value";
-
-export type PrimitiveExtendedRecord<Record> = Record extends object
-  ? never
-  : {
-      [ID_KEY]: TableRecordID;
-      [PLAIN_EXTENDED_RECORD_VALUE_KEY]: Record;
-    };
-export type ObjectExtendedRecord<Record> = Record extends object
-  ? object & { [ID_KEY]: TableRecordID }
-  : never;
-export type Extend<RawRecord> = RawRecord extends object
-  ? ObjectExtendedRecord<RawRecord>
-  : PrimitiveExtendedRecord<RawRecord>;
 
 export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
   isEmpty: () => boolean;

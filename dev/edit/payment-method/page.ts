@@ -22,7 +22,7 @@ import {
   TextBox,
 } from "../../@libs/elements";
 import { db } from "../../@libs/common/localstorage/stores";
-import { TableRecordID } from "../../@libs/common/kvdb";
+import { TableRecordID } from "../../@libs/kvdb";
 
 const error = signal("");
 const paymentMethodType = signal<CurrencyType>("digital");

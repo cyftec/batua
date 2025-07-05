@@ -1,10 +1,9 @@
-export type DbUnsupportedType = "Date";
-export type IDKey = "id";
-export const ID_KEY: IDKey = "id";
-export type TableRecordID = number;
-export type TableID = string;
-export type KVSRecordIDPrefix = `${TableID}_`;
-export type KVSRecordID = `${KVSRecordIDPrefix}${TableRecordID}`;
+import {
+  KVSRecordID,
+  KVSRecordIDPrefix,
+  TableID,
+  TableRecordID,
+} from "./models";
 
 export const parseNum = (str: string) =>
   Number.isNaN(+str) ? undefined : +str;
