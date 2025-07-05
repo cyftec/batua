@@ -1,15 +1,18 @@
-import { IDKey } from "../../localstorage/core";
+import { IDKey } from "../../../kvdb";
 import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
 import { PaymentMethodUI } from "./payment-method";
 
 export type ExpenseAccountType = "Expense";
-export type PeopleAccountType = "People";
-export type ShopAccountType = "Shop";
-export type PeopleOrShopAccountType = PeopleAccountType | ShopAccountType;
 export type LoanAccountType = "Loan";
 export type InvestmentAccountType = "Investment";
 export type CapitalAccountType = LoanAccountType | InvestmentAccountType;
+export type PeopleAccountType = "People";
+export type ShopAccountType = "Shop";
+export type PeopleOrShopAccountType = PeopleAccountType | ShopAccountType;
+export type AccountType = Prettify<
+  ExpenseAccountType | CapitalAccountType | PeopleOrShopAccountType
+>;
 
 export type BaseAccount = {
   isPermanent: NumBoolean;
@@ -29,6 +32,8 @@ export type CapitalAccount = Prettify<
   BaseAccount & {
     isPermanent: 0;
     type: CapitalAccountType;
+    vault?: undefined;
+    paymentMethods?: undefined;
   }
 >;
 export type LoanAccount = Prettify<
@@ -44,6 +49,8 @@ export type InvestmentAccount = Prettify<
 export type PeopleOrShopAccount = Prettify<
   BaseAccount & {
     type: PeopleOrShopAccountType;
+    vault?: undefined;
+    paymentMethods?: undefined;
   }
 >;
 export type PeopleAccount = Prettify<
@@ -57,6 +64,13 @@ export type ShopAccount = Prettify<
     type: ShopAccountType;
   }
 >;
+export type Account = Prettify<
+  BaseAccount & {
+    type: AccountType;
+    vault?: CurrencyType;
+    paymentMethods?: PaymentMethodUI[IDKey][];
+  }
+>;
 
 /**
  *
@@ -64,7 +78,6 @@ export type ShopAccount = Prettify<
  * UI Models
  */
 
-export type BaseAccountUI = Prettify<WithID<BaseAccount>>;
 export type ExpenseAccountUI = Prettify<
   WithID<
     Omit<ExpenseAccount, "paymentMethods"> & {
@@ -78,6 +91,14 @@ export type InvestmentAccountUI = Prettify<WithID<InvestmentAccount>>;
 export type PeopleOrShopAccountUI = Prettify<WithID<PeopleOrShopAccount>>;
 export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
 export type ShopAccountUI = Prettify<WithID<ShopAccount>>;
+export type AccountUI =
+  | ExpenseAccountUI
+  | CapitalAccountUI
+  | LoanAccountUI
+  | InvestmentAccountUI
+  | PeopleOrShopAccountUI
+  | PeopleAccountUI
+  | ShopAccountUI;
 
 /**
  *

@@ -5,7 +5,7 @@ import {
   AS_ANALYTICS_KEY,
   INITIAL_ANALYTICS,
 } from "../../models";
-import { parseObjectJsonString } from "../core";
+import { parseObjectJsonString } from "../../utils";
 
 export const updateAnalytics = (analytics: Analytics) => {
   localStorage.setItem(AS_ANALYTICS_KEY, JSON.stringify(analytics));

@@ -54,10 +54,7 @@ export const getStorageData = (): StorageDetails => getStorageSpaceData();
  */
 
 export const isNewToApp = (): boolean => {
-  const accountsStoreEmpty =
-    db.accounts.expenseAccounts.isEmpty() &&
-    db.accounts.capitalAccounts.isEmpty() &&
-    db.accounts.peopleOrShopAccounts.isEmpty();
+  const accountsStoreEmpty = db.accounts.isEmpty();
   const pmethsStoreEmpty = db.paymentMethods.isEmpty();
 
   const anyOneEmpty = accountsStoreEmpty || pmethsStoreEmpty;
@@ -72,10 +69,10 @@ export const populateInitialData = () => {
   INITIAL_TAGS.forEach((tag) => db.tags.add(tag));
   db.paymentMethods.add(NET_BANKING_PAYMENT_METHOD);
   const cashPmID = db.paymentMethods.add(CASH_PAYMENT_METHOD);
-  const cashAccID = db.accounts.expenseAccounts.add(CASH_EXPENSE_ACCOUNT);
-  db.accounts.peopleOrShopAccounts.add(UNKNOWN_SHOP);
+  const cashAccID = db.accounts.add(CASH_EXPENSE_ACCOUNT);
+  db.accounts.add(UNKNOWN_SHOP);
   // Add Notes & Coins payment method to Cash account
-  db.accounts.expenseAccounts.update(cashAccID, {
+  db.accounts.update(cashAccID, {
     ...CASH_EXPENSE_ACCOUNT,
     paymentMethods: [cashPmID],
   });

@@ -1,4 +1,4 @@
-import { ID, ID_KEY } from "../../localstorage/core";
+import { TableRecordID, ID_KEY } from "../../../kvdb";
 
 export type NumBoolean = 0 | 1;
 
@@ -9,7 +9,7 @@ export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
-export type WithID<T extends object> = { [ID_KEY]: ID } & T;
+export type WithID<T extends object> = { [ID_KEY]: TableRecordID } & T;
 
 export type TypeData<
   RootType extends Record<string, string>,

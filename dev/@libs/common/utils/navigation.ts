@@ -1,5 +1,5 @@
 import { phase } from "@mufw/maya/utils";
-import { ID } from "../models/core";
+import { TableRecordID } from "../../kvdb";
 
 export const getQueryParamValue = (queryParamKey: string) => {
   if (!phase.currentIs("run")) return "";
@@ -41,11 +41,11 @@ export const goToAccountsPage = (tabIndex?: number) =>
     tabIndex === undefined ? undefined : { tab: `${tabIndex}` }
   );
 
-export const goToEditXPage = (xHref: string, id?: ID) =>
+export const goToEditXPage = (xHref: string, id?: TableRecordID) =>
   goToHref(xHref, id === undefined ? undefined : { id: `${id}` });
-export const goToEditAccountPage = (accountId?: ID) =>
+export const goToEditAccountPage = (accountId?: TableRecordID) =>
   goToEditXPage(APP.EDIT.ACCOUNT.href, accountId);
-export const goToEditPaymentMethodPage = (paymentMethodId?: ID) =>
+export const goToEditPaymentMethodPage = (paymentMethodId?: TableRecordID) =>
   goToEditXPage(APP.EDIT.PAYMENT_METHOD.href, paymentMethodId);
-export const goToEditTxnPage = (txnId?: ID) =>
+export const goToEditTxnPage = (txnId?: TableRecordID) =>
   goToEditXPage(APP.EDIT.TXN.href, txnId);

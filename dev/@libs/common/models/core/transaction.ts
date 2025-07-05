@@ -1,4 +1,4 @@
-import { ID } from "../../localstorage/core";
+import { TableRecordID } from "../../../kvdb";
 import { TypeData } from "./common";
 import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
@@ -47,7 +47,7 @@ export type TxnUI = Omit<
   Txn,
   "date" | "created" | "modified" | "payments" | "tags" | "title"
 > & {
-  id: ID;
+  id: TableRecordID;
   date: Date;
   created: Date;
   modified: Date;

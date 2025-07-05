@@ -22,7 +22,7 @@ import {
   TextBox,
 } from "../../@libs/elements";
 import { db } from "../../@libs/common/localstorage/stores";
-import { ID } from "../../@libs/common/localstorage/core";
+import { TableRecordID } from "../../@libs/common/kvdb";
 
 const error = signal("");
 const paymentMethodType = signal<CurrencyType>("digital");
@@ -31,7 +31,7 @@ const paymentMethodUniqueID = signal("");
 const pmIdFromQuery = signal("");
 const editablePaymentMethod = derive(() => {
   if (!pmIdFromQuery.value) return;
-  const pmID: ID = +pmIdFromQuery.value;
+  const pmID: TableRecordID = +pmIdFromQuery.value;
   const pm = db.paymentMethods.get(pmID);
   if (!pm) throw `Error fetching payment method for id - ${pmID}`;
   return pm;
@@ -63,7 +63,7 @@ const validateForm = () => {
     paymentMethodUniqueID.value &&
     !uniqueIdRegex.test(paymentMethodUniqueID.value)
   ) {
-    error.value = "Invalid method ID.";
+    error.value = "Invalid method TableRecordID.";
     return;
   }
   error.value = "";
@@ -142,11 +142,11 @@ export default HTMLPage({
               placeholder: "like GPay, PayPal, etc.",
               onchange: (text) => (paymentMethodName.value = text.trim()),
             }),
-            Label({ text: "Unique ID" }),
+            Label({ text: "Unique TableRecordID" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: paymentMethodUniqueID,
-              placeholder: "ID of the method",
+              placeholder: "TableRecordID of the method",
               onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
             }),
             m.If({

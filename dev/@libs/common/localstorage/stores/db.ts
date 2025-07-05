@@ -1,14 +1,11 @@
+import { phase } from "@mufw/maya/utils";
 import {
-  CapitalAccount,
-  CapitalAccountUI,
-  ExpenseAccount,
-  ExpenseAccountUI,
+  Account,
+  AccountUI,
   Payment,
   PaymentMethod,
   PaymentMethodUI,
   PaymentUI,
-  PeopleOrShopAccount,
-  PeopleOrShopAccountUI,
   Tag,
   TagUI,
   Txn,
@@ -16,27 +13,47 @@ import {
   TxnTitleUI,
   TxnUI,
 } from "../../models/core";
-import { createTable } from "../core";
+import { createTable, KVStore } from "../../../kvdb";
 
-const paymentMethodsTable = createTable<PaymentMethod, PaymentMethodUI>("pm");
-const expenseAccountsTable = createTable<ExpenseAccount, ExpenseAccountUI>(
-  "eac",
-  { paymentMethods: paymentMethodsTable }
+const lsKvStore: KVStore = {
+  getAllKeys: function (): string[] {
+    const lsKeys: string[] = [];
+    if (!phase.currentIs("run")) return lsKeys;
+    for (const key in localStorage) {
+      if (!localStorage.hasOwnProperty(key)) continue;
+      lsKeys.push(key);
+    }
+    return lsKeys;
+  },
+  getItem: function (key: string): string | undefined {
+    if (!phase.currentIs("run")) return;
+    return localStorage.getItem(key) || undefined;
+  },
+  setItem: function (key: string, value: string): void {
+    if (!phase.currentIs("run")) return;
+    localStorage.setItem(key, value);
+  },
+  removeItem: function (key: string): void {
+    if (!phase.currentIs("run")) return;
+    localStorage.removeItem(key);
+  },
+};
+
+const paymentMethodsTable = createTable<PaymentMethod, PaymentMethodUI>(
+  lsKvStore,
+  "pm"
 );
-const capitalAccountsTable = createTable<CapitalAccount, CapitalAccountUI>(
-  "cac"
-);
-const peopleOrShopAccountsTable = createTable<
-  PeopleOrShopAccount,
-  PeopleOrShopAccountUI
->("pac");
-const paymentsTable = createTable<Payment, PaymentUI>("p", {
-  account: expenseAccountsTable,
+const accountsTable = createTable<Account, AccountUI>(lsKvStore, "ac", {
+  paymentMethods: paymentMethodsTable,
+});
+const paymentsTable = createTable<Payment, PaymentUI>(lsKvStore, "p", {
+  account: accountsTable,
   via: paymentMethodsTable,
 });
-const tagsTable = createTable<Tag, TagUI>("tg");
-const txnTitlesTable = createTable<TxnTitle, TxnTitleUI>("tt");
+const tagsTable = createTable<Tag, TagUI>(lsKvStore, "tg");
+const txnTitlesTable = createTable<TxnTitle, TxnTitleUI>(lsKvStore, "tt");
 const txnsTable = createTable<Txn, TxnUI>(
+  lsKvStore,
   "t",
   {
     tags: tagsTable,
@@ -47,12 +64,8 @@ const txnsTable = createTable<Txn, TxnUI>(
 );
 
 export const db = {
-  accounts: {
-    expenseAccounts: expenseAccountsTable,
-    peopleOrShopAccounts: peopleOrShopAccountsTable,
-    capitalAccounts: capitalAccountsTable,
-  },
   paymentMethods: paymentMethodsTable,
+  accounts: accountsTable,
   payments: paymentsTable,
   tags: tagsTable,
   txnTitles: txnTitlesTable,

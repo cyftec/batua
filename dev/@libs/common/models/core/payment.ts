@@ -1,11 +1,11 @@
-import { ID, IDKey } from "../../localstorage/core";
-import { ExpenseAccountUI } from "./account";
+import { IDKey, TableRecordID } from "../../../kvdb";
+import { AccountUI } from "./account";
 import { Prettify } from "./common";
 import { PaymentMethodUI } from "./payment-method";
 
 export type Payment = {
   amount: number;
-  account: ExpenseAccountUI[IDKey];
+  account: AccountUI[IDKey];
   via?: PaymentMethodUI[IDKey];
 };
 
@@ -17,8 +17,8 @@ export type Payment = {
 
 export type PaymentUI = Prettify<
   Omit<Payment, "account" | "via"> & {
-    id: ID;
-    account: ExpenseAccountUI;
+    id: TableRecordID;
+    account: AccountUI;
     via?: PaymentMethodUI;
   }
 >;

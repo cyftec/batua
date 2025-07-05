@@ -7,7 +7,7 @@ import {
   INITIAL_STORAGE_DATA,
   StorageDetails,
 } from "../../models";
-import { parseObjectJsonString, validLocalStorageKeys } from "../core";
+import { validLocalStorageKeys, parseObjectJsonString } from "../../utils";
 
 export const updateSettings = (settings: AppSettings) => {
   localStorage.setItem(AS_SETTINGS_KEY, JSON.stringify(settings));

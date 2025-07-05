@@ -1,3 +1,4 @@
+import { phase } from "@mufw/maya/utils";
 import { updateInteractionTime } from "../localstorage";
 
 const vibrateOnTap = () => {
@@ -14,5 +15,33 @@ export const handleTap = (fn: ((...args: any[]) => any) | undefined) => {
   };
 };
 
-export const parseNum = (str: string) =>
-  Number.isNaN(+str) ? undefined : +str;
+export const parseObjectJsonString = <T extends Object>(
+  objectJsonString: string | null | undefined,
+  nonNullPropKey: string
+): T | undefined => {
+  const obj = JSON.parse(objectJsonString || "{}");
+  const isObject = obj && typeof obj === "object";
+  if (!isObject) return;
+  const propValue = obj[nonNullPropKey];
+  if (propValue === null || propValue === undefined) {
+    console.log(objectJsonString, nonNullPropKey);
+
+    throw `The value for nonNullPropKey '${nonNullPropKey}' should not be null or undefined`;
+  }
+
+  return obj;
+};
+
+export const validLocalStorageKeys = () => {
+  const lsKeys: string[] = [];
+  if (!phase.currentIs("run")) return lsKeys;
+
+  for (const key in localStorage) {
+    if (!localStorage.hasOwnProperty(key)) {
+      continue;
+    }
+    lsKeys.push(key);
+  }
+
+  return lsKeys;
+};

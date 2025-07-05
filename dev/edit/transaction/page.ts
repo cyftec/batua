@@ -1,7 +1,8 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
-import { Child, m } from "@mufw/maya";
+import { m } from "@mufw/maya";
+import { db } from "../../@libs/common/localstorage/stores";
 import {
-  PaymentMethodUI,
+  AccountUI,
   TagUI,
   Txn,
   TXN_NECESSITIES_WITH_ICONS,
@@ -19,10 +20,9 @@ import {
   TextBox,
 } from "../../@libs/elements";
 import {
-  ID,
-  PLAIN_RECORD_VALUE_KEY,
-} from "../../@libs/common/localstorage/core";
-import { db } from "../../@libs/common/localstorage/stores";
+  PLAIN_EXTENDED_RECORD_VALUE_KEY,
+  TableRecordID,
+} from "../../@libs/kvdb";
 
 const nowTime = new Date().getTime();
 const error = signal("");
@@ -36,7 +36,7 @@ const selectedNecessityOptionIndex = derive(() =>
     (ness) => ness.label === txnNecessity.value
   )
 );
-const allPaymentMethods = signal<PaymentMethodUI[]>([]);
+const allAccounts = signal<AccountUI[]>([]);
 const txnPayments = signal<Txn["payments"]>([]);
 const txnTitle = signal<string>("");
 
@@ -44,27 +44,30 @@ const allTags = signal<TagUI[]>([]);
 const selectedTags = signal<TagUI[]>([]);
 const nonSelectedTags = derive(() => {
   const selectedTagNames = selectedTags.value.map(
-    (tg) => tg[PLAIN_RECORD_VALUE_KEY]
+    (tg) => tg[PLAIN_EXTENDED_RECORD_VALUE_KEY]
   );
   return allTags.value
-    .filter((tg) => !selectedTagNames.includes(tg[PLAIN_RECORD_VALUE_KEY]))
+    .filter(
+      (tg) => !selectedTagNames.includes(tg[PLAIN_EXTENDED_RECORD_VALUE_KEY])
+    )
     .sort(
       (a, b) =>
-        (b[PLAIN_RECORD_VALUE_KEY] as any) - (a[PLAIN_RECORD_VALUE_KEY] as any)
+        (b[PLAIN_EXTENDED_RECORD_VALUE_KEY] as any) -
+        (a[PLAIN_EXTENDED_RECORD_VALUE_KEY] as any)
     );
 });
 
 const txnIdFromQuery = signal("");
 const editableTxn = derive(() => {
   if (!txnIdFromQuery.value) return;
-  const txnID: ID = +txnIdFromQuery.value;
+  const txnID: TableRecordID = +txnIdFromQuery.value;
   const txn = db.txns.get(txnID);
   if (!txn) throw `Error fetching transaction for id - ${txnID}`;
   return txn;
 });
 const headerLabel = derive(() =>
   editableTxn.value
-    ? `Edit '${editableTxn.value.title[PLAIN_RECORD_VALUE_KEY]}'`
+    ? `Edit '${editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY]}'`
     : `Add new transaction`
 );
 const commitBtnLabel = op(editableTxn).ternary("Save", "Add");
@@ -78,10 +81,10 @@ effect(() => {
   txnNecessity.value = editableTxn.value.necessity;
   txnPayments.value = editableTxn.value.payments.map((p) => p.id);
   selectedTags.value = editableTxn.value.tags;
-  txnTitle.value = editableTxn.value.title[PLAIN_RECORD_VALUE_KEY];
+  txnTitle.value = editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY];
 });
 
-const onTagTap = (tagID: ID, selectTag: boolean) => {
+const onTagTap = (tagID: TableRecordID, selectTag: boolean) => {
   const updatedSelectedTags = [...selectedTags.value];
   if (selectTag) {
     const selectedTag = allTags.value.find((tg) => tg.id === tagID) as TagUI;
@@ -137,7 +140,7 @@ const onPageMount = () => {
   const id = getQueryParamValue("id");
   if (id) txnIdFromQuery.value = id;
   allTags.value = db.tags.getAll();
-  allPaymentMethods.value = db.paymentMethods.getAll();
+  allAccounts.value = db.accounts.getAll();
 };
 
 export default HTMLPage({
@@ -174,6 +177,14 @@ export default HTMLPage({
           cssClasses: "color-inherit",
           text: "FROM",
         }),
+        m.Div(
+          m.For({
+            subject: allAccounts,
+            map: (acc) => {
+              return m.Div(acc.name);
+            },
+          })
+        ),
         m.Div({
           class: "flex items-center",
           children: [
@@ -222,7 +233,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "selected",
-                    label: tg[PLAIN_RECORD_VALUE_KEY],
+                    label: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
                   }),
               }),
             }),
@@ -244,7 +255,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "unselected",
-                    label: tg[PLAIN_RECORD_VALUE_KEY],
+                    label: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
                   }),
               }),
             }),

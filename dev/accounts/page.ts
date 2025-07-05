@@ -1,11 +1,16 @@
-import { effect, op, signal } from "@cyftech/signal";
+import { effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../@libs/common/localstorage/stores";
 import {
+  AccountUI,
+  CAPITAL_ACCOUNT_TYPES_LIST,
+  CapitalAccountType,
   CapitalAccountUI,
   ExpenseAccountUI,
   PaymentMethodUI,
+  PeopleOrShopAccountType,
   PeopleOrShopAccountUI,
+  PERSON_OR_SHOP_ACCOUNT_TYPES_LIST,
 } from "../@libs/common/models/core";
 import { getQueryParamValue, goToAccountsPage } from "../@libs/common/utils";
 import { HTMLPage, NavScaffold } from "../@libs/components";
@@ -23,22 +28,42 @@ const ACCOUNTS_PAGE_TABS = [
   "Shops or People",
 ] as const satisfies string[];
 const selectedTabIndex = signal(1);
-const header = op(selectedTabIndex).ternary(
-  "My other accounts",
-  "My expense accounts & payment methods"
-);
+const header = trap([
+  "My expense accounts & payment methods",
+  "My loan & investment accounts",
+  "Shops & People as accounts",
+]).at(selectedTabIndex);
 const allPaymentMethods = signal<PaymentMethodUI[]>([]);
+const allAccounts = signal<AccountUI[]>([]);
 const allExpenseAccounts = signal<ExpenseAccountUI[]>([]);
 const allCapitalAccounts = signal<CapitalAccountUI[]>([]);
 const allPeopleOrShopAccounts = signal<PeopleOrShopAccountUI[]>([]);
+
+effect(() => {
+  const expAccs: ExpenseAccountUI[] = [];
+  const capAccs: CapitalAccountUI[] = [];
+  const pspAccs: PeopleOrShopAccountUI[] = [];
+  allAccounts.value.forEach((acc) => {
+    if (acc.type === "Expense") expAccs.push(acc);
+    if (CAPITAL_ACCOUNT_TYPES_LIST.includes(acc.type as CapitalAccountType))
+      capAccs.push(acc as CapitalAccountUI);
+    if (
+      PERSON_OR_SHOP_ACCOUNT_TYPES_LIST.includes(
+        acc.type as PeopleOrShopAccountType
+      )
+    )
+      pspAccs.push(acc as PeopleOrShopAccountUI);
+  });
+  allExpenseAccounts.value = expAccs;
+  allCapitalAccounts.value = capAccs;
+  allPeopleOrShopAccounts.value = pspAccs;
+});
 
 const triggerPageDataRefresh = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   allPaymentMethods.value = db.paymentMethods.getAll();
-  allExpenseAccounts.value = db.accounts.expenseAccounts.getAll();
-  allCapitalAccounts.value = db.accounts.capitalAccounts.getAll();
-  allPeopleOrShopAccounts.value = db.accounts.peopleOrShopAccounts.getAll();
+  allAccounts.value = db.accounts.getAll();
 };
 
 const onPageMount = () => {

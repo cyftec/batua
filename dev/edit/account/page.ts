@@ -1,9 +1,12 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import { TableRecordID } from "../../@libs/common/kvdb";
+import { db } from "../../@libs/common/localstorage/stores";
 import {
+  Account,
+  AccountType,
   CURRENCY_TYPES,
   CurrencyType,
-  ExpenseAccount,
   PaymentMethodUI,
 } from "../../@libs/common/models/core";
 import {
@@ -21,14 +24,12 @@ import {
   Select,
   TextBox,
 } from "../../@libs/elements";
-import { ID } from "../../@libs/common/localstorage/core";
-import { db } from "../../@libs/common/localstorage/stores";
 
 const accIdFromQuery = signal("");
 const editableAccount = derive(() => {
   if (!accIdFromQuery.value) return;
-  const accID: ID = +accIdFromQuery.value;
-  const acc = db.accounts.expenseAccounts.get(accID);
+  const accID: TableRecordID = +accIdFromQuery.value;
+  const acc = db.accounts.get(accID);
   if (!acc) throw `Error fetching account for id - ${accID}`;
   return acc;
 });
@@ -41,7 +42,8 @@ const headerLabel = derive(() =>
 const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
-const vaultType = signal<CurrencyType>("digital");
+const accountType = signal<AccountType>("Expense");
+const vaultType = signal<CurrencyType | undefined>("digital");
 const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
   []
 );
@@ -52,6 +54,7 @@ const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
 
 effect(() => {
   if (!editableAccount.value) return;
+  accountType.value = editableAccount.value.type;
   accountName.value = editableAccount.value.name;
   accountUniqueId.value = editableAccount.value.uniqueId || "";
   vaultType.value = editableAccount.value.vault;
@@ -84,27 +87,27 @@ const savePaymentMethod = () => {
   const uniqueIdObj = accountUniqueId.value
     ? { uniqueId: accountUniqueId.value }
     : {};
-  let newAccountID: ID | undefined;
+  const vaultObj = vaultType.value ? { vault: vaultType.value } : {};
   const updates: Pick<
-    ExpenseAccount,
+    Account,
     "name" | "paymentMethods" | "vault" | "uniqueId"
   > = {
     name: accountName.value,
     paymentMethods: selectedPaymentMethods.value.map((pm) => pm.id),
-    vault: vaultType.value,
+    ...vaultObj,
     ...uniqueIdObj,
   };
 
   if (editableAccount.value) {
-    db.accounts.expenseAccounts.update(editableAccount.value.id, updates);
+    db.accounts.update(editableAccount.value.id, updates);
   } else {
-    const newAccount: ExpenseAccount = {
+    const newAccount: Account = {
       isPermanent: 0,
       balance: 0,
       type: "Expense",
       ...updates,
     };
-    newAccountID = db.accounts.expenseAccounts.add(newAccount);
+    db.accounts.add(newAccount);
   }
   goBack();
 };
@@ -113,7 +116,7 @@ const triggerPageDataRefresh = () => {
   const id = getQueryParamValue("id");
   if (id) accIdFromQuery.value = id;
   const initialSelectendPmIDs = editableAccount.value
-    ? editableAccount.value.paymentMethods.map((pm) => pm.id)
+    ? (editableAccount.value.paymentMethods || []).map((pm) => pm.id)
     : [];
   const fetchedPMs = db.paymentMethods.getAll();
   allPaymentMethods.value = fetchedPMs.map((pm) => ({
@@ -172,11 +175,11 @@ export default HTMLPage({
               placeholder: "Account name",
               onchange: (text) => (accountName.value = text.trim()),
             }),
-            Label({ text: "Unique ID" }),
+            Label({ text: "Unique TableRecordID" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: accountUniqueId,
-              placeholder: "Unique ID (optional)",
+              placeholder: "Unique TableRecordID (optional)",
               onchange: (text) => (accountUniqueId.value = text.trim()),
             }),
           ],
