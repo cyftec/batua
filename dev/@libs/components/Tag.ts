@@ -17,7 +17,7 @@ export const Tag = component<TagProps>(
         ? "f5 br3 pa2"
         : size.value === "medium"
         ? "f6 br3 ph2 pv1"
-        : "f8 fw5 br3 pa1"
+        : "f8 fw5 br3 ph1"
     );
     const colorCss = op(state)
       .equals("unselected")

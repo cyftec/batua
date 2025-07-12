@@ -88,6 +88,7 @@ const savePaymentMethod = () => {
     };
     db.paymentMethods.update(editablePaymentMethod.value.id, updates);
   } else {
+    // TODO: Check existing method before adding
     db.paymentMethods.add({
       isPermanent: 0,
       name: paymentMethodName.value,

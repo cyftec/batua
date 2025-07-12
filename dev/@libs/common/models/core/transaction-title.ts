@@ -1,4 +1,4 @@
-import { PlainExtendedRecord } from "../../localstorage/core";
+import { PrimitiveExtendedRecord } from "../../../kvdb";
 
 export type TxnTitle = string;
 
@@ -7,7 +7,7 @@ export type TxnTitle = string;
  *
  * UI Models
  */
-export type TxnTitleUI = PlainExtendedRecord<TxnTitle>;
+export type TxnTitleUI = PrimitiveExtendedRecord<TxnTitle>;
 
 /**
  *

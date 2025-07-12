@@ -1,4 +1,4 @@
-import { PlainExtendedRecord } from "../../localstorage/core";
+import { PrimitiveExtendedRecord } from "../../../kvdb";
 
 export type Tag = string;
 
@@ -7,7 +7,7 @@ export type Tag = string;
  *
  * UI Models
  */
-export type TagUI = PlainExtendedRecord<Tag>;
+export type TagUI = PrimitiveExtendedRecord<Tag>;
 
 /**
  *

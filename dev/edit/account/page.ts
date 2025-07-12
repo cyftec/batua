@@ -101,6 +101,7 @@ const savePaymentMethod = () => {
   if (editableAccount.value) {
     db.accounts.update(editableAccount.value.id, updates);
   } else {
+    // TODO: Check existing account before adding new
     const newAccount: Account = {
       isPermanent: 0,
       balance: 0,

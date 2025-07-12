@@ -10,6 +10,7 @@ export type FromMarketTxnType = "earned" | "found";
 export type FromPeopleTxnType = "received as gift" | "borrowed";
 export type CapitalTxnType = "loaned" | "invested";
 export type TransferTxnType = "settled" | "transferred";
+// TODO: Segregate all txn types in 3 categroies - IncomingTxnType, OutgoingTxnType and TransferTxnType
 export type TxnType = Prettify<
   | ToMarketTxnType
   | FromMarketTxnType
