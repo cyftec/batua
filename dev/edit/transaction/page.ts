@@ -1,35 +1,40 @@
-import { derive, effect, op, signal, trap } from "@cyftech/signal";
+import { derive, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../@libs/common/localstorage/stores";
 import {
   AccountUI,
+  Payment,
   TagUI,
   Txn,
   TXN_NECESSITIES_WITH_ICONS,
+  TxnType,
+  TxnUI,
 } from "../../@libs/common/models/core";
 import { getQueryParamValue, nameRegex } from "../../@libs/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
 import {
+  DateTimePicker,
   DialogActionButtons,
   Icon,
   Label,
-  NumberBox,
-  Section,
-  Select,
+  Link,
   TabbedSelect,
   TextBox,
 } from "../../@libs/elements";
 import {
+  ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
 } from "../../@libs/kvdb";
+import { PaymentTile } from "./@components/PaymentTile";
+import { isFutureDate } from "../../@libs/common/transforms";
 
-const nowTime = new Date().getTime();
+const now = new Date();
 const error = signal("");
-const txnType = signal<Txn["type"]>("expense");
-const txnDate = signal<Txn["date"]>(nowTime);
-const txnCreated = signal<Txn["created"]>(nowTime);
-const txnModified = signal<Txn["modified"]>(nowTime);
+const txnType = signal<TxnType>("spent");
+const txnDate = signal<Date>(now);
+const txnCreated = signal<Date>(now);
+const txnModified = signal<Date>(now);
 const txnNecessity = signal<Txn["necessity"]>("Essential");
 const selectedNecessityOptionIndex = derive(() =>
   TXN_NECESSITIES_WITH_ICONS.findIndex(
@@ -37,7 +42,7 @@ const selectedNecessityOptionIndex = derive(() =>
   )
 );
 const allAccounts = signal<AccountUI[]>([]);
-const txnPayments = signal<Txn["payments"]>([]);
+const txnPayments = signal<Payment[]>([]);
 const txnTitle = signal<string>("");
 
 const allTags = signal<TagUI[]>([]);
@@ -57,14 +62,7 @@ const nonSelectedTags = derive(() => {
     );
 });
 
-const txnIdFromQuery = signal("");
-const editableTxn = derive(() => {
-  if (!txnIdFromQuery.value) return;
-  const txnID: TableRecordID = +txnIdFromQuery.value;
-  const txn = db.txns.get(txnID);
-  if (!txn) throw `Error fetching transaction for id - ${txnID}`;
-  return txn;
-});
+const editableTxn = signal<TxnUI | undefined>(undefined);
 const headerLabel = derive(() =>
   editableTxn.value
     ? `Edit '${editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY]}'`
@@ -72,19 +70,50 @@ const headerLabel = derive(() =>
 );
 const commitBtnLabel = op(editableTxn).ternary("Save", "Add");
 
-effect(() => {
-  if (!editableTxn.value) return;
-  txnType.value = editableTxn.value.type;
-  txnDate.value = editableTxn.value.date.getTime();
-  txnCreated.value = editableTxn.value.created.getTime();
-  txnModified.value = editableTxn.value.modified.getTime();
-  txnNecessity.value = editableTxn.value.necessity;
-  txnPayments.value = editableTxn.value.payments.map((p) => p.id);
-  selectedTags.value = editableTxn.value.tags;
-  txnTitle.value = editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY];
-});
+const resetError = () => {
+  error.value = "";
+};
+
+const onTxnNecessityChange = (optionIndex: number) => {
+  resetError();
+  txnNecessity.value = TXN_NECESSITIES_WITH_ICONS[optionIndex].label;
+};
+
+const onTxnDateChange = (newDate: Date) => {
+  resetError();
+  txnDate.value = newDate;
+};
+
+const onTxnTitleChange = (newTitle: string) => {
+  resetError();
+  txnTitle.value = newTitle.trim();
+};
+
+const onPaymentAdd = () => {
+  resetError();
+  txnPayments.value = [
+    ...txnPayments.value,
+    {
+      amount: 0,
+      account: allAccounts.value[0].id,
+    },
+  ];
+};
+
+const onPaymentUpdate = (newPayment: Payment, paymentIndex: number) => {
+  resetError();
+  txnPayments.value = txnPayments.value.map((tp, i) => {
+    return paymentIndex === i ? newPayment : tp;
+  });
+};
+
+const onPaymentRemove = (paymentIndex: number) => {
+  resetError();
+  txnPayments.value = txnPayments.value.filter((_, i) => i !== paymentIndex);
+};
 
 const onTagTap = (tagID: TableRecordID, selectTag: boolean) => {
+  resetError();
   const updatedSelectedTags = [...selectedTags.value];
   if (selectTag) {
     const selectedTag = allTags.value.find((tg) => tg.id === tagID) as TagUI;
@@ -106,6 +135,19 @@ const validateForm = () => {
     error.value = "Invalid method name.";
     return;
   }
+  if (isFutureDate(txnDate.value)) {
+    error.value = "Transaction date cannot be in future.";
+    return;
+  }
+  const sumOfAllPmts = txnPayments.value.reduce((s, p) => s + p.amount, 0);
+  if (sumOfAllPmts !== 0) {
+    error.value = `The sum of all payment amounts is ${sumOfAllPmts}. It must be 0.`;
+    return;
+  }
+  if (!selectedTags.value.length) {
+    error.value = `You must select at least one tag.`;
+    return;
+  }
   error.value = "";
 };
 
@@ -116,31 +158,75 @@ const discardAndGoBack = () => {
 const saveTxn = () => {
   validateForm();
   if (error.value) return;
+  const now = new Date().getTime();
   // const uniqueIdObj = txnUniqueID.value ? { uniqueId: txnUniqueID.value } : {};
 
-  // if (editableTxn.value) {
-  //   txnsStore.update({
-  //     ...editableTxn.value,
-  //     name: txnTitle.value,
-  //     mode: txnMode.value,
-  //     ...uniqueIdObj,
-  //   });
-  // } else {
-  //   txnsStore.add({
-  //     isPermanent: 0,
-  //     name: txnTitle.value,
-  //     mode: txnMode.value,
-  //     ...uniqueIdObj,
-  //   });
-  // }
+  if (editableTxn.value) {
+    // txnsStore.update({
+    //   ...editableTxn.value,
+    //   name: txnTitle.value,
+    //   mode: txnMode.value,
+    //   ...uniqueIdObj,
+    // });
+  } else {
+    const newTxnTitleID = db.txnTitles.add(txnTitle.value);
+    const pmtIDs: TableRecordID[] = [];
+    txnPayments.value.forEach((pmt) => {
+      const newPmtID = db.payments.add(pmt);
+      pmtIDs.push(newPmtID);
+    });
+    db.txns.add({
+      type: "spent",
+      date: txnDate.value.getTime(),
+      created: now,
+      modified: now,
+      necessity: txnNecessity.value,
+      payments: pmtIDs,
+      tags: selectedTags.value.map((tg) => tg[ID_KEY]),
+      title: newTxnTitleID,
+    });
+  }
   history.back();
 };
 
+const populateInitialTxnValueOnMount = () => {
+  const txnIDStr = getQueryParamValue("id");
+  if (!txnIDStr) {
+    txnPayments.value = [
+      {
+        amount: -100,
+        account: allAccounts.value[1].id,
+      },
+      {
+        amount: 100,
+        account: allAccounts.value[0].id,
+      },
+    ];
+    return;
+  }
+
+  const txnID: TableRecordID = +txnIDStr;
+  const txn = db.txns.get(txnID);
+  if (!txn) throw `Error fetching transaction for id - ${txnID}`;
+  editableTxn.value = txn;
+  txnType.value = editableTxn.value.type;
+  txnDate.value = editableTxn.value.date;
+  txnCreated.value = editableTxn.value.created;
+  txnModified.value = editableTxn.value.modified;
+  txnNecessity.value = editableTxn.value.necessity;
+  txnPayments.value = editableTxn.value.payments.map((p) => ({
+    amount: p.amount,
+    account: p.account.id,
+    via: p.via?.id,
+  }));
+  selectedTags.value = editableTxn.value.tags;
+  txnTitle.value = editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY];
+};
+
 const onPageMount = () => {
-  const id = getQueryParamValue("id");
-  if (id) txnIdFromQuery.value = id;
   allTags.value = db.tags.getAll();
   allAccounts.value = db.accounts.getAll();
+  populateInitialTxnValueOnMount();
 };
 
 export default HTMLPage({
@@ -149,79 +235,52 @@ export default HTMLPage({
     header: headerLabel,
     content: m.Div({
       children: [
-        Label({ unpadded: true, text: "Necessity of transaction" }),
+        Label({ text: "Necessity of transaction" }),
         TabbedSelect({
-          cssClasses: "mh3 mb4",
-          options: TXN_NECESSITIES_WITH_ICONS,
+          cssClasses: "ml3 mr2 mt2 mb3 pb2",
           labelPosition: "bottom",
+          options: TXN_NECESSITIES_WITH_ICONS,
           selectedOptionIndex: selectedNecessityOptionIndex,
-          onChange: (optionIndex) => {
-            txnNecessity.value = TXN_NECESSITIES_WITH_ICONS[optionIndex].label;
-          },
+          onChange: onTxnNecessityChange,
         }),
-        Label({ unpadded: true, text: "Time of transaction" }),
-        m.Div({
-          class:
-            "w-100 flex items-center justify-between ba br4 b--light-silver pa3 mb3",
-          children: "Today 5:15 PM",
+        Label({ text: "Time of transaction" }),
+        DateTimePicker({
+          cssClasses: `w-100 f6 ph3 pv3 mb4 ba br4 b--light-gray`,
+          dateTime: txnDate,
+          onchange: onTxnDateChange,
         }),
         Label({ text: "Title of transaction" }),
         TextBox({
-          cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 mb3 outline-0 w-100`,
+          cssClasses: `fw5 ba b--light-gray bw1 br4 pa3 mb3 outline-0 w-100`,
           text: txnTitle,
           placeholder: "Title",
-          onchange: (text) => (txnTitle.value = text.trim()),
+          onchange: onTxnTitleChange,
         }),
-        Label({ text: "Payments list" }),
-        Label({
-          cssClasses: "color-inherit",
-          text: "FROM",
-        }),
-        m.Div(
-          m.For({
-            subject: allAccounts,
-            map: (acc) => {
-              return m.Div(acc.name);
-            },
-          })
-        ),
+        Label({ unpadded: true, text: "Payments" }),
         m.Div({
-          class: "flex items-center",
-          children: [
-            NumberBox({
-              cssClasses: "w3 f4",
-              num: 20,
-              onchange: (value) => console.log("Function not implemented."),
+          class: "mb4",
+          children: m.For({
+            subject: txnPayments,
+            n: Infinity,
+            nthChild: m.Div({
+              class: "mb2 flex items-center justify-end",
+              children: Link({
+                onClick: onPaymentAdd,
+                cssClasses: "f6 mt2",
+                children: "Add new payment",
+              }),
             }),
-            Select({
-              cssClasses: "f6 br3 pa2",
-              anchor: "left",
-              options: ["ICICI Savings", "Arindam Babu", "Unknown"],
-              selectedOptionIndex: 0,
-              onChange: (option) => console.log("Function not implemented."),
-            }),
-            m.Span("via"),
-            Select({
-              cssClasses: "f6 br3 pa2",
-              anchor: "right",
-              options: ["GPay", "ICICI Debitcard"],
-              selectedOptionIndex: 0,
-              onChange: (option) => console.log("Function not implemented."),
-            }),
-          ],
+            map: (payment, index) =>
+              PaymentTile({
+                allAccounts: allAccounts,
+                payment: payment,
+                onChange: (newPmt) => onPaymentUpdate(newPmt, index),
+                onRemove: () => onPaymentRemove(index),
+              }),
+          }),
         }),
+        Label({ text: "Associated tags" }),
         m.Div({
-          children: "100 From Arindam Babu",
-        }),
-        Label({
-          cssClasses: "color-inherit",
-          text: "TO",
-        }),
-        m.Div({
-          children: "120 to Unknown Account",
-        }),
-        Section({
-          title: "Associated tags",
           children: [
             m.Div({
               class: "flex flex-wrap",
@@ -233,7 +292,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "selected",
-                    label: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
+                    children: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
                   }),
               }),
             }),
@@ -255,7 +314,7 @@ export default HTMLPage({
                     cssClasses: "mr2 mt2",
                     size: "medium",
                     state: "unselected",
-                    label: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
+                    children: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
                   }),
               }),
             }),
@@ -266,6 +325,7 @@ export default HTMLPage({
     hideNavbar: true,
     navbarTop: DialogActionButtons({
       cssClasses: "sticky bottom-0 bg-near-white pv2 ph3 nl3 nr3",
+      error: error,
       discardLabel: [
         Icon({ cssClasses: "nl2 mr2", iconName: "arrow_back" }),
         "Cancel",

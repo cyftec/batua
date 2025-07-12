@@ -24,10 +24,24 @@ const MONTHS = [
   "December",
 ] as const satisfies string[];
 
+export const getDateInputLocaleValue = (gmtDate: Date) => {
+  const localeDate = gmtDate
+    .toLocaleDateString()
+    .split("/")
+    .reverse()
+    .join("-");
+  const localeTimeArr = gmtDate.toLocaleTimeString().split(":");
+  localeTimeArr.pop();
+  const localeTime = localeTimeArr.join(":");
+  const localeDateLabel = `${localeDate}T${localeTime}`;
+
+  return localeDateLabel;
+};
+
 export const getMinutesInMS = (minutes: number) => minutes * MINUTE_IN_MS;
 
-export const getWeekdayName = (dayIndex: number, letters?: number) =>
-  DAYS_OF_WEEK[dayIndex].substring(0, letters);
+export const getWeekdayName = (date: Date, letters?: number) =>
+  DAYS_OF_WEEK[date.getDay()].substring(0, letters);
 
 export const getMonthName = (monthIndex: number, letters?: number) =>
   MONTHS[monthIndex].substring(0, letters);
@@ -41,11 +55,6 @@ export const getMomentZero = (date: Date): number =>
 
 export const areSameDates = (date1: Date, date2: Date) =>
   getMomentZero(date1) === getMomentZero(date2);
-
-export const isFutureDay = (date: Date, referenceDate?: Date) => {
-  const refDate = referenceDate || new Date();
-  return getMomentZero(date) > getMomentZero(refDate);
-};
 
 export const getDaysGap = (earlierDate: Date, laterDate: Date): number => {
   const earlierDateMZ = getMomentZero(earlierDate);
@@ -62,6 +71,11 @@ export const getGapDate = (baseDate: Date, daysGap: number): Date =>
     baseDate.getMonth(),
     baseDate.getDate() + daysGap
   );
+
+export const isFutureDate = (date: Date, referenceDate?: Date): boolean => {
+  const refDate = referenceDate || new Date();
+  return getDaysGap(refDate, date) > 0;
+};
 
 export const getMonthFirstDay = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), 1);
@@ -133,4 +147,23 @@ export const getDateWindow = (monthsCount: number) => {
   const startDate = new Date(year, monthIndex - (monthsCount - 1), 1);
   const endDate = new Date(year, monthIndex + 1, 0);
   return { startDate, endDate };
+};
+
+export const getDiffDaysFromToday = (date: Date) => {
+  const DIFFS = {
+    FUT: { isFuture: true, label: "Future" },
+    TOD: { isFuture: false, label: "Today" },
+    YST: { isFuture: false, label: "Yesterday" },
+    XDB: (x: number) => ({
+      isFuture: false,
+      label: `${getWeekdayName(date, 3)}, ${x} days back`,
+    }),
+  };
+
+  const diffDays = getDateGapFromToday(date);
+  if (diffDays > 0) return DIFFS.FUT;
+  if (diffDays === 0) return DIFFS.TOD;
+  if (diffDays === -1) return DIFFS.YST;
+
+  return DIFFS.XDB(-diffDays);
 };

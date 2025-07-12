@@ -9,7 +9,7 @@ type LabelProps = {
 
 export const Label = component<LabelProps>(({ cssClasses, unpadded, text }) => {
   const paddingCss = op(unpadded).ternary("pl0", "pl1");
-  const classes = tmpl`mt2 pt1 mb1 f7 moon-gray ${paddingCss} ${cssClasses}`;
+  const classes = tmpl`mt2 pt1 mb1 f7 light-silver ${paddingCss} ${cssClasses}`;
 
   return m.Div({
     onunmount: () => dispose(paddingCss, classes),

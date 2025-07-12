@@ -1,18 +1,23 @@
 import { TableRecordID } from "../../../kvdb";
-import { TypeData } from "./common";
+import { Prettify } from "./common";
 import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
 
-export const TRANSACTION_TYPE = {
-  expense: "paid in full for a purchase",
-  earning: "received as income, gift, profit or interest",
-  unsettled: "lend, borrow or a group purchase",
-  settlement: "paid or received in part or full for settlement",
-  transfer: "transferred between my accounts",
-  lost: "Financial or unaccounted loss, misplaced or stolen",
-} as const;
-export type TxnType = keyof typeof TRANSACTION_TYPE;
+export type ToMarketTxnType = "spent" | "group spent" | "lost";
+export type ToPeopleTxnType = "gifted" | "lent";
+export type FromMarketTxnType = "earned" | "found";
+export type FromPeopleTxnType = "received as gift" | "borrowed";
+export type CapitalTxnType = "loaned" | "invested";
+export type TransferTxnType = "settled" | "transferred";
+export type TxnType = Prettify<
+  | ToMarketTxnType
+  | FromMarketTxnType
+  | ToPeopleTxnType
+  | FromPeopleTxnType
+  | CapitalTxnType
+  | TransferTxnType
+>;
 
 export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
 export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Luxury", "Mixed"];
@@ -41,7 +46,6 @@ export type Txn = {
  *
  * UI Models
  */
-export type TxnTypeUI<K extends TxnType> = TypeData<typeof TRANSACTION_TYPE, K>;
 
 export type TxnUI = Omit<
   Txn,

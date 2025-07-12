@@ -90,9 +90,9 @@ export const AccountCard = component<AccountCardProps>(
                           subject: paymentMethods,
                           map: (pm) =>
                             Tag({
-                              label: pm.name,
                               size: "small",
                               state: "selected",
+                              children: pm.name,
                             }),
                         }),
                       }),

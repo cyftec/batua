@@ -10,24 +10,3 @@ export type Prettify<T> = {
 } & {};
 
 export type WithID<T extends object> = { [ID_KEY]: TableRecordID } & T;
-
-export type TypeData<
-  RootType extends Record<string, string>,
-  K extends keyof RootType
-> = {
-  key: K;
-  label: RootType[K];
-};
-
-export const getTypeData = <
-  RootType extends Record<string, string>,
-  K extends keyof RootType
->(
-  data: RootType,
-  type: K
-): TypeData<RootType, K> => {
-  return {
-    key: type,
-    label: data[type],
-  };
-};

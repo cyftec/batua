@@ -35,10 +35,10 @@ export const TabbedSelect = component<TabbedSelectProps>(
               map: (option, index) => {
                 const colorCss = op(selectedOptionIndex)
                   .equals(index)
-                  .ternary("black fw6", "moon-gray");
+                  .ternary("black fw6", "silver");
                 const borderCss = op(selectedOptionIndex)
                   .equals(index)
-                  .ternary("b--gray", "b--light-gray");
+                  .ternary("b--mid-gray bw1dot5", "b--light-silver");
                 const labelPositionCss = op(labelPosition)
                   .equals("bottom")
                   .ternary("bottom--1", "top--1");

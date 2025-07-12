@@ -11,7 +11,7 @@ import {
   CASH_PAYMENT_METHOD,
   INITIAL_TAGS,
   NET_BANKING_PAYMENT_METHOD,
-  UNKNOWN_SHOP,
+  MARKET,
 } from "../models/core";
 
 /**
@@ -70,7 +70,7 @@ export const populateInitialData = () => {
   db.paymentMethods.add(NET_BANKING_PAYMENT_METHOD);
   const cashPmID = db.paymentMethods.add(CASH_PAYMENT_METHOD);
   const cashAccID = db.accounts.add(CASH_EXPENSE_ACCOUNT);
-  db.accounts.add(UNKNOWN_SHOP);
+  db.accounts.add(MARKET);
   // Add Notes & Coins payment method to Cash account
   db.accounts.update(cashAccID, {
     ...CASH_EXPENSE_ACCOUNT,

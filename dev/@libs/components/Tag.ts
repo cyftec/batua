@@ -1,23 +1,23 @@
 import { derive, dispose, op, tmpl } from "@cyftech/signal";
-import { component, m } from "@mufw/maya";
+import { Children, component, m } from "@mufw/maya";
 import { handleTap } from "../common/utils";
 
 type TagProps = {
   cssClasses?: string;
-  label: string;
+  children: Children;
   size: "large" | "medium" | "small";
   state: "selected" | "unselected" | "idle";
   onClick?: () => void;
 };
 
 export const Tag = component<TagProps>(
-  ({ label, size, state, cssClasses, onClick }) => {
+  ({ children, size, state, cssClasses, onClick }) => {
     const sizeCss = derive(() =>
       size.value === "large"
         ? "f5 br3 pa2"
         : size.value === "medium"
         ? "f6 br3 ph2 pv1"
-        : "f8 fw5 br2 pa1"
+        : "f8 fw5 br3 pa1"
     );
     const colorCss = op(state)
       .equals("unselected")
@@ -31,7 +31,7 @@ export const Tag = component<TagProps>(
       onunmount: () => dispose(classes, borderCss, colorCss, sizeCss),
       onclick: handleTap(onClick),
       class: classes,
-      children: label,
+      children: children,
     });
   }
 );

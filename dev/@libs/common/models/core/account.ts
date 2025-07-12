@@ -135,16 +135,16 @@ export const PERSON_OR_SHOP_ACCOUNT_TYPES_LIST: PeopleOrShopAccountType[] =
 
 export const CASH_EXPENSE_ACCOUNT: ExpenseAccount = {
   isPermanent: 0,
-  name: "Cash in wallet",
+  name: "Wallet",
   balance: 0,
   vault: "physical",
   type: "Expense",
   paymentMethods: [],
 };
 
-export const UNKNOWN_SHOP: ShopAccount = {
+export const MARKET: ShopAccount = {
   isPermanent: 1,
-  name: "Unknown Shops",
+  name: "Market",
   balance: Number.MAX_SAFE_INTEGER,
   type: "Shop",
 };

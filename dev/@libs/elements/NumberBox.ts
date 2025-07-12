@@ -6,10 +6,11 @@ type NumberBoxProps = {
   placeholder?: string;
   num: number;
   onchange: (value: number) => void;
+  onFocusChange?: (isFocused: boolean) => void;
 };
 
 export const NumberBox = component<NumberBoxProps>(
-  ({ cssClasses, placeholder, num, onchange }) => {
+  ({ cssClasses, placeholder, num, onchange, onFocusChange }) => {
     const stringValue = trap(num).string;
 
     const onTextChange = (e: KeyboardEvent) => {
@@ -27,6 +28,8 @@ export const NumberBox = component<NumberBoxProps>(
       placeholder,
       value: stringValue,
       onchange: onTextChange as DomEventValue,
+      onfocus: () => onFocusChange && onFocusChange(true),
+      onblur: () => onFocusChange && onFocusChange(false),
     });
   }
 );

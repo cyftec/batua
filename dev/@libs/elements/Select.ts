@@ -7,6 +7,7 @@ type SelectProps = {
   cssClasses?: string;
   optionsMenuClasses?: string;
   anchor?: "left" | "center" | "right";
+  size?: "large" | "medium" | "small";
   options: string[];
   selectedOptionIndex: number;
   targetFormattor?: (option: string, index?: number) => Child;
@@ -19,14 +20,22 @@ export const Select = component<SelectProps>(
     cssClasses,
     optionsMenuClasses,
     anchor,
+    size,
     options,
     selectedOptionIndex,
     targetFormattor,
     optionFormattor,
     onChange,
   }) => {
+    const sizeCss = derive(() =>
+      size?.value === "large"
+        ? "f5 br3 pl2 pv2 pr1"
+        : size?.value === "small"
+        ? "f8 fw5 br3 pl1 pv1 pr0"
+        : "f6 br3 pl1 pv2"
+    );
+    const classes = tmpl`relative dib pointer outline-0 ba bw1 b--light-silver bg-near-white black ${sizeCss} ${cssClasses}`;
     const isOptionSelectorOpen = signal(false);
-    const classes = tmpl`relative dib pointer bg-near-white ba bw1 fw6 outline-0 b--moon-gray ${cssClasses}`;
     const selectedOption = trap(options).at(selectedOptionIndex);
     const anchorPosition = derive(() => {
       const anchorVal = anchor?.value || "center";
@@ -37,6 +46,9 @@ export const Select = component<SelectProps>(
         ? targetFormattor(selectedOption.value || "")
         : selectedOption.value
     );
+    const targetIconSize = derive(() =>
+      size?.value === "large" ? 20 : size?.value === "medium" ? 16 : 12
+    );
 
     return m.Div({
       onclick: handleTap(
@@ -45,10 +57,14 @@ export const Select = component<SelectProps>(
       class: classes,
       children: [
         m.Div({
-          class: "flex items-center",
+          class: "flex items-center justify-between",
           children: [
-            formattedSelectedOption,
-            Icon({ cssClasses: "ml1", size: 20, iconName: "unfold_more" }),
+            m.Div(formattedSelectedOption),
+            Icon({
+              cssClasses: "ml1",
+              size: targetIconSize,
+              iconName: "unfold_more",
+            }),
           ],
         }),
         m.Div({
@@ -80,7 +96,7 @@ export const Select = component<SelectProps>(
                   optionFormattor
                     ? optionFormattor(option, index)
                     : m.Div({
-                        class: "w-100 fw6 tl",
+                        class: "w-100 fw6 f5 tl",
                         children: option,
                       }),
                 ],
