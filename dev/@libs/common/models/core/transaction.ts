@@ -4,20 +4,22 @@ import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
 
-export type ToMarketTxnType = "spent" | "group spent" | "lost";
-export type ToPeopleTxnType = "gifted" | "lent";
-export type FromMarketTxnType = "earned" | "found";
-export type FromPeopleTxnType = "received as gift" | "borrowed";
-export type CapitalTxnType = "loaned" | "invested";
+export type IncomingTxnType =
+  | "earned"
+  | "found"
+  | "received as gift"
+  | "interest earned";
+export type OutgoingTxnType = "spent" | "lost" | "gifted";
+export type FutureOutgoingTxnType =
+  | "loaned"
+  | "interest charged"
+  | "borrowed"
+  | "borrowed in group expense";
+export type ParkedMoneyTxnType = "invested" | "lent" | "lent in group expense";
+export type UnsettledTxnType = FutureOutgoingTxnType | ParkedMoneyTxnType;
 export type TransferTxnType = "settled" | "transferred";
-// TODO: Segregate all txn types in 3 categroies - IncomingTxnType, OutgoingTxnType and TransferTxnType
 export type TxnType = Prettify<
-  | ToMarketTxnType
-  | FromMarketTxnType
-  | ToPeopleTxnType
-  | FromPeopleTxnType
-  | CapitalTxnType
-  | TransferTxnType
+  OutgoingTxnType | IncomingTxnType | UnsettledTxnType | TransferTxnType
 >;
 
 export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
