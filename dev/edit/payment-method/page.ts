@@ -63,7 +63,7 @@ const validateForm = () => {
     paymentMethodUniqueID.value &&
     !uniqueIdRegex.test(paymentMethodUniqueID.value)
   ) {
-    error.value = "Invalid method TableRecordID.";
+    error.value = "Invalid method id.";
     return;
   }
   error.value = "";
@@ -143,11 +143,11 @@ export default HTMLPage({
               placeholder: "like GPay, PayPal, etc.",
               onchange: (text) => (paymentMethodName.value = text.trim()),
             }),
-            Label({ text: "Unique TableRecordID" }),
+            Label({ text: "Unique id" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: paymentMethodUniqueID,
-              placeholder: "TableRecordID of the method",
+              placeholder: "Unique id of the method",
               onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
             }),
             m.If({

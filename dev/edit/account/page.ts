@@ -176,11 +176,11 @@ export default HTMLPage({
               placeholder: "Account name",
               onchange: (text) => (accountName.value = text.trim()),
             }),
-            Label({ text: "Unique TableRecordID" }),
+            Label({ text: "Unique id" }),
             TextBox({
               cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
               text: accountUniqueId,
-              placeholder: "Unique TableRecordID (optional)",
+              placeholder: "Unique id (optional)",
               onchange: (text) => (accountUniqueId.value = text.trim()),
             }),
           ],
