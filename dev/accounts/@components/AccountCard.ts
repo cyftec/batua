@@ -46,11 +46,11 @@ export const AccountCard = component<AccountCardProps>(
               m.Div(name),
               m.If({
                 subject: isPermanent,
-                isFalsy: () =>
+                isTruthy: () =>
                   Icon({
-                    cssClasses: "ml1 mt1 silver",
-                    size: 10,
-                    iconName: "edit",
+                    cssClasses: "ml1 mt1",
+                    iconName: "edit_off",
+                    size: 14,
                   }),
               }),
             ],
@@ -70,11 +70,11 @@ export const AccountCard = component<AccountCardProps>(
                 class: "mt2 mb3",
                 children: [
                   m.Div({
-                    class: "f7 mb1 mig-gray flex items-center",
+                    class: "f8 mb1 mid-gray flex items-center",
                     children: [
                       Icon({
                         cssClasses: "mr1",
-                        size: 20,
+                        size: 12,
                         iconName:
                           subject.value === "digital" ? "credit_card" : "paid",
                       }),
@@ -90,6 +90,7 @@ export const AccountCard = component<AccountCardProps>(
                           subject: paymentMethods,
                           map: (pm) =>
                             Tag({
+                              cssClasses: "mr1 mb1",
                               size: "small",
                               state: "selected",
                               children: pm.name,

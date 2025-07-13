@@ -5,7 +5,7 @@ export const getQueryParamValue = (queryParamKey: string) => {
   if (!phase.currentIs("run")) return "";
   const urlString = window.location.search;
   const urlParams = new URLSearchParams(urlString);
-  return urlParams.get(queryParamKey) || "";
+  return urlParams.get(queryParamKey) || undefined;
 };
 
 export const goToHref = (href: string, params?: Record<string, string>) => {

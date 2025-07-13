@@ -32,7 +32,7 @@ export const Select = component<SelectProps>(
         ? "f5 br3 pl2 pv2 pr1"
         : size?.value === "small"
         ? "f8 fw5 br3 pl1 pv1 pr0"
-        : "f6 br3 pl1 pv2"
+        : "f6 br3 pl2 pv2"
     );
     const classes = tmpl`relative dib pointer outline-0 ba bw1 b--light-silver bg-near-white black ${sizeCss} ${cssClasses}`;
     const isOptionSelectorOpen = signal(false);
@@ -68,10 +68,10 @@ export const Select = component<SelectProps>(
           ],
         }),
         m.Div({
-          class: tmpl`bg-white absolute z-9999 mt3 br3 shadow-2 f4 ${optionsMenuClasses} ${() =>
-            isOptionSelectorOpen.value ? "db" : "dn"}`,
+          class: tmpl`bg-white absolute z-9999 mt3 br3 shadow-2 f5 w-max-content ${optionsMenuClasses} ${op(
+            isOptionSelectorOpen
+          ).ternary("db", "dn")}`,
           style: tmpl`
-            width: max-content;
             left: ${anchorPosition}%;
             transform: translate(-${anchorPosition}%, 0%);
           `,
@@ -81,8 +81,9 @@ export const Select = component<SelectProps>(
               const isSelected = op(selectedOptionIndex).equals(index).truthy;
               const isLast = op(options).lengthEquals(index + 1).truthy;
               const iconCss = op(isSelected).ternary("balck mr1", "white mr1");
-              const optionCss = tmpl`w-100 flex items-center black db fw5 pv2dot5 pl2 pr3 bg-transparent b--light-silver bg-white ${() =>
-                isLast.value ? "bn" : "bb bt-0 br-0 bl-0"}`;
+              const optionCss = tmpl`w-100 flex items-center black db fw5 pv2dot5 pl2 pr3 bg-transparent b--light-silver bg-white ${op(
+                isLast
+              ).ternary("bn", "bb bt-0 br-0 bl-0")}`;
 
               return m.Div({
                 onclick: handleTap(() => onChange(index)),

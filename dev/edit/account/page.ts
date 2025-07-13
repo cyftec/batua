@@ -1,10 +1,11 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { TableRecordID } from "../../@libs/kvdb";
+import { phase } from "@mufw/maya/utils";
 import { db } from "../../@libs/common/localstorage/stores";
 import {
   Account,
   AccountType,
+  AccountUI,
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethodUI,
@@ -20,19 +21,12 @@ import {
   Icon,
   Label,
   Link,
-  Section,
   Select,
   TextBox,
 } from "../../@libs/elements";
+import { TableRecordID } from "../../@libs/kvdb";
 
-const accIdFromQuery = signal("");
-const editableAccount = derive(() => {
-  if (!accIdFromQuery.value) return;
-  const accID: TableRecordID = +accIdFromQuery.value;
-  const acc = db.accounts.get(accID);
-  if (!acc) throw `Error fetching account for id - ${accID}`;
-  return acc;
-});
+const editableAccount = signal<AccountUI | undefined>(undefined);
 const headerLabel = derive(() =>
   editableAccount.value
     ? `Edit '${editableAccount.value.name}'`
@@ -43,7 +37,7 @@ const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
 const accountType = signal<AccountType>("Expense");
-const vaultType = signal<CurrencyType | undefined>("digital");
+const vaultType = signal<CurrencyType | undefined>(undefined);
 const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
   []
 );
@@ -51,6 +45,23 @@ const [selectedPaymentMethods, nonSelectedPaymentMethods] = trap(
   allPaymentMethods
 ).partition((pm) => pm.isSelected);
 const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
+
+effect(() => {
+  const vType = vaultType.value;
+  const editableAccVal = editableAccount.value;
+  if (!phase.currentIs("run")) return;
+  const initialSelectendPmIDs = editableAccVal
+    ? (editableAccVal.paymentMethods || []).map((pm) => pm.id)
+    : [];
+  allPaymentMethods.value = db.paymentMethods
+    .getAll()
+    .map((pm) => ({
+      ...pm,
+      isSelected: initialSelectendPmIDs.includes(pm.id),
+    }))
+    // TODO: Filter out slave payment methods as well
+    .filter((pm) => pm.type === vType);
+});
 
 effect(() => {
   if (!editableAccount.value) return;
@@ -114,16 +125,11 @@ const savePaymentMethod = () => {
 };
 
 const triggerPageDataRefresh = () => {
-  const id = getQueryParamValue("id");
-  if (id) accIdFromQuery.value = id;
-  const initialSelectendPmIDs = editableAccount.value
-    ? (editableAccount.value.paymentMethods || []).map((pm) => pm.id)
-    : [];
-  const fetchedPMs = db.paymentMethods.getAll();
-  allPaymentMethods.value = fetchedPMs.map((pm) => ({
-    ...pm,
-    isSelected: initialSelectendPmIDs.includes(pm.id),
-  }));
+  vaultType.value = "digital";
+  const idStr = getQueryParamValue("id");
+  if (!idStr) return;
+  const accID: TableRecordID = +idStr;
+  editableAccount.value = db.accounts.get(accID);
 };
 
 const onPageMount = () => {
@@ -150,85 +156,87 @@ export default HTMLPage({
               ],
             }),
         }),
-        Section({
-          title: "Account details",
-          children: [
-            m.If({
-              subject: vaultType,
-              isTruthy: (subject) =>
-                m.Div([
-                  Label({ text: "My money vault type" }),
-                  Select({
-                    cssClasses: "f6 br3 pa2",
-                    anchor: "left",
-                    options: CURRENCY_TYPES,
-                    selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
-                    targetFormattor: (option) => capitalize(option),
-                    optionFormattor: (option) => capitalize(option),
-                    onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
-                  }),
-                ]),
-            }),
-            Label({ text: "Name of account" }),
-            TextBox({
-              cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-              text: accountName,
-              placeholder: "Account name",
-              onchange: (text) => (accountName.value = text.trim()),
-            }),
-            Label({ text: "Unique id" }),
-            TextBox({
-              cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-              text: accountUniqueId,
-              placeholder: "Unique id (optional)",
-              onchange: (text) => (accountUniqueId.value = text.trim()),
-            }),
-          ],
-        }),
         m.If({
           subject: vaultType,
+          isTruthy: (subject) =>
+            m.Div([
+              Label({ text: "My money vault type" }),
+              Select({
+                cssClasses: "mb2 f6 br3",
+                anchor: "left",
+                options: CURRENCY_TYPES,
+                selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
+                targetFormattor: (option) => capitalize(option),
+                optionFormattor: (option) => capitalize(option),
+                onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
+              }),
+            ]),
+        }),
+        Label({ text: "Name of account" }),
+        TextBox({
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
+          text: accountName,
+          placeholder: "Account name",
+          onchange: (text) => (accountName.value = text.trim()),
+        }),
+        Label({ text: "Unique id" }),
+        TextBox({
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
+          text: accountUniqueId,
+          placeholder: "Unique id (optional)",
+          onchange: (text) => (accountUniqueId.value = text.trim()),
+        }),
+        m.If({
+          subject: trap(allPaymentMethods).length,
           isTruthy: () =>
-            Section({
-              title: "Payment methods",
-              children: [
-                m.Div({
-                  class: "flex flex-wrap",
-                  children: m.For({
-                    subject: selectedPaymentMethods,
-                    map: (pm) =>
-                      Tag({
-                        onClick: () => onTagTap(pm.id, false),
-                        cssClasses: "mr2 mt2",
-                        size: "large",
-                        state: "selected",
-                        children: pm.name,
+            m.Div([
+              Label({ text: "Payment Methods" }),
+              m.Div({
+                class: "ba br4 b--light-silver ph2",
+                children: [
+                  m.If({
+                    subject: trap(selectedPaymentMethods).length,
+                    isTruthy: () =>
+                      Label({
+                        text: "ACCEPTED PAYMENT METHODS (TAP TO DESELECT)",
                       }),
                   }),
-                }),
-                m.If({
-                  subject: trap(nonSelectedPaymentMethods).length,
-                  isTruthy: () =>
-                    m.Div({
-                      class: "mt2 pt2 f7 silver",
-                      children: "TAP TO SELECT METHODS FROM BELOW",
+                  m.Div({
+                    class: "flex flex-wrap",
+                    children: m.For({
+                      subject: selectedPaymentMethods,
+                      map: (pm) =>
+                        Tag({
+                          onClick: () => onTagTap(pm.id, false),
+                          cssClasses: "mr2 mb2",
+                          size: "medium",
+                          state: "selected",
+                          children: pm.name,
+                        }),
                     }),
-                }),
-                m.Div({
-                  class: "flex flex-wrap",
-                  children: m.For({
-                    subject: nonSelectedPaymentMethods,
-                    map: (pm) =>
-                      Tag({
-                        onClick: () => onTagTap(pm.id, true),
-                        cssClasses: "mr2 mt2",
-                        size: "large",
-                        state: "unselected",
-                        children: pm.name,
-                      }),
                   }),
-                }),
-              ],
-            }),
+                  m.If({
+                    subject: trap(nonSelectedPaymentMethods).length,
+                    isTruthy: () =>
+                      Label({ text: "TAP TO SELECT PAYMENT METHOD" }),
+                  }),
+                  m.Div({
+                    class: "flex flex-wrap",
+                    children: m.For({
+                      subject: nonSelectedPaymentMethods,
+                      map: (pm) =>
+                        Tag({
+                          onClick: () => onTagTap(pm.id, true),
+                          cssClasses: "mr2 mb2",
+                          size: "medium",
+                          state: "unselected",
+                          children: pm.name,
+                        }),
+                    }),
+                  }),
+                ],
+              }),
+            ]),
         }),
       ],
     }),
