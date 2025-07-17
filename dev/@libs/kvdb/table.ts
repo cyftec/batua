@@ -19,6 +19,13 @@ export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
   getRaw: (id: TableRecordID) => RawRecord | undefined;
   get: (id: TableRecordID) => ExtendedRecord | undefined;
   getAll: (ids?: TableRecordID[]) => ExtendedRecord[];
+  getAllWhere: (
+    recordMatcher: (record: ExtendedRecord) => boolean,
+    option?: { count?: number }
+  ) => ExtendedRecord[];
+  getWhere: (
+    recordMatcher: (record: ExtendedRecord) => boolean
+  ) => ExtendedRecord | undefined;
   add: (record: RawRecord) => TableRecordID;
   update: (
     id: TableRecordID,
@@ -117,6 +124,25 @@ export const createTable = <
         records.push(record);
       }
       return records;
+    },
+    getAllWhere: function (recordMatcher, options) {
+      const thisTable = this as Table<RawRecord, ExtendedRecord>;
+      const validIDs: TableRecordID[] = thisTable.getAllIDs();
+      const matchingRecords: ExtendedRecord[] = [];
+      const idsLength = validIDs.length;
+      const recordsLength = options?.count || idsLength;
+      for (const id of validIDs) {
+        const record = thisTable.get(id);
+        if (!record) continue;
+        const recordMatched = recordMatcher(record);
+        if (recordMatched) matchingRecords.push(record);
+        if (matchingRecords.length === recordsLength) break;
+      }
+      return matchingRecords;
+    },
+    getWhere: function (recordMatcher) {
+      const thisTable = this as Table<RawRecord, ExtendedRecord>;
+      return thisTable.getAllWhere(recordMatcher, { count: 1 })[0];
     },
     add: function (record: RawRecord) {
       const tableRecordID = kvsIdManager.useNewID((newTableRecordID) => {
