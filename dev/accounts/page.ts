@@ -59,18 +59,13 @@ effect(() => {
   allPeopleOrShopAccounts.value = pspAccs;
 });
 
-const triggerPageDataRefresh = () => {
+const onPageMount = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   allPaymentMethods.value = db.paymentMethods
     .getAll()
     .sort((a, b) => b.isPermanent - a.isPermanent);
   allAccounts.value = db.accounts.getAll();
-};
-
-const onPageMount = () => {
-  triggerPageDataRefresh();
-  window.addEventListener("pageshow", triggerPageDataRefresh);
 };
 
 export default HTMLPage({

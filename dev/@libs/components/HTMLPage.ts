@@ -18,7 +18,17 @@ export const HTMLPage = component<HTMLPageProps>(
     const onBodyMount = () => {
       stylesRel.value = "stylesheet";
       if (isNewToApp()) modalOpen.value = true;
-      if (onMount) onMount();
+      if (onMount) {
+        onMount();
+        window.addEventListener("pageshow", onMount);
+      }
+    };
+
+    const closeModal = () => (modalOpen.value = false);
+
+    const onAccountCreationDone = () => {
+      closeModal();
+      onMount && onMount();
     };
 
     return m.Html({
@@ -62,7 +72,8 @@ export const HTMLPage = component<HTMLPageProps>(
             m.Script({ src: "main.js", defer: true }),
             AccountCreator({
               isOpen: modalOpen,
-              onClose: () => (modalOpen.value = false),
+              onClose: closeModal,
+              onDone: onAccountCreationDone,
             }),
             body,
           ],

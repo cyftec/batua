@@ -5,13 +5,14 @@ import { Button, Modal } from "../elements";
 type AccountCreatorProps = {
   isOpen: boolean;
   onClose: () => void;
+  onDone: () => void;
 };
 
 export const AccountCreator = component<AccountCreatorProps>(
-  ({ isOpen, onClose }) => {
+  ({ isOpen, onClose, onDone }) => {
     const onStartAfresh = () => {
       populateInitialData();
-      onClose();
+      onDone();
     };
 
     return Modal({
@@ -44,13 +45,13 @@ export const AccountCreator = component<AccountCreatorProps>(
             children: [
               Button({
                 cssClasses: "pv2 ph3 mr1 b",
-                children: "Start fresh",
+                children: "Start afresh",
                 onTap: onStartAfresh,
               }),
               Button({
                 cssClasses: "pv2 ph3 ml2 b themecol",
                 children: "Load backup",
-                onTap: onClose,
+                onTap: onStartAfresh,
               }),
             ],
           }),

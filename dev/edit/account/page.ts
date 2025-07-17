@@ -124,17 +124,12 @@ const savePaymentMethod = () => {
   goBack();
 };
 
-const triggerPageDataRefresh = () => {
+const onPageMount = () => {
   vaultType.value = "digital";
   const idStr = getQueryParamValue("id");
   if (!idStr) return;
   const accID: TableRecordID = +idStr;
   editableAccount.value = db.accounts.get(accID);
-};
-
-const onPageMount = () => {
-  triggerPageDataRefresh();
-  window.addEventListener("pageshow", triggerPageDataRefresh);
 };
 
 export default HTMLPage({
