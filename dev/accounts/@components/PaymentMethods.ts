@@ -18,11 +18,11 @@ export const PaymentMethods = component<PaymentMethodsProps>(
       title: "Payment methods",
       children: m.For({
         subject: paymentMethods,
-        n: 0,
+        n: Infinity,
         nthChild: CardButton({
-          cssClasses: "w-100 mb3 mt1",
+          cssClasses: "w-48 mb3",
           onTap: () => goToEditPaymentMethodPage(),
-          icon: "add_card",
+          icon: "add",
           label: "Add new payment method",
         }),
         map: (pm, i) =>

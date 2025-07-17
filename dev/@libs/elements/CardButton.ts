@@ -21,7 +21,7 @@ export const CardButton = component<CardButtonProps>(
       children: m.Div({
         class: "flex flex-column items-center f7",
         children: [
-          Icon({ size: 22, iconName: icon }),
+          Icon({ size: 16, iconName: icon }),
           m.Span({ class: "mt1 tc", children: label }),
         ],
       }),

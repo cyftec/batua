@@ -91,7 +91,7 @@ export const AccountCard = component<AccountCardProps>(
                           map: (pm) =>
                             Tag({
                               cssClasses: "mr1 mb1",
-                              size: "small",
+                              size: "xsmall",
                               state: "selected",
                               children: pm.name,
                             }),

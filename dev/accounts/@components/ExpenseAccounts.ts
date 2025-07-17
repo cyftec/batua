@@ -19,11 +19,11 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
       title: "Expense accounts",
       children: m.For({
         subject: expenseAccounts,
-        n: 0,
+        n: Infinity,
         nthChild: CardButton({
           onTap: () => goToEditAccountPage(),
-          cssClasses: "w-100 mb3 mt1",
-          icon: "account_balance",
+          cssClasses: "w-48 mb3",
+          icon: "add",
           label: "Add new account",
         }),
         map: (acc) =>
@@ -31,7 +31,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
             onTap: acc.isPermanent
               ? undefined
               : () => goToEditAccountPage(acc.id),
-            cssClasses: "mb3 w-48",
+            cssClasses: "w-48 mb3",
             account: acc,
           }),
       }),
