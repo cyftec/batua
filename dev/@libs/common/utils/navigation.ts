@@ -35,6 +35,12 @@ const APP = {
 };
 export const goToHomePage = () => goToHref(APP.href);
 
+export const goToManageMoneyPage = (tabIndex?: number) =>
+  goToHref(
+    APP.MANAGE.href,
+    tabIndex === undefined ? undefined : { tab: `${tabIndex}` }
+  );
+
 export const goToAccountsPage = (tabIndex?: number) =>
   goToHref(
     APP.ACCOUNTS.href,

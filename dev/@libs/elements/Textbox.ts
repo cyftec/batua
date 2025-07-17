@@ -7,14 +7,14 @@ import {
   MHtmlElement,
 } from "@mufw/maya";
 
-type CustomKeyDownEvent = { key: string; text: string };
+export type CustomKeyDownEvent = { key: string; text: string };
 
 type TextBoxProps = {
   cssClasses?: string;
   placeholder?: string;
   disabled?: boolean;
-  text: string;
-  onmount?: CustomEventValue;
+  text?: string;
+  onmount?: (currentElement: MHtmlElement<HTMLInputElement>) => void;
   onchange?: (value: string) => void;
   onkeydown?: (event: CustomKeyDownEvent) => void;
   onfocus?: () => void;
@@ -38,7 +38,7 @@ export const TextBox = component<TextBoxProps>(
 
     const onMount: CustomEventValue = (elem) => {
       inputElem = elem as MHtmlElement<HTMLInputElement>;
-      if (onmount) onmount(elem);
+      if (onmount) onmount(elem as MHtmlElement<HTMLInputElement>);
     };
 
     const onTextChange = (e: KeyboardEvent) => {

@@ -11,7 +11,7 @@ type TabBarProps = {
 
 export const TabBar = component<TabBarProps>(
   ({ cssClasses, tabs, selectedTabIndex, onTabChange }) => {
-    const containerClasses = tmpl`bg-near-white br-pill ${cssClasses}`;
+    const containerClasses = tmpl`bg-white pa1 f7 ${cssClasses}`;
     const tabsData = trap(tabs).map((tab) => {
       const tabSelectionCss =
         tabs.value.indexOf(tab) === selectedTabIndex.value
@@ -29,7 +29,7 @@ export const TabBar = component<TabBarProps>(
       onunmount: () => dispose(containerClasses, tabsData),
       class: containerClasses,
       children: m.Div({
-        class: "flex items-center justify-between pa1",
+        class: "bg-near-white br-pill flex items-center justify-between pa1",
         children: m.For({
           subject: tabsData,
           itemKey: "label",

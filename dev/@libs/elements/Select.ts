@@ -81,7 +81,7 @@ export const Select = component<SelectProps>(
               const isSelected = op(selectedOptionIndex).equals(index).truthy;
               const isLast = op(options).lengthEquals(index + 1).truthy;
               const iconCss = op(isSelected).ternary("balck mr1", "white mr1");
-              const optionCss = tmpl`w-100 flex items-center black db fw5 pv2dot5 pl2 pr3 bg-transparent b--light-silver bg-white ${op(
+              const optionCss = tmpl`w-100 flex items-center black db fw5 pv2 pl2 pr3 bg-transparent b--light-silver bg-white ${op(
                 isLast
               ).ternary("bn", "bb bt-0 br-0 bl-0")}`;
 

@@ -92,7 +92,7 @@ export default HTMLPage({
       ],
     }),
     navbarTop: TabBar({
-      cssClasses: "mb1 nl2 nr2 f7",
+      cssClasses: "nl3 nr3",
       tabs: ACCOUNTS_PAGE_TABS,
       selectedTabIndex: selectedTabIndex,
       onTabChange: (tabIndex) => goToAccountsPage(tabIndex),

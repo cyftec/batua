@@ -1,31 +1,41 @@
-import { signal } from "@cyftech/signal";
+import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import { getQueryParamValue, goToManageMoneyPage } from "../@libs/common/utils";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
-import { Budget, Tags } from "./@components";
+import { Budget, TagsPage } from "./@components";
 
 const MANAGE_MONEY_TABS = ["Budget", "Tags"] as const satisfies string[];
 const selectedTabIndex = signal(0);
+const header = trap(["Manage budget", "Manage tags and their categories"]).at(
+  selectedTabIndex
+);
+
+const onPageMount = () => {
+  const queryParamTabId = getQueryParamValue("tab") || "";
+  selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
+};
 
 export default HTMLPage({
+  onMount: onPageMount,
   body: NavScaffold({
-    header: "Manage your money",
+    header: header,
     content: m.Div({
       children: [
         m.Switch({
           subject: selectedTabIndex,
           cases: {
             0: () => Budget({}),
-            1: () => Tags({}),
+            1: () => TagsPage({}),
           },
         }),
       ],
     }),
     navbarTop: TabBar({
-      cssClasses: "mb2 nl2 nr2",
+      cssClasses: "nl3 nr3",
       tabs: MANAGE_MONEY_TABS,
       selectedTabIndex: selectedTabIndex,
-      onTabChange: (tabIndex) => (selectedTabIndex.value = tabIndex),
+      onTabChange: (tabIndex) => goToManageMoneyPage(tabIndex),
     }),
   }),
 });

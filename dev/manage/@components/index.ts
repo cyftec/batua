@@ -1,2 +1,2 @@
 export * from "./Budget";
-export * from "./Tags";
+export * from "./TagsPage";

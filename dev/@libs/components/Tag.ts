@@ -5,8 +5,8 @@ import { handleTap } from "../common/utils";
 type TagProps = {
   cssClasses?: string;
   children: Children;
-  size: "large" | "medium" | "small";
-  state: "selected" | "unselected" | "idle";
+  size: "large" | "medium" | "small" | "xsmall";
+  state: "selected" | "unselected" | "idle" | "error";
   onClick?: () => void;
 };
 
@@ -17,11 +17,17 @@ export const Tag = component<TagProps>(
         ? "f5 br3 pa2"
         : size.value === "medium"
         ? "f6 br3 ph2 pv1"
+        : size.value === "small"
+        ? "f7 br3 ph2 pv1"
         : "f8 fw5 br3 ph1"
     );
-    const colorCss = op(state)
-      .equals("unselected")
-      .ternary("light-silver", "black");
+    const colorCss = derive(() =>
+      state.value === "unselected"
+        ? "light-silver"
+        : state.value === "error"
+        ? "red"
+        : "black"
+    );
     const borderCss = op(state)
       .equals("selected")
       .ternary("b--moon-gray", "b--transparent");

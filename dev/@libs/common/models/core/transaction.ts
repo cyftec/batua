@@ -22,8 +22,8 @@ export type TxnType = Prettify<
   OutgoingTxnType | IncomingTxnType | UnsettledTxnType | TransferTxnType
 >;
 
-export type TxnNecessity = "Essential" | "Luxury" | "Mixed";
-export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Luxury", "Mixed"];
+export type TxnNecessity = "Essential" | "Mixed" | "Luxury";
+export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Mixed", "Luxury"];
 export const TXN_NECESSITIES_WITH_ICONS: {
   label: TxnNecessity;
   icon: string;
@@ -34,10 +34,10 @@ export const TXN_NECESSITIES_WITH_ICONS: {
 ];
 
 export type Txn = {
-  type: TxnType;
   date: number;
   created: number;
   modified: number;
+  type: TxnType;
   necessity: TxnNecessity;
   payments: PaymentUI["id"][];
   tags: TagUI["id"][];
