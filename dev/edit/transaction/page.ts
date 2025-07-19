@@ -10,7 +10,11 @@ import {
   TxnType,
   TxnUI,
 } from "../../@libs/common/models/core";
-import { getQueryParamValue, nameRegex } from "../../@libs/common/utils";
+import {
+  getLowercaseTagName,
+  getQueryParamValue,
+  nameRegex,
+} from "../../@libs/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
 import {
   DateTimePicker,
@@ -22,12 +26,14 @@ import {
   TextBox,
 } from "../../@libs/elements";
 import {
+  getPrimitiveRecordValue,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
 } from "../../@libs/kvdb";
 import { PaymentTile } from "./@components/PaymentTile";
 import { isFutureDate } from "../../@libs/common/transforms";
+import { TagsSelector } from "../@components";
 
 const now = new Date();
 const error = signal("");
@@ -45,34 +51,20 @@ const allAccounts = signal<AccountUI[]>([]);
 const txnPayments = signal<Payment[]>([]);
 const txnTitle = signal<string>("");
 
-const allTags = signal<TagUI[]>([]);
-const selectedTags = signal<TagUI[]>([]);
-const nonSelectedTags = derive(() => {
-  const selectedTagNames = selectedTags.value.map(
-    (tg) => tg[PLAIN_EXTENDED_RECORD_VALUE_KEY]
-  );
-  return allTags.value
-    .filter(
-      (tg) => !selectedTagNames.includes(tg[PLAIN_EXTENDED_RECORD_VALUE_KEY])
-    )
-    .sort(
-      (a, b) =>
-        (b[PLAIN_EXTENDED_RECORD_VALUE_KEY] as any) -
-        (a[PLAIN_EXTENDED_RECORD_VALUE_KEY] as any)
-    );
-});
+const allTags = signal<(TagUI & { isSelected: boolean })[]>([]);
+const [selectedTags, nonSelectedTags] = trap(allTags).partition(
+  (t) => t.isSelected
+);
 
 const editableTxn = signal<TxnUI | undefined>(undefined);
 const headerLabel = derive(() =>
   editableTxn.value
-    ? `Edit '${editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY]}'`
+    ? `Edit '${getPrimitiveRecordValue(editableTxn.value.title)}'`
     : `Add new transaction`
 );
 const commitBtnLabel = op(editableTxn).ternary("Save", "Add");
 
-const resetError = () => {
-  error.value = "";
-};
+const resetError = () => (error.value = "");
 
 const onTxnNecessityChange = (optionIndex: number) => {
   resetError();
@@ -112,18 +104,43 @@ const onPaymentRemove = (paymentIndex: number) => {
   txnPayments.value = txnPayments.value.filter((_, i) => i !== paymentIndex);
 };
 
-const onTagTap = (tagID: TableRecordID, selectTag: boolean) => {
+const onTagTap = (tagIndex: number, isSelected: boolean) => {
   resetError();
-  const updatedSelectedTags = [...selectedTags.value];
-  if (selectTag) {
-    const selectedTag = allTags.value.find((tg) => tg.id === tagID) as TagUI;
-    updatedSelectedTags.push(selectedTag);
+  const tappedTag = isSelected
+    ? nonSelectedTags.value[tagIndex]
+    : selectedTags.value[tagIndex];
+  allTags.value = allTags.value.map((t) => {
+    if (t[ID_KEY] === tappedTag[ID_KEY]) t.isSelected = isSelected;
+    return t;
+  });
+};
+
+const onTagAdd = (text: string) => {
+  resetError();
+  const tagName = getLowercaseTagName(text);
+  let existing = false;
+  let unselected = false;
+  const updatedAllTags = allTags.value.map((t) => {
+    const tagFound = getPrimitiveRecordValue(t) === tagName;
+    if (tagFound) {
+      existing = true;
+      unselected = !t.isSelected;
+      t.isSelected = unselected ? true : t.isSelected;
+    }
+    return t;
+  });
+
+  if (existing) {
+    if (unselected) allTags.value = updatedAllTags;
+    else return false;
   } else {
-    const i = updatedSelectedTags.findIndex((tg) => tg.id === tagID);
-    if (i < 0) throw `Tag not found in selected methods list for id - ${tagID}`;
-    updatedSelectedTags.splice(i, 1);
+    const newTagID = db.tags.add(tagName);
+    const newTag = db.tags.get(newTagID);
+    if (!newTag) throw `Error fetching the new tag after adding it to the DB.`;
+    allTags.value = [...allTags.value, { ...newTag, isSelected: true }];
   }
-  selectedTags.value = updatedSelectedTags;
+
+  return true;
 };
 
 const validateForm = () => {
@@ -219,12 +236,25 @@ const populateInitialTxnValueOnMount = () => {
     account: p.account.id,
     via: p.via?.id,
   }));
-  selectedTags.value = editableTxn.value.tags;
-  txnTitle.value = editableTxn.value.title[PLAIN_EXTENDED_RECORD_VALUE_KEY];
+  txnTitle.value = getPrimitiveRecordValue(editableTxn.value.title);
+  const editableTxnTagNames = editableTxn.value.tags.map(
+    getPrimitiveRecordValue
+  );
+  allTags.value = allTags.value.map((t) => ({
+    ...t,
+    isSelected: editableTxnTagNames.includes(getPrimitiveRecordValue(t)),
+  }));
 };
 
 const onPageMount = () => {
-  allTags.value = db.tags.getAll();
+  allTags.value = db.tags
+    .getAll()
+    .map((t) => ({ ...t, isSelected: false }))
+    .sort((a, b) =>
+      getPrimitiveRecordValue(a).localeCompare(getPrimitiveRecordValue(b))
+    );
+  console.log(allTags.value);
+
   allAccounts.value = db.accounts.getAll();
   populateInitialTxnValueOnMount();
 };
@@ -280,50 +310,19 @@ export default HTMLPage({
           }),
         }),
         Label({ text: "Associated tags" }),
-        m.Div({
-          children: [
-            m.Div({
-              class: "flex flex-wrap",
-              children: m.For({
-                subject: selectedTags,
-                map: (tg) =>
-                  Tag({
-                    onClick: () => onTagTap(tg.id, false),
-                    cssClasses: "mr2 mt2",
-                    size: "medium",
-                    state: "selected",
-                    children: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
-                  }),
-              }),
-            }),
-            m.If({
-              subject: trap(nonSelectedTags).length,
-              isTruthy: () =>
-                m.Div({
-                  class: "mt2 pt2 f7 silver",
-                  children: "TAP TO SELECT METHODS FROM BELOW",
-                }),
-            }),
-            m.Div({
-              class: "flex flex-wrap",
-              children: m.For({
-                subject: nonSelectedTags,
-                map: (tg) =>
-                  Tag({
-                    onClick: () => onTagTap(tg.id, true),
-                    cssClasses: "mr2 mt2",
-                    size: "medium",
-                    state: "unselected",
-                    children: tg[PLAIN_EXTENDED_RECORD_VALUE_KEY],
-                  }),
-              }),
-            }),
-          ],
+        TagsSelector({
+          onTagTap: onTagTap,
+          onAdd: onTagAdd,
+          textboxPlaceholder: "search or create new tag",
+          selectedTags: trap(selectedTags).map(getPrimitiveRecordValue),
+          unSelectedTags: trap(nonSelectedTags).map(getPrimitiveRecordValue),
         }),
       ],
     }),
     hideNavbar: true,
     navbarTop: DialogActionButtons({
+      onDiscard: discardAndGoBack,
+      onCommit: saveTxn,
       cssClasses: "sticky bottom-0 bg-near-white pv2 ph3 nl3 nr3",
       error: error,
       discardLabel: [
@@ -334,8 +333,6 @@ export default HTMLPage({
         Icon({ cssClasses: "nl3 mr2", iconName: commitBtnLabel }),
         commitBtnLabel,
       ],
-      onDiscard: discardAndGoBack,
-      onCommit: saveTxn,
     }),
   }),
 });

@@ -1,5 +1,6 @@
 import { signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
+import { db } from "../../@libs/common/localstorage/stores";
 import {
   AccountUI,
   PaymentMethodUI,
@@ -7,10 +8,10 @@ import {
   TXN_NECESSITIES,
 } from "../../@libs/common/models/core";
 import { getLowercaseTagName } from "../../@libs/common/utils";
-import { Section } from "../../@libs/components";
-import { PLAIN_EXTENDED_RECORD_VALUE_KEY } from "../../@libs/kvdb";
+import { Section, TagsList } from "../../@libs/components";
+import { Icon } from "../../@libs/elements";
+import { getPrimitiveRecordValue } from "../../@libs/kvdb";
 import { TagCategory } from "./TagsCategory";
-import { db } from "../../@libs/common/localstorage/stores";
 
 type TagsPageProps = {
   allTags?: TagUI[];
@@ -24,11 +25,12 @@ export const TagsPage = component<TagsPageProps>(({}) => {
   const allTags = signal<TagUI[]>([]);
 
   const onTagAdd = (newTag: string): boolean => {
+    const newTagName = getLowercaseTagName(newTag);
     const existingTag = db.tags.getWhere(
-      (tag) => tag[PLAIN_EXTENDED_RECORD_VALUE_KEY] === newTag
+      (tag) => getPrimitiveRecordValue(tag) === newTagName
     );
     if (existingTag) return false;
-    db.tags.add(newTag);
+    db.tags.add(newTagName);
     allTags.value = db.tags.getAll();
     return true;
   };
@@ -36,7 +38,11 @@ export const TagsPage = component<TagsPageProps>(({}) => {
   const onTagsPageMount = () => {
     allAccounts.value = db.accounts.getAll();
     allPaymentMethods.value = db.paymentMethods.getAll();
-    allTags.value = db.tags.getAll();
+    allTags.value = db.tags
+      .getAll()
+      .sort((a, b) =>
+        getPrimitiveRecordValue(a).localeCompare(getPrimitiveRecordValue(b))
+      );
   };
 
   return m.Div({
@@ -45,15 +51,19 @@ export const TagsPage = component<TagsPageProps>(({}) => {
       Section({
         title: "Customizable Tags",
         children: [
-          TagCategory({
+          m.Div({
+            class: "flex items-center silver",
+            children: [
+              Icon({ iconName: "category", size: 14 }),
+              m.Div({ class: "f7 ml2", children: "UNCATEGORIZED" }),
+            ],
+          }),
+          TagsList({
             onTagTap: (tagIndex) => console.log(allTags.value.at(tagIndex)),
-            onNewTagAdd: onTagAdd,
-            cssClasses: "mb4",
-            icon: "category",
-            title: "UNCATEGORIZED",
-            tags: trap(allTags).map(
-              (tg) => tg[PLAIN_EXTENDED_RECORD_VALUE_KEY]
-            ),
+            onTagAdd: onTagAdd,
+            hideSuggestion: true,
+            tagClasses: "mt2 mr2",
+            tags: trap(allTags).map(getPrimitiveRecordValue),
           }),
         ],
       }),

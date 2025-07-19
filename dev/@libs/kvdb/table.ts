@@ -11,7 +11,7 @@ import {
 import {
   getKVSRecordIDFromTableRecordID,
   getTableRecordIDFromKVSRecordID,
-} from "./utils";
+} from "./transforms";
 
 export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
   isEmpty: () => boolean;

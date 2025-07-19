@@ -9,3 +9,9 @@ export const getOnlyAlphaNumeric = (input: string): string =>
 
 export const getLowercaseTagName = (input: string): string =>
   getOnlyAlphaNumeric(input).toLowerCase();
+
+export const deepTrim = (input: string): string =>
+  input.replaceAll("&nbsp;", " ").replace(/\s+/g, " ").trim();
+
+export const deepTrimmedLowercase = (input: string): string =>
+  deepTrim(input).toLowerCase();

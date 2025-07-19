@@ -12,6 +12,7 @@ import {
 } from "../../@libs/common/models/core";
 import {
   capitalize,
+  deepTrim,
   getQueryParamValue,
   nameRegex,
 } from "../../@libs/common/utils";
@@ -25,6 +26,7 @@ import {
   TextBox,
 } from "../../@libs/elements";
 import { TableRecordID } from "../../@libs/kvdb";
+import { TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);
 const headerLabel = derive(() =>
@@ -37,13 +39,18 @@ const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
 const accountType = signal<AccountType>("Expense");
-const vaultType = signal<CurrencyType | undefined>(undefined);
+const vaultType = signal<CurrencyType>("physical");
 const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
   []
 );
-const [selectedPaymentMethods, nonSelectedPaymentMethods] = trap(
+const [selectedPaymentMethods, unSelectedPaymentMethods] = trap(
   allPaymentMethods
 ).partition((pm) => pm.isSelected);
+const tagsSelectorPlaceholder = derive(() =>
+  unSelectedPaymentMethods.value.length
+    ? "search or create new"
+    : "create new payment method"
+);
 const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
 
 effect(() => {
@@ -54,13 +61,12 @@ effect(() => {
     ? (editableAccVal.paymentMethods || []).map((pm) => pm.id)
     : [];
   allPaymentMethods.value = db.paymentMethods
-    .getAll()
+    .getAllWhere((pm) => pm.type === vType)
     .map((pm) => ({
       ...pm,
       isSelected: initialSelectendPmIDs.includes(pm.id),
-    }))
-    // TODO: Filter out slave payment methods as well
-    .filter((pm) => pm.type === vType);
+    }));
+  // TODO: Filter out slave payment methods as well
 });
 
 effect(() => {
@@ -68,14 +74,56 @@ effect(() => {
   accountType.value = editableAccount.value.type;
   accountName.value = editableAccount.value.name;
   accountUniqueId.value = editableAccount.value.uniqueId || "";
-  vaultType.value = editableAccount.value.vault;
+  // vaultType.value = editableAccount.value.vault;
 });
 
-const onTagTap = (pmID: number, selectTag: boolean) => {
-  allPaymentMethods.value = allPaymentMethods.value.map((pm) => {
-    if (pm.id === pmID) pm.isSelected = selectTag;
+const resetError = () => (error.value = "");
+
+const onPaymentMethodTagTap = (tagIndex: number, isSelected: boolean) => {
+  const pm = isSelected
+    ? unSelectedPaymentMethods.value[tagIndex]
+    : selectedPaymentMethods.value[tagIndex];
+  allPaymentMethods.value = allPaymentMethods.value.map((p) => {
+    if (p.id === pm.id) p.isSelected = isSelected;
+    return p;
+  });
+};
+
+const onPaymentMethodAdd = (name: string) => {
+  resetError();
+  const newPmName = deepTrim(name);
+  console.log(`new payment-method '${newPmName}' added`);
+  let existing = false;
+  let unselected = false;
+  const updatedAllPMs = allPaymentMethods.value.map((pm) => {
+    const pmFound = deepTrim(pm.name).toLowerCase() === newPmName.toLowerCase();
+    if (pmFound) {
+      existing = true;
+      unselected = !pm.isSelected;
+      pm.isSelected = unselected ? true : pm.isSelected;
+    }
     return pm;
   });
+
+  if (existing) {
+    if (unselected) allPaymentMethods.value = updatedAllPMs;
+    else return false;
+  } else {
+    const newPmID = db.paymentMethods.add({
+      isPermanent: 0,
+      name: newPmName,
+      type: vaultType.value,
+      slave: false,
+    });
+    const newPM = db.paymentMethods.get(newPmID);
+    if (!newPM) throw `Error fetching the new tag after adding it to the DB.`;
+    allPaymentMethods.value = [
+      ...allPaymentMethods.value,
+      { ...newPM, isSelected: true },
+    ];
+  }
+
+  return true;
 };
 
 const validateForm = () => {
@@ -181,57 +229,14 @@ export default HTMLPage({
           placeholder: "Unique id (optional)",
           onchange: (text) => (accountUniqueId.value = text.trim()),
         }),
-        m.If({
-          subject: trap(allPaymentMethods).length,
-          isTruthy: () =>
-            m.Div([
-              Label({ text: "Payment Methods" }),
-              m.Div({
-                class: "ba br4 b--light-silver ph2",
-                children: [
-                  m.If({
-                    subject: trap(selectedPaymentMethods).length,
-                    isTruthy: () =>
-                      Label({
-                        text: "ACCEPTED PAYMENT METHODS (TAP TO DESELECT)",
-                      }),
-                  }),
-                  m.Div({
-                    class: "flex flex-wrap",
-                    children: m.For({
-                      subject: selectedPaymentMethods,
-                      map: (pm) =>
-                        Tag({
-                          onClick: () => onTagTap(pm.id, false),
-                          cssClasses: "mr2 mb2",
-                          size: "medium",
-                          state: "selected",
-                          children: pm.name,
-                        }),
-                    }),
-                  }),
-                  m.If({
-                    subject: trap(nonSelectedPaymentMethods).length,
-                    isTruthy: () =>
-                      Label({ text: "TAP TO SELECT PAYMENT METHOD" }),
-                  }),
-                  m.Div({
-                    class: "flex flex-wrap",
-                    children: m.For({
-                      subject: nonSelectedPaymentMethods,
-                      map: (pm) =>
-                        Tag({
-                          onClick: () => onTagTap(pm.id, true),
-                          cssClasses: "mr2 mb2",
-                          size: "medium",
-                          state: "unselected",
-                          children: pm.name,
-                        }),
-                    }),
-                  }),
-                ],
-              }),
-            ]),
+        Label({ text: "Payment Methods" }),
+        TagsSelector({
+          onAdd: onPaymentMethodAdd,
+          onTagTap: onPaymentMethodTagTap,
+          cssClasses: "ba br4 b--light-silver ph2",
+          selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
+          unSelectedTags: trap(unSelectedPaymentMethods).map((a) => a.name),
+          textboxPlaceholder: tagsSelectorPlaceholder,
         }),
       ],
     }),

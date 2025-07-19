@@ -1,5 +1,6 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import { phase } from "@mufw/maya/utils";
 import { db } from "../../@libs/common/localstorage/stores";
 import {
   AccountUI,
@@ -14,18 +15,16 @@ import {
   nameRegex,
   uniqueIdRegex,
 } from "../../@libs/common/utils";
-import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
+import { HTMLPage, NavScaffold } from "../../@libs/components";
 import {
   DialogActionButtons,
   Icon,
   Label,
   Link,
-  Section,
   Select,
   TextBox,
 } from "../../@libs/elements";
 import { TableRecordID } from "../../@libs/kvdb";
-import { phase } from "@mufw/maya/utils";
 
 const error = signal("");
 const paymentMethodType = signal<CurrencyType>("physical");
@@ -33,9 +32,6 @@ const paymentMethodName = signal("");
 const paymentMethodUniqueID = signal("");
 const paymentMethodSlaveOf = signal<AccountUI | undefined>(undefined);
 const allAccounts = signal<(AccountUI & { isSelected: boolean })[]>([]);
-const [selectedAccounts, nonSelectedAccounts] = trap(allAccounts).partition(
-  (pm) => pm.isSelected
-);
 const editablePaymentMethod = signal<PaymentMethodUI | undefined>(undefined);
 const headerLabel = derive(() =>
   editablePaymentMethod.value
@@ -69,13 +65,6 @@ effect(() => {
     ? allAccounts.value.at(0)
     : undefined;
 });
-
-const onTagTap = (accID: TableRecordID, selectTag: boolean) => {
-  allAccounts.value = allAccounts.value.map((acc) => {
-    if (acc.id === accID) acc.isSelected = selectTag;
-    return acc;
-  });
-};
 
 const validateForm = () => {
   if (!paymentMethodName.value) {
@@ -192,55 +181,6 @@ export default HTMLPage({
           onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
         }),
         // TODO: Implement a lock for slave payment method
-        m.If({
-          subject: trap(allAccounts).length,
-          isTruthy: () =>
-            m.Div([
-              Label({ text: "Connected accounts" }),
-              m.Div({
-                class: "ba br4 b--light-silver ph2",
-                children: [
-                  m.If({
-                    subject: trap(selectedAccounts).length,
-                    isTruthy: () =>
-                      Label({ text: "CONNECTED (TAP TO DESELECT)" }),
-                  }),
-                  m.Div({
-                    class: "flex flex-wrap",
-                    children: m.For({
-                      subject: selectedAccounts,
-                      map: (acc) =>
-                        Tag({
-                          onClick: () => onTagTap(acc.id, false),
-                          cssClasses: "mr2 mb2",
-                          size: "medium",
-                          state: "selected",
-                          children: acc.name,
-                        }),
-                    }),
-                  }),
-                  m.If({
-                    subject: trap(nonSelectedAccounts).length,
-                    isTruthy: () => Label({ text: "TAP ON ACCOUNT TO SELECT" }),
-                  }),
-                  m.Div({
-                    class: "flex flex-wrap",
-                    children: m.For({
-                      subject: nonSelectedAccounts,
-                      map: (acc) =>
-                        Tag({
-                          onClick: () => onTagTap(acc.id, true),
-                          cssClasses: "mr2 mb2",
-                          size: "medium",
-                          state: "unselected",
-                          children: acc.name,
-                        }),
-                    }),
-                  }),
-                ],
-              }),
-            ]),
-        }),
       ],
     }),
     hideNavbar: true,

@@ -5,7 +5,7 @@ import { TxnUI } from "./@libs/common/models/core";
 import { goToEditTxnPage } from "./@libs/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "./@libs/components";
 import { Button, Icon } from "./@libs/elements";
-import { PLAIN_EXTENDED_RECORD_VALUE_KEY } from "./@libs/kvdb";
+import { getPrimitiveRecordValue } from "./@libs/kvdb";
 
 const allTxns = signal<TxnUI[]>([]);
 
@@ -43,7 +43,7 @@ export default HTMLPage({
                     children: [
                       m.Div({
                         class: "f6 mb1",
-                        children: txn.title[PLAIN_EXTENDED_RECORD_VALUE_KEY],
+                        children: getPrimitiveRecordValue(txn.title),
                       }),
                       m.Div({
                         class: "flex flex-wrap",
@@ -53,7 +53,7 @@ export default HTMLPage({
                             Tag({
                               size: "small",
                               state: "selected",
-                              children: tag[PLAIN_EXTENDED_RECORD_VALUE_KEY],
+                              children: getPrimitiveRecordValue(tag),
                             }),
                         }),
                       }),
