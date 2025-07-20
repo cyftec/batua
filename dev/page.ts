@@ -13,7 +13,6 @@ const onPageMount = () => {
   allTxns.value = db.txns
     .getAll()
     .sort((a, b) => b.date.getTime() - a.date.getTime());
-  console.log(allTxns.value);
 };
 
 export default HTMLPage({
@@ -51,7 +50,7 @@ export default HTMLPage({
                           subject: txn.tags,
                           map: (tag) =>
                             Tag({
-                              size: "small",
+                              size: "xsmall",
                               state: "selected",
                               children: getPrimitiveRecordValue(tag),
                             }),
