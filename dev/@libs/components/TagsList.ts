@@ -35,29 +35,36 @@ export const TagsList = component<TagsListProps>(
       const tbVal = textboxText.value.toLowerCase();
       return tags.value.filter((t) => t.toLowerCase().includes(tbVal));
     });
-    const suggestion = derive(() => {
-      if (hideSuggestion?.value || !textboxText.value) return "";
-      return (
-        tags.value.find((t) => {
-          return suggestExact?.value
-            ? t.startsWith(textboxText.value)
-            : deepTrimmedLowercase(t).startsWith(
-                deepTrimmedLowercase(textboxText.value)
-              );
-        }) || textboxText.value
-      );
-    });
+    const suggestion = signal("");
     const suggestionText = derive(() =>
       (
         textboxText.value + suggestion.value.slice(textboxText.value.length)
       ).replaceAll(" ", "&nbsp;")
     );
 
+    effect(() => {
+      const shouldSuggextExact = !!suggestExact?.value;
+      const shoudlHideSuggestion = !!hideSuggestion?.value;
+      const tbText = textboxText.value;
+      suggestion.value =
+        shoudlHideSuggestion || !tbText
+          ? ""
+          : tags.value.find((t) => {
+              return shouldSuggextExact
+                ? t.startsWith(tbText)
+                : deepTrimmedLowercase(t).startsWith(
+                    deepTrimmedLowercase(tbText)
+                  );
+            }) || tbText;
+    });
+
     effect(() => console.log(`Suggestion - '${suggestionText.value}'`));
 
     const onTextboxKeydown = ({ key, text }: CustomKeyDownEvent) => {
       textboxText.value = text;
       existingTag.value = "";
+
+      if (key === "Backspace") suggestion.value = textboxText.value;
       if (key === "Enter" && textboxElem) {
         const readyForAdd = hideSuggestion?.value
           ? textboxText.value
