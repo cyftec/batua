@@ -83,10 +83,12 @@ const onTxnTitleChange = (newTitle: string) => {
 
 const onPaymentAdd = () => {
   resetError();
+  const oldPayments = txnPayments.value;
+  const sum = oldPayments.reduce((s, p) => s + p.amount, 0);
   txnPayments.value = [
-    ...txnPayments.value,
+    ...oldPayments,
     {
-      amount: 0,
+      amount: sum === 0 ? 0 : -sum,
       account: allAccounts.value[0].id,
     },
   ];
@@ -94,9 +96,32 @@ const onPaymentAdd = () => {
 
 const onPaymentUpdate = (newPayment: Payment, paymentIndex: number) => {
   resetError();
-  txnPayments.value = txnPayments.value.map((tp, i) => {
-    return paymentIndex === i ? newPayment : tp;
-  });
+  const payments = txnPayments.value;
+  const oldPayment = payments[paymentIndex];
+  const diff = newPayment.amount - oldPayment.amount;
+  let compensatingPaymentIndex = -1;
+
+  if (diff !== 0) {
+    compensatingPaymentIndex = payments.findIndex((p, i) => {
+      return oldPayment.amount < 0
+        ? p.amount < 0 && i !== paymentIndex
+        : p.amount >= 0;
+    });
+    if (compensatingPaymentIndex === -1) {
+      compensatingPaymentIndex = payments.findIndex((p) => {
+        return oldPayment.amount < 0 ? p.amount >= 0 : p.amount < 0;
+      });
+    }
+  }
+  const compensatingPayment = payments[compensatingPaymentIndex];
+  console.log(compensatingPayment);
+  txnPayments.value = txnPayments.value.map((tp, i) =>
+    paymentIndex === i
+      ? newPayment
+      : compensatingPaymentIndex === i
+      ? { ...compensatingPayment, amount: compensatingPayment.amount - diff }
+      : tp
+  );
 };
 
 const onPaymentRemove = (paymentIndex: number) => {
@@ -275,13 +300,13 @@ export default HTMLPage({
         }),
         Label({ text: "Time of transaction" }),
         DateTimePicker({
-          cssClasses: `w-100 f6 ph3 pv3 mb4 ba br4 b--light-gray`,
+          cssClasses: `w-100 f6 ph3 pv3 mb4 ba br4 b--light-silver bw1`,
           dateTime: txnDate,
           onchange: onTxnDateChange,
         }),
         Label({ text: "Title of transaction" }),
         TextBox({
-          cssClasses: `fw5 ba b--light-gray bw1 br4 pa3 mb3 outline-0 w-100`,
+          cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 mb3 outline-0 w-100`,
           text: txnTitle,
           placeholder: "Title",
           onchange: onTxnTitleChange,
