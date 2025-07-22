@@ -1,5 +1,8 @@
+import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
+import { db } from "../../../@libs/common/localstorage/stores";
 import { AccountUI, Payment } from "../../../@libs/common/models/core";
+import { areNamesSimilar, nameRegex } from "../../../@libs/common/utils";
 import {
   DialogActionButtons,
   Link,
@@ -7,14 +10,6 @@ import {
   TextBox,
 } from "../../../@libs/elements";
 import { PaymentTile } from "./PaymentTile";
-import { signal } from "@cyftech/signal";
-import { db } from "../../../@libs/common/localstorage/stores";
-import {
-  deepTrim,
-  deepTrimmedLowercase,
-  getValidName,
-  nameRegex,
-} from "../../../@libs/common/utils";
 
 type PaymentsEditorProps = {
   cssClasses?: string;
@@ -51,15 +46,12 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
     };
 
     const validate = () => {
-      if (getValidName(peopleAccountName.value) !== peopleAccountName.value) {
-        error.value =
-          "Unnecessary blank spaces or invalid characters in the name";
+      if (!nameRegex.test(peopleAccountName.value)) {
+        error.value = `Name should be alpha-numeric max 36 chars, should not repeat, start or end with (allowed) special chars.`;
         return;
       }
-      const existingAccount = db.accounts.getWhere(
-        (acc) =>
-          deepTrimmedLowercase(acc.name) ===
-          deepTrimmedLowercase(peopleAccountName.value)
+      const existingAccount = db.accounts.getWhere((acc) =>
+        areNamesSimilar(acc.name, peopleAccountName.value)
       );
       if (existingAccount) {
         error.value = `Account with name '${existingAccount.name}' already exists`;
@@ -71,7 +63,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
     const onPeopleAccountAdd = () => {
       validate();
       if (error.value) return;
-      const newAccID = db.accounts.add({
+      db.accounts.add({
         isPermanent: 0,
         name: peopleAccountName.value,
         balance: 0,

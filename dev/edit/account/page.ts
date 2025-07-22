@@ -11,12 +11,13 @@ import {
   PaymentMethodUI,
 } from "../../@libs/common/models/core";
 import {
+  areNamesSimilar,
   capitalize,
   deepTrim,
   getQueryParamValue,
   nameRegex,
 } from "../../@libs/common/utils";
-import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
+import { HTMLPage, NavScaffold } from "../../@libs/components";
 import {
   DialogActionButtons,
   Icon,
@@ -55,10 +56,10 @@ const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
 
 effect(() => {
   const vType = vaultType.value;
-  const editableAccVal = editableAccount.value;
+  const editableAcc = editableAccount.value;
   if (!phase.currentIs("run")) return;
-  const initialSelectendPmIDs = editableAccVal
-    ? (editableAccVal.paymentMethods || []).map((pm) => pm.id)
+  const initialSelectendPmIDs = editableAcc
+    ? (editableAcc.paymentMethods || []).map((pm) => pm.id)
     : [];
   allPaymentMethods.value = db.paymentMethods
     .getAllWhere((pm) => pm.type === vType)
@@ -70,11 +71,14 @@ effect(() => {
 });
 
 effect(() => {
-  if (!editableAccount.value) return;
-  accountType.value = editableAccount.value.type;
-  accountName.value = editableAccount.value.name;
-  accountUniqueId.value = editableAccount.value.uniqueId || "";
-  // vaultType.value = editableAccount.value.vault;
+  const editableAcc = editableAccount.value;
+  if (!editableAcc) return;
+  accountType.value = editableAcc.type;
+  accountName.value = editableAcc.name;
+  accountUniqueId.value = editableAcc.uniqueId || "";
+  if (editableAcc.type === "Expense") {
+    vaultType.value = editableAcc.vault;
+  }
 });
 
 const resetError = () => (error.value = "");
@@ -96,7 +100,7 @@ const onPaymentMethodAdd = (name: string) => {
   let existing = false;
   let unselected = false;
   const updatedAllPMs = allPaymentMethods.value.map((pm) => {
-    const pmFound = deepTrim(pm.name).toLowerCase() === newPmName.toLowerCase();
+    const pmFound = areNamesSimilar(pm.name, newPmName);
     if (pmFound) {
       existing = true;
       unselected = !pm.isSelected;

@@ -23,9 +23,9 @@ import {
 } from "./@components";
 
 const ACCOUNTS_PAGE_TABS = [
-  "Expense Accs",
-  "Capital Accs",
-  "Shops or People",
+  "Savings Accounts",
+  "Fund Accounts",
+  "People or Shops",
 ] as const satisfies string[];
 const selectedTabIndex = signal(1);
 const header = trap([

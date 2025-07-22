@@ -16,9 +16,11 @@ export type AccountType = Prettify<
 
 export type BaseAccount = {
   isPermanent: NumBoolean;
-  uniqueId?: string;
   name: string;
   balance: number;
+  uniqueId?: string;
+  vault?: CurrencyType;
+  paymentMethods?: PaymentMethodUI[IDKey][];
 };
 export type ExpenseAccount = Prettify<
   BaseAccount & {

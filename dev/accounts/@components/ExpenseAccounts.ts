@@ -21,7 +21,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
         subject: expenseAccounts,
         n: Infinity,
         nthChild: CardButton({
-          onTap: () => goToEditAccountPage(),
+          onTap: () => goToEditAccountPage(undefined, "Expense"),
           cssClasses: "w-48 mb3",
           icon: "add",
           label: "Add new account",
@@ -30,7 +30,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
           AccountCard({
             onTap: acc.isPermanent
               ? undefined
-              : () => goToEditAccountPage(acc.id),
+              : () => goToEditAccountPage(acc.id, "Expense"),
             cssClasses: "w-48 mb3",
             account: acc,
           }),
