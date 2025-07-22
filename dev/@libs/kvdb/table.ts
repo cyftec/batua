@@ -1,11 +1,11 @@
+import { KVStore } from "./kv-stores";
 import { getKVStoreIDManager } from "./kvs-id-manager";
 import {
   DbUnsupportedType,
   Extend,
   ID_KEY,
-  KVStore,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
-  TableID,
+  TableKey,
   TableRecordID,
 } from "./models";
 import {
@@ -41,8 +41,9 @@ export const createTable = <
   ExtendedRecord extends Extend<RawRecord>
 >(
   kvStore: KVStore,
-  tableID: TableID,
-  foreignKeyMappings?: Partial<{ [k in keyof RawRecord]: Table<any, any> }>,
+  tableKey: TableKey,
+  getForeignTableFromKey: (tableKey: TableKey) => Table<any, any>,
+  foreignKeyMappings?: Partial<{ [k in keyof RawRecord]: TableKey }>,
   dbToJsTypeMappings?: Partial<{ [k in keyof RawRecord]: DbUnsupportedType }>
 ): Table<RawRecord, ExtendedRecord> => {
   const kvsIdManager = getKVStoreIDManager(kvStore);
@@ -57,14 +58,17 @@ export const createTable = <
       const kvStoreRecordIDs = kvStore.getAllKeys();
       const validIDs: TableRecordID[] = [];
       for (const id of kvStoreRecordIDs) {
-        const validTableRecordID = getTableRecordIDFromKVSRecordID(tableID, id);
+        const validTableRecordID = getTableRecordIDFromKVSRecordID(
+          tableKey,
+          id
+        );
         if (validTableRecordID === undefined) continue;
         validIDs.push(validTableRecordID);
       }
       return validIDs;
     },
     getRaw: function (id: TableRecordID) {
-      const kvsRecordID = getKVSRecordIDFromTableRecordID(tableID, id);
+      const kvsRecordID = getKVSRecordIDFromTableRecordID(tableKey, id);
       const kvsRecordValue = kvStore.getItem(kvsRecordID);
       if (kvsRecordValue === undefined) return;
       const record = JSON.parse(kvsRecordValue);
@@ -84,18 +88,19 @@ export const createTable = <
       }
 
       if (foreignKeyMappings) {
-        Object.entries(foreignKeyMappings).forEach(([key, foreignTable]) => {
+        Object.entries(foreignKeyMappings).forEach(([key, foreignTableKey]) => {
           // rawRecordValue can only be undefined | TableRecordID | TableRecordID[]
           const rawRecordValue = record[key];
+          const foreignTable = getForeignTableFromKey(
+            foreignTableKey as string
+          );
 
           if (typeof rawRecordValue === "number") {
-            record[key] = (foreignTable as Table<any, any>).get(
-              rawRecordValue as TableRecordID
-            );
+            record[key] = foreignTable.get(rawRecordValue as TableRecordID);
           }
 
           if (Array.isArray(rawRecordValue)) {
-            record[key] = (foreignTable as Table<any, any>).getAll(
+            record[key] = foreignTable.getAll(
               rawRecordValue as TableRecordID[]
             );
           }
@@ -147,7 +152,7 @@ export const createTable = <
     add: function (record: RawRecord) {
       const tableRecordID = kvsIdManager.useNewID((newTableRecordID) => {
         const kvsRecordID = getKVSRecordIDFromTableRecordID(
-          tableID,
+          tableKey,
           newTableRecordID
         );
         const kvsRecordValue = JSON.stringify(record);
@@ -162,7 +167,7 @@ export const createTable = <
         : RawRecord
     ) {
       const thisTable = this as Table<RawRecord, ExtendedRecord>;
-      const kvsRecordID = getKVSRecordIDFromTableRecordID(tableID, id);
+      const kvsRecordID = getKVSRecordIDFromTableRecordID(tableKey, id);
       const previousRecord = thisTable.getRaw(id);
       if (previousRecord === undefined)
         throw `No record found for id - '${id}'`;
@@ -179,7 +184,7 @@ export const createTable = <
     },
     delete: function (tableRecordID: TableRecordID) {
       const kvsRecordID = getKVSRecordIDFromTableRecordID(
-        tableID,
+        tableKey,
         tableRecordID
       );
       kvStore.removeItem(kvsRecordID);

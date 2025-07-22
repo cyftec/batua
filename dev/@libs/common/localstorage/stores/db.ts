@@ -1,4 +1,4 @@
-import { phase } from "@mufw/maya/utils";
+import { createDb } from "../../../kvdb";
 import {
   Account,
   AccountUI,
@@ -13,61 +13,39 @@ import {
   TxnTitleUI,
   TxnUI,
 } from "../../models/core";
-import { createTable, KVStore } from "../../../kvdb";
 
-const lsKvStore: KVStore = {
-  getAllKeys: function (): string[] {
-    const lsKeys: string[] = [];
-    if (!phase.currentIs("run")) return lsKeys;
-    for (const key in localStorage) {
-      if (!localStorage.hasOwnProperty(key)) continue;
-      lsKeys.push(key);
-    }
-    return lsKeys;
+export const dbschema = {
+  paymentMethods: {
+    key: "pm",
+    structure: [{} as PaymentMethod, {} as PaymentMethodUI],
+    foreignKeyMappings: {},
   },
-  getItem: function (key: string): string | undefined {
-    if (!phase.currentIs("run")) return;
-    return localStorage.getItem(key) || undefined;
+  accounts: {
+    key: "a",
+    structure: [{} as Account, {} as AccountUI],
+    foreignKeyMappings: { paymentMethods: "pm" },
   },
-  setItem: function (key: string, value: string): void {
-    if (!phase.currentIs("run")) return;
-    localStorage.setItem(key, value);
+  payments: {
+    key: "p",
+    structure: [{} as Payment, {} as PaymentUI],
+    foreignKeyMappings: { accounts: "a", via: "pm" },
   },
-  removeItem: function (key: string): void {
-    if (!phase.currentIs("run")) return;
-    localStorage.removeItem(key);
+  tags: {
+    key: "tg",
+    structure: ["" as Tag, {} as TagUI],
+    foreignKeyMappings: {},
   },
-};
+  txnTitles: {
+    key: "tt",
+    structure: ["" as TxnTitle, {} as TxnTitleUI],
+    foreignKeyMappings: {},
+  },
+  txns: {
+    key: "t",
+    structure: [{} as Txn, {} as TxnUI],
+    foreignKeyMappings: { tags: "tg", title: "tt", payments: "p" },
+    dbToJsTypeMappings: { date: "Date", created: "Date", modified: "Date" },
+  },
+} as const;
 
-const paymentMethodsTable = createTable<PaymentMethod, PaymentMethodUI>(
-  lsKvStore,
-  "pm"
-);
-const accountsTable = createTable<Account, AccountUI>(lsKvStore, "ac", {
-  paymentMethods: paymentMethodsTable,
-});
-const paymentsTable = createTable<Payment, PaymentUI>(lsKvStore, "p", {
-  account: accountsTable,
-  via: paymentMethodsTable,
-});
-const tagsTable = createTable<Tag, TagUI>(lsKvStore, "tg");
-const txnTitlesTable = createTable<TxnTitle, TxnTitleUI>(lsKvStore, "tt");
-const txnsTable = createTable<Txn, TxnUI>(
-  lsKvStore,
-  "t",
-  {
-    tags: tagsTable,
-    title: txnTitlesTable,
-    payments: paymentsTable,
-  },
-  { date: "Date", created: "Date", modified: "Date" }
-);
-
-export const db = {
-  paymentMethods: paymentMethodsTable,
-  accounts: accountsTable,
-  payments: paymentsTable,
-  tags: tagsTable,
-  txnTitles: txnTitlesTable,
-  txns: txnsTable,
-};
+export const db = createDb(dbschema);
