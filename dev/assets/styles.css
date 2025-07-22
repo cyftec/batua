@@ -64,7 +64,16 @@ input::placeholder {
 .h0dot5 { height: 0.5rem; }
 .h1dot1 { height: 1.1rem; }
 .h1dot2 { height: 1.2rem; }
-.h1dot5 { height: 1.5rem; }
+.h1dot5 { height: 1.5rem; } 
+.maxh1 { max-height: 1rem; }
+.maxh2 { max-height: 2rem; }
+.maxh3 { max-height: 4rem; }
+.maxh4 { max-height: 8rem; }
+.maxh5 { max-height: 16rem; }
+.maxh6 { max-height: 32rem; }
+.maxh7 { max-height: 48rem; }
+.maxh8 { max-height: 64rem; }
+.maxh9 { max-height: 96rem; }
 .w-max-content { width: max-content; }
 .w-100vw { width: 100vw; }
 .w-80vw { width: 80vw; }

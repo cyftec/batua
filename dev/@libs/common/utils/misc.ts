@@ -15,6 +15,8 @@ export const handleTap = (fn: ((...args: any[]) => any) | undefined) => {
   };
 };
 
+// TODOD: This method is not required as JSON stringify and parse
+// works fine even with primitives. It was created as a mistake.
 export const parseObjectJsonString = <T extends Object>(
   objectJsonString: string | null | undefined,
   nonNullPropKey: string
@@ -25,7 +27,6 @@ export const parseObjectJsonString = <T extends Object>(
   const propValue = obj[nonNullPropKey];
   if (propValue === null || propValue === undefined) {
     console.log(objectJsonString, nonNullPropKey);
-
     throw `The value for nonNullPropKey '${nonNullPropKey}' should not be null or undefined`;
   }
 

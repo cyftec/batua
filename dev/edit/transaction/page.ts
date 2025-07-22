@@ -10,30 +10,28 @@ import {
   TxnType,
   TxnUI,
 } from "../../@libs/common/models/core";
+import { isFutureDate } from "../../@libs/common/transforms";
 import {
   getLowercaseTagName,
   getQueryParamValue,
   nameRegex,
 } from "../../@libs/common/utils";
-import { HTMLPage, NavScaffold, Tag } from "../../@libs/components";
+import { HTMLPage, NavScaffold } from "../../@libs/components";
 import {
   DateTimePicker,
   DialogActionButtons,
   Icon,
   Label,
-  Link,
   TabbedSelect,
   TextBox,
 } from "../../@libs/elements";
 import {
   getPrimitiveRecordValue,
   ID_KEY,
-  PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
 } from "../../@libs/kvdb";
-import { PaymentTile } from "./@components/PaymentTile";
-import { isFutureDate } from "../../@libs/common/transforms";
 import { TagsSelector } from "../@components";
+import { PaymentsEditor } from "./@components/PaymentsEditor";
 
 const now = new Date();
 const error = signal("");
@@ -81,6 +79,13 @@ const onTxnTitleChange = (newTitle: string) => {
   txnTitle.value = newTitle.trim();
 };
 
+const onNewPeopleAccountAdd = () => {
+  console.log(`Adding new Friend`);
+  allAccounts.value = db.accounts
+    .getAll()
+    .sort((a, b) => a.type.localeCompare(b.type));
+};
+
 const onPaymentAdd = () => {
   resetError();
   const oldPayments = txnPayments.value;
@@ -124,7 +129,7 @@ const onPaymentUpdate = (newPayment: Payment, paymentIndex: number) => {
   );
 };
 
-const onPaymentRemove = (paymentIndex: number) => {
+const onPaymentDelete = (paymentIndex: number) => {
   resetError();
   txnPayments.value = txnPayments.value.filter((_, i) => i !== paymentIndex);
 };
@@ -278,9 +283,9 @@ const onPageMount = () => {
     .sort((a, b) =>
       getPrimitiveRecordValue(a).localeCompare(getPrimitiveRecordValue(b))
     );
-  console.log(allTags.value);
-
-  allAccounts.value = db.accounts.getAll();
+  allAccounts.value = db.accounts
+    .getAll()
+    .sort((a, b) => a.type.localeCompare(b.type));
   populateInitialTxnValueOnMount();
 };
 
@@ -312,27 +317,13 @@ export default HTMLPage({
           onchange: onTxnTitleChange,
         }),
         Label({ unpadded: true, text: "Payments" }),
-        m.Div({
-          class: "mb4",
-          children: m.For({
-            subject: txnPayments,
-            n: Infinity,
-            nthChild: m.Div({
-              class: "mb2 flex items-center justify-end",
-              children: Link({
-                onClick: onPaymentAdd,
-                cssClasses: "f6 mt2",
-                children: "Add new payment",
-              }),
-            }),
-            map: (payment, index) =>
-              PaymentTile({
-                allAccounts: allAccounts,
-                payment: payment,
-                onChange: (newPmt) => onPaymentUpdate(newPmt, index),
-                onRemove: () => onPaymentRemove(index),
-              }),
-          }),
+        PaymentsEditor({
+          payments: txnPayments,
+          allAccounts,
+          onPaymentAdd,
+          onPaymentUpdate,
+          onPaymentDelete,
+          onNewPeopleAccountAdd,
         }),
         Label({ text: "Associated tags" }),
         TagsSelector({

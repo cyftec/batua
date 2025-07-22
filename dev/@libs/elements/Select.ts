@@ -1,17 +1,22 @@
-import { derive, op, signal, tmpl, trap } from "@cyftech/signal";
+import { derive, DerivedSignal, op, signal, tmpl, trap } from "@cyftech/signal";
 import { Child, component, m } from "@mufw/maya";
 import { handleTap } from "../common/utils";
 import { Icon } from "./Icon";
+
+export type SelectOption<D extends any> = {
+  label: string;
+  data?: D;
+};
 
 type SelectProps = {
   cssClasses?: string;
   optionsMenuClasses?: string;
   anchor?: "left" | "center" | "right";
   size?: "large" | "medium" | "small";
-  options: string[];
+  options: SelectOption<any>[];
   selectedOptionIndex: number;
-  targetFormattor?: (option: string, index?: number) => Child;
-  optionFormattor?: (option: string, index?: number) => Child;
+  targetFormattor?: (option: SelectOption<any>, index?: number) => Child;
+  optionFormattor?: (option: SelectOption<any>, index?: number) => Child;
   onChange: (optionIndex: number) => void;
 };
 
@@ -36,15 +41,17 @@ export const Select = component<SelectProps>(
     );
     const classes = tmpl`relative dib pointer outline-0 ba bw1 b--light-silver bg-near-white black ${sizeCss} ${cssClasses}`;
     const isOptionSelectorOpen = signal(false);
-    const selectedOption = trap(options).at(selectedOptionIndex);
+    const selectedOption = trap(options).at(
+      selectedOptionIndex
+    ) as DerivedSignal<SelectOption<any>>;
     const anchorPosition = derive(() => {
       const anchorVal = anchor?.value || "center";
       return anchorVal === "left" ? 0 : anchorVal === "right" ? 100 : 50;
     });
     const formattedSelectedOption = derive(() =>
       targetFormattor
-        ? targetFormattor(selectedOption.value || "")
-        : selectedOption.value
+        ? targetFormattor(selectedOption.value)
+        : selectedOption.value.label
     );
     const targetIconSize = derive(() =>
       size?.value === "large" ? 20 : size?.value === "medium" ? 16 : 12
@@ -68,7 +75,7 @@ export const Select = component<SelectProps>(
           ],
         }),
         m.Div({
-          class: tmpl`bg-white absolute z-9999 mt3 br3 shadow-2 f5 w-max-content ${optionsMenuClasses} ${op(
+          class: tmpl`maxh5 overflow-scroll bg-white absolute z-9999 mt2 pv1 br3 shadow-2 f5 w-max-content ${optionsMenuClasses} ${op(
             isOptionSelectorOpen
           ).ternary("db", "dn")}`,
           style: tmpl`
@@ -98,7 +105,7 @@ export const Select = component<SelectProps>(
                     ? optionFormattor(option, index)
                     : m.Div({
                         class: "w-100 fw6 f5 tl",
-                        children: option,
+                        children: option.label,
                       }),
                 ],
               });

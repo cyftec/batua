@@ -33,7 +33,7 @@ export default HTMLPage({
                     class: "bg-near-white br3 pa2 mr2",
                     children: txn.payments
                       .reduce((s, p) => {
-                        return p.account.name === "Market" ? s : s + p.amount;
+                        return p.account.type === "Expense" ? s + p.amount : s;
                       }, 0)
                       .toLocaleString(),
                   }),
@@ -61,7 +61,7 @@ export default HTMLPage({
                 ],
               }),
               m.Div({
-                class: "silver f8",
+                class: "silver f8 w2 mt1",
                 children: txn.date
                   .toDateString()
                   .split(" ")

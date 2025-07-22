@@ -1,24 +1,36 @@
-import { derive, effect, op, signal, trap } from "@cyftech/signal";
+import { derive, op, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
+import { AccountUI, Payment } from "../../../@libs/common/models/core";
 import {
-  AccountUI,
-  Payment,
-  PaymentMethodUI,
-} from "../../../@libs/common/models/core";
-import { Icon, NumberBox, Select } from "../../../@libs/elements";
+  Icon,
+  NumberBox,
+  Select,
+  type SelectOption,
+} from "../../../@libs/elements";
 
 type PaymentTileProps = {
-  allAccounts: AccountUI[];
   payment: Payment;
+  allAccounts: AccountUI[];
+  onPeopleAccountAdd: () => void;
   onChange: (newPayment: Payment) => void;
   onRemove: () => void;
 };
 
 export const PaymentTile = component<PaymentTileProps>(
-  ({ allAccounts, payment, onChange, onRemove }) => {
+  ({ payment, allAccounts, onPeopleAccountAdd, onChange, onRemove }) => {
+    const ADD_NEW_PERSON = "Add new person";
     const amountEditorFocused = signal(false);
     const { account, amount, via } = trap(payment).props;
-    const accountOptions = trap(allAccounts).map((acc) => acc.name);
+    const accountOptions = derive(() => {
+      const allAccs = allAccounts.value.map((acc) => ({
+        label: acc.name,
+        data: acc,
+      }));
+      return [
+        ...allAccs,
+        { label: "", data: { type: "People", name: ADD_NEW_PERSON } },
+      ];
+    });
     const selectedAccountIndex = trap(allAccounts).findIndex(
       (acc) => acc.id === account.value
     );
@@ -32,6 +44,10 @@ export const PaymentTile = component<PaymentTileProps>(
       onChange({ ...payment.value, amount: newAmount });
 
     const onAccountChange = (newAccountIndex: number) => {
+      if (newAccountIndex === allAccounts.value.length) {
+        onPeopleAccountAdd();
+        return;
+      }
       onChange({
         ...payment.value,
         account: allAccounts.value[newAccountIndex].id,
@@ -70,13 +86,32 @@ export const PaymentTile = component<PaymentTileProps>(
               options: accountOptions,
               selectedOptionIndex: selectedAccountIndex,
               onChange: onAccountChange,
+              optionFormattor(option: SelectOption<AccountUI>, index) {
+                return m.Div({
+                  children: [
+                    m.Div({
+                      class: "f8 silver",
+                      children: option.data?.type,
+                    }),
+                    m.Div({
+                      class: `f6 black ${
+                        option.data?.name === ADD_NEW_PERSON
+                          ? "underline fw5"
+                          : "fw6"
+                      }`,
+                      children: option.data?.name,
+                    }),
+                  ],
+                });
+              },
             }),
             m.If({
               subject: selectedAccPaymentMethods,
               isTruthy: (nonNullPms) => {
-                const paymentMethodOptions = trap(nonNullPms).map(
-                  (pm) => pm.name
-                );
+                const paymentMethodOptions = trap(nonNullPms).map((pm) => ({
+                  label: pm.name,
+                  data: pm,
+                }));
                 const selectedPaymentMethodIndex = trap(nonNullPms).findIndex(
                   (pm) =>
                     via?.value === undefined ? true : pm.id === via.value
@@ -92,7 +127,7 @@ export const PaymentTile = component<PaymentTileProps>(
                   size: "small",
                   options: paymentMethodOptions,
                   selectedOptionIndex: selectedPaymentMethodIndex,
-                  targetFormattor: (option) => `via ${option}`,
+                  targetFormattor: (option) => `via ${option.label}`,
                   optionFormattor: (option) =>
                     m.Div({
                       children: [
@@ -100,7 +135,7 @@ export const PaymentTile = component<PaymentTileProps>(
                           class: "light-silver f8",
                           children: `paid via`,
                         }),
-                        m.Div({ class: "f6 fw6", children: option }),
+                        m.Div({ class: "f6 fw6", children: option.label }),
                       ],
                     }),
                   onChange: onPaymentMethodChange,
