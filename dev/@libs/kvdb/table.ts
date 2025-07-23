@@ -9,8 +9,11 @@ import {
   TableRecordID,
 } from "./models";
 import {
+  getMappedObject,
   getKVSRecordIDFromTableRecordID,
   getTableRecordIDFromKVSRecordID,
+  getExtendedValue,
+  getJsValue,
 } from "./transforms";
 
 export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
@@ -76,7 +79,7 @@ export const createTable = <
     },
     get: function (id: TableRecordID) {
       const thisTable = this as Table<RawRecord, ExtendedRecord>;
-      const record = thisTable.getRaw(id);
+      let record = thisTable.getRaw(id);
 
       if (!record) return;
 
@@ -88,32 +91,29 @@ export const createTable = <
       }
 
       if (foreignKeyMappings) {
-        Object.entries(foreignKeyMappings).forEach(([key, foreignTableKey]) => {
-          // rawRecordValue can only be undefined | TableRecordID | TableRecordID[]
-          const rawRecordValue = record[key];
-          const foreignTable = getForeignTableFromKey(
-            foreignTableKey as string
+        Object.keys(foreignKeyMappings).forEach((keysPath) => {
+          if (!record) return;
+          const foreignTableKey = foreignKeyMappings[keysPath] as string;
+          const foreignTable = getForeignTableFromKey(foreignTableKey);
+          const keysPathArray = keysPath.split(".");
+          record = getMappedObject(
+            (rawValue) => getExtendedValue(foreignTable, rawValue),
+            record,
+            keysPathArray
           );
-
-          if (typeof rawRecordValue === "number") {
-            record[key] = foreignTable.get(rawRecordValue as TableRecordID);
-          }
-
-          if (Array.isArray(rawRecordValue)) {
-            record[key] = foreignTable.getAll(
-              rawRecordValue as TableRecordID[]
-            );
-          }
         });
       }
 
       if (dbToJsTypeMappings) {
-        Object.entries(dbToJsTypeMappings).forEach(([key, jsType]) => {
-          // rawRecordValue can only be one of DbUnsupportedType
-          const rawRecordValue = record[key];
-          if (typeof rawRecordValue === "number" && jsType === "Date") {
-            record[key] = new Date(rawRecordValue);
-          }
+        Object.keys(dbToJsTypeMappings).forEach((keysPath) => {
+          if (!record) return;
+          const jsType = dbToJsTypeMappings[keysPath] as DbUnsupportedType;
+          const keysPathArray = keysPath.split(".");
+          record = getMappedObject(
+            (rawValue) => getJsValue(rawValue, jsType),
+            record,
+            keysPathArray
+          );
         });
       }
 

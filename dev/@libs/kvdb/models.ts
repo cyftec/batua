@@ -1,4 +1,4 @@
-export type DbUnsupportedType = "Date";
+export type DbUnsupportedType = "Date" | "Boolean";
 export type IDKey = "id";
 export const ID_KEY: IDKey = "id";
 export type TableRecordID = number;
