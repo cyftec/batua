@@ -2,19 +2,14 @@
 
 export const ACCOUNT = {
   people: {
-    rel: "with name" as const,
     niteshagarwal: {},
     arindam: {},
   },
-  savings: {
-    rel: "with vault type" as const,
+  expense: {
     physical: {},
-    digital: {
-      rel: "acc with name",
-    },
+    digital: {},
   },
   loan: {
-    rel: "of type" as const,
     personal: {},
     business: {},
     education: {},
@@ -22,8 +17,8 @@ export const ACCOUNT = {
     car: {},
     insurance: {},
   },
-  investment: {
-    rel: "of type" as const,
+  deposit: {
+    fd: {},
     stocks: {},
     bonds: {},
     mutualfunds: {},
@@ -33,75 +28,20 @@ export const ACCOUNT = {
   },
 };
 
-export const money = {
-  rel: "moved, involving" as const,
-  multipleaccs: {
-    rel: "as a txn of type" as const,
-    transfer: {
-      rel: "between accounts of same type, which is one of" as const,
-      people: ACCOUNT.people,
-      savings: ACCOUNT.savings,
-      loan: ACCOUNT.loan,
-      investment: ACCOUNT.investment,
-    },
-    settlement: {
-      rel: "between my savings acc and acc of type" as const,
-      people: ACCOUNT.people,
-      loan: ACCOUNT.loan,
-      investment: ACCOUNT.investment,
-    },
-    lend: {
-      rel: "from my savings acc to acc of type" as const,
-      people: ACCOUNT.people,
-      investment: ACCOUNT.investment,
-    },
-    borrow: {
-      rel: "from acc of type" as const,
-      people: ACCOUNT.people,
-      loan: ACCOUNT.loan,
-    },
+export const financialActivity = {
+  balanceupdate: {},
+  transfer: {
+    restructure: {},
+    settlement: {},
+    lend: {},
+    borrow: {},
   },
-  singleacc: {
-    rel: "as a txn of type" as const,
-    balanceupdate: {
-      rel: "of any one of" as const,
-      people: ACCOUNT.people,
-      savings: ACCOUNT.savings,
-      loan: ACCOUNT.loan,
-      investment: ACCOUNT.investment,
-    },
-    credit: {
-      rel: "to my savings acc of type" as const,
-      people: ACCOUNT.people,
-      savings: ACCOUNT.savings,
-      loan: ACCOUNT.loan,
-      investment: ACCOUNT.investment,
-    },
-    debit: {
-      rel: "from my savings acc" as const,
-    },
+  moneycredit: {
+    income: { job: {}, business: {} },
+    win: { find: {}, prize: {} },
   },
-};
-
-export const TRADE = {
-  income: {
-    rel: "by a" as const,
-    job: {},
-    business: {},
-  },
-  win: {
-    rel: "by a" as const,
-    find: {},
-    prize: {},
-  },
-  expense: {
-    rel: "by a" as const,
-    purchase: {},
-    donation: {},
-  },
-  loss: {
-    rel: "by a" as const,
-    misplacement: {},
-    penalty: {},
+  moneydebit: {
+    expense: { purchase: {}, donation: {} },
+    loss: { misplacement: {}, penalty: {} },
   },
 };
