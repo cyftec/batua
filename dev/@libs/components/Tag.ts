@@ -2,11 +2,13 @@ import { derive, dispose, op, tmpl } from "@cyftech/signal";
 import { Children, component, m } from "@mufw/maya";
 import { handleTap } from "../common/utils";
 
+export type TagState = "selected" | "unselected" | "idle" | "error";
+
 type TagProps = {
   cssClasses?: string;
   children: Children;
   size: "large" | "medium" | "small" | "xsmall";
-  state: "selected" | "unselected" | "idle" | "error";
+  state: TagState;
   onClick?: () => void;
 };
 

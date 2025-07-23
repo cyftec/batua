@@ -59,8 +59,8 @@ export const TagsPage = component<TagsPageProps>(({}) => {
             ],
           }),
           TagsList({
-            onTagTap: (tagIndex) => console.log(allTags.value.at(tagIndex)),
             onTagAdd: onTagAdd,
+            tagsState: "idle",
             hideSuggestion: true,
             tagClasses: "mt2 mr2",
             tags: trap(allTags).map(getPrimitiveRecordValue),

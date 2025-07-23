@@ -1,6 +1,6 @@
 import { derive, effect, op, signal, tmpl, trap } from "@cyftech/signal";
 import { component, m, MHtmlElement } from "@mufw/maya";
-import { Tag } from ".";
+import { Tag, TagState } from ".";
 import { deepTrimmedLowercase } from "../common/utils";
 import { CustomKeyDownEvent, SuggestiveTextbox } from "../elements";
 
@@ -14,6 +14,7 @@ type TagsListProps = {
   hideSuggestion?: boolean;
   suggestExact?: boolean;
   tags: string[];
+  tagsState?: TagState;
 };
 
 export const TagsList = component<TagsListProps>(
@@ -27,6 +28,7 @@ export const TagsList = component<TagsListProps>(
     hideSuggestion,
     suggestExact,
     tags,
+    tagsState,
   }) => {
     let textboxElem: MHtmlElement<HTMLInputElement>;
     const existingTag = signal("");
@@ -57,8 +59,6 @@ export const TagsList = component<TagsListProps>(
                   );
             }) || tbText;
     });
-
-    effect(() => console.log(`Suggestion - '${suggestionText.value}'`));
 
     const onTextboxKeydown = ({ key, text }: CustomKeyDownEvent) => {
       textboxText.value = text;
@@ -122,9 +122,7 @@ export const TagsList = component<TagsListProps>(
               const tagState = derive(() =>
                 existingTag.value === tag
                   ? "error"
-                  : onTagTap
-                  ? "idle"
-                  : "selected"
+                  : tagsState?.value || "unselected"
               );
               return Tag({
                 onClick: () => onTagClick(tag),

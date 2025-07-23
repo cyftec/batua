@@ -26,11 +26,6 @@ export const TagsSelector = component<TagsSelectorProps>(
     return m.Div({
       class: cssClasses,
       children: [
-        Label({ text: "SELECTED (TAP TO UNSELECT)" }),
-        m.If({
-          subject: trap(selectedTags).length,
-          isFalsy: () => "&nbsp;--",
-        }),
         m.Div({
           class: "flex flex-wrap",
           children: m.For({
@@ -45,7 +40,6 @@ export const TagsSelector = component<TagsSelectorProps>(
               }),
           }),
         }),
-        Label({ text: "TAP TO SELECT OR CREATE NEW" }),
         TagsList({
           onTagAdd: onAdd,
           onTagTap: (index) => onTagTap(index, true),
