@@ -19,7 +19,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
       title: "Expense accounts",
       children: m.For({
         subject: expenseAccounts,
-        n: Infinity,
+        n: 0,
         nthChild: CardButton({
           onTap: () => goToEditAccountPage(undefined, "Expense"),
           cssClasses: "w-48 mb3",

@@ -23,6 +23,7 @@ import {
   Icon,
   Label,
   Link,
+  Section,
   Select,
   TextBox,
 } from "../../@libs/elements";
@@ -96,7 +97,6 @@ const onPaymentMethodTagTap = (tagIndex: number, isSelected: boolean) => {
 const onPaymentMethodAdd = (name: string) => {
   resetError();
   const newPmName = deepTrim(name);
-  console.log(`new payment-method '${newPmName}' added`);
   let existing = false;
   let unselected = false;
   const updatedAllPMs = allPaymentMethods.value.map((pm) => {
@@ -203,44 +203,54 @@ export default HTMLPage({
               ],
             }),
         }),
+        Section({
+          title: "Basic details",
+          children: [
+            Label({ text: "Name of account" }),
+            TextBox({
+              cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
+              text: accountName,
+              placeholder: "Account name",
+              onchange: (text) => (accountName.value = text.trim()),
+            }),
+            Label({ text: "Unique id" }),
+            TextBox({
+              cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
+              text: accountUniqueId,
+              placeholder: "Unique id (optional)",
+              onchange: (text) => (accountUniqueId.value = text.trim()),
+            }),
+          ],
+        }),
         m.If({
           subject: vaultType,
           isTruthy: (subject) =>
-            m.Div([
-              Label({ text: "My money vault type" }),
-              Select({
-                cssClasses: "mb2 f6 br3",
-                anchor: "left",
-                options: CURRENCY_TYPES.map((c) => ({ label: c })),
-                selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
-                targetFormattor: (option) => capitalize(option.label),
-                optionFormattor: (option) => capitalize(option.label),
-                onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
-              }),
-            ]),
-        }),
-        Label({ text: "Name of account" }),
-        TextBox({
-          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-          text: accountName,
-          placeholder: "Account name",
-          onchange: (text) => (accountName.value = text.trim()),
-        }),
-        Label({ text: "Unique id" }),
-        TextBox({
-          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
-          text: accountUniqueId,
-          placeholder: "Unique id (optional)",
-          onchange: (text) => (accountUniqueId.value = text.trim()),
-        }),
-        Label({ text: "Payment Methods" }),
-        TagsSelector({
-          onAdd: onPaymentMethodAdd,
-          onTagTap: onPaymentMethodTagTap,
-          cssClasses: "ba br4 b--light-silver ph2",
-          selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
-          unSelectedTags: trap(unSelectedPaymentMethods).map((a) => a.name),
-          textboxPlaceholder: tagsSelectorPlaceholder,
+            Section({
+              title: "Vault and payment methods",
+              children: [
+                Label({ text: "My money vault type" }),
+                Select({
+                  cssClasses: "mb2 f6 br3",
+                  anchor: "left",
+                  options: CURRENCY_TYPES.map((c) => ({ label: c })),
+                  selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
+                  targetFormattor: (option) => capitalize(option.label),
+                  optionFormattor: (option) => capitalize(option.label),
+                  onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
+                }),
+                Label({ text: "Payment Methods" }),
+                TagsSelector({
+                  onAdd: onPaymentMethodAdd,
+                  onTagTap: onPaymentMethodTagTap,
+                  cssClasses: "",
+                  selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
+                  unSelectedTags: trap(unSelectedPaymentMethods).map(
+                    (a) => a.name
+                  ),
+                  textboxPlaceholder: tagsSelectorPlaceholder,
+                }),
+              ],
+            }),
         }),
       ],
     }),

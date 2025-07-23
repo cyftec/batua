@@ -168,14 +168,14 @@ export default HTMLPage({
         }),
         Label({ text: "Name of the method" }),
         TextBox({
-          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
           text: paymentMethodName,
           placeholder: "like GPay, PayPal, etc.",
           onchange: (text) => (paymentMethodName.value = text.trim()),
         }),
         Label({ text: "Unique id" }),
         TextBox({
-          cssClasses: `mb2 fw5 ba b--light-silver bw1 br4 pa3 outline-0 w-100`,
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
           text: paymentMethodUniqueID,
           placeholder: "Unique id of the method",
           onchange: (text) => (paymentMethodUniqueID.value = text.trim()),

@@ -18,7 +18,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
       title: "Payment methods",
       children: m.For({
         subject: paymentMethods,
-        n: Infinity,
+        n: 0,
         nthChild: CardButton({
           cssClasses: "w-48 mb3",
           onTap: () => goToEditPaymentMethodPage(),
@@ -40,6 +40,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
                     subject: pm.isPermanent,
                     isTruthy: () =>
                       Icon({
+                        cssClasses: "silver",
                         iconName: "edit_off",
                         size: 14,
                       }),
