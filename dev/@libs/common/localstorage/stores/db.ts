@@ -14,36 +14,50 @@ import {
   TxnUI,
 } from "../../models/core";
 
+const PAYMENT_METHODS_TABLE_KEY = "pm";
+const ACCOUNTS_TABLE_KEY = "a";
+const PAYMENTS_TABLE_KEY = "p";
+const TAGS_TABLE_KEY = "tg";
+const TRANSACTION_TITLES_TABLE_KEY = "tt";
+const TRANSACTIONS_TABLE_KEY = "t";
+
 export const dbschema = {
   paymentMethods: {
-    key: "pm",
+    key: PAYMENT_METHODS_TABLE_KEY,
     structure: [{} as PaymentMethod, {} as PaymentMethodUI],
     foreignKeyMappings: {},
   },
   accounts: {
-    key: "a",
+    key: ACCOUNTS_TABLE_KEY,
     structure: [{} as Account, {} as AccountUI],
-    foreignKeyMappings: { paymentMethods: "pm" },
+    foreignKeyMappings: { paymentMethods: PAYMENT_METHODS_TABLE_KEY },
   },
   payments: {
-    key: "p",
+    key: PAYMENTS_TABLE_KEY,
     structure: [{} as Payment, {} as PaymentUI],
-    foreignKeyMappings: { accounts: "a", via: "pm" },
+    foreignKeyMappings: {
+      accounts: ACCOUNTS_TABLE_KEY,
+      via: PAYMENT_METHODS_TABLE_KEY,
+    },
   },
   tags: {
-    key: "tg",
+    key: TAGS_TABLE_KEY,
     structure: ["" as Tag, {} as TagUI],
     foreignKeyMappings: {},
   },
   txnTitles: {
-    key: "tt",
+    key: TRANSACTION_TITLES_TABLE_KEY,
     structure: ["" as TxnTitle, {} as TxnTitleUI],
     foreignKeyMappings: {},
   },
   txns: {
-    key: "t",
+    key: TRANSACTIONS_TABLE_KEY,
     structure: [{} as Txn, {} as TxnUI],
-    foreignKeyMappings: { tags: "tg", title: "tt", payments: "p" },
+    foreignKeyMappings: {
+      tags: TAGS_TABLE_KEY,
+      title: TRANSACTION_TITLES_TABLE_KEY,
+      payments: PAYMENTS_TABLE_KEY,
+    },
     dbToJsTypeMappings: { date: "Date", created: "Date", modified: "Date" },
   },
 } as const;
