@@ -1,7 +1,7 @@
 import { compute, dispose, op, signal, tmpl } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { getNavbarRoutes } from "../common/transforms";
-import { goToHref, handleTap } from "../common/utils";
+import { handleTap } from "../common/utils";
 import { Icon } from "../elements";
 
 type NavBarProps = {
@@ -46,7 +46,7 @@ export const NavBarLink = component<NavBarLinkProps>(
     return m.Div({
       onunmount: () => dispose(fontColor, classes),
       class: classes,
-      onclick: handleTap(() => goToHref(href.value)),
+      onclick: handleTap(() => (location.href = href.value)),
       children: [
         Icon({ size: 22, iconName: icon }),
         m.Div({ class: "f8 b pt1", children: label }),

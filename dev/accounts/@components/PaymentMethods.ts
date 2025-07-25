@@ -1,10 +1,6 @@
 import { component, m } from "@mufw/maya";
 import { PaymentMethodUI } from "../../@libs/common/models/core";
-import {
-  capitalize,
-  goToEditPaymentMethodPage,
-  handleTap,
-} from "../../@libs/common/utils";
+import { URL, capitalize, goToPage, handleTap } from "../../@libs/common/utils";
 import { CardButton, Icon, Section } from "../../@libs/elements";
 
 type PaymentMethodsProps = {
@@ -21,7 +17,7 @@ export const PaymentMethods = component<PaymentMethodsProps>(
         n: 0,
         nthChild: CardButton({
           cssClasses: "w-48 mb3",
-          onTap: () => goToEditPaymentMethodPage(),
+          onTap: () => goToPage(URL.EDIT.PAYMENT_METHOD),
           icon: "add",
           label: "Add new payment method",
         }),
@@ -29,7 +25,9 @@ export const PaymentMethods = component<PaymentMethodsProps>(
           m.Div({
             onclick: pm.isPermanent
               ? undefined
-              : handleTap(() => goToEditPaymentMethodPage(pm.id)),
+              : handleTap(() =>
+                  goToPage(URL.EDIT.PAYMENT_METHOD, { id: pm.id })
+                ),
             class: `w-48 mb3 pa2 ba b--light-gray br4`,
             children: [
               m.Div({

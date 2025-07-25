@@ -1,12 +1,8 @@
 import { component, m } from "@mufw/maya";
-import {
-  ExpenseAccountUI,
-  PaymentMethodUI,
-} from "../../@libs/common/models/core";
-import { goToEditAccountPage } from "../../@libs/common/utils";
+import { ExpenseAccountUI } from "../../@libs/common/models/core";
 import { CardButton, Section } from "../../@libs/elements";
 import { AccountCard } from "./AccountCard";
-import { trap } from "@cyftech/signal";
+import { URL, goToPage } from "../../@libs/common/utils";
 
 type ExpenseAccountsProps = {
   expenseAccounts: ExpenseAccountUI[];
@@ -21,7 +17,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
         subject: expenseAccounts,
         n: 0,
         nthChild: CardButton({
-          onTap: () => goToEditAccountPage(undefined, "Expense"),
+          onTap: () => goToPage(URL.EDIT.ACCOUNT, { type: "Expense" }),
           cssClasses: "w-48 mb3",
           icon: "add",
           label: "Add new account",
@@ -30,7 +26,8 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
           AccountCard({
             onTap: acc.isPermanent
               ? undefined
-              : () => goToEditAccountPage(acc.id, "Expense"),
+              : () =>
+                  goToPage(URL.EDIT.ACCOUNT, { id: acc.id, type: "Expense" }),
             cssClasses: "w-48 mb3",
             account: acc,
           }),

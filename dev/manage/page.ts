@@ -1,6 +1,6 @@
 import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { getQueryParamValue, goToManageMoneyPage } from "../@libs/common/utils";
+import { URL, getQueryParamValue, goToPage } from "../@libs/common/utils";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
 import { Budget, TagsPage } from "./@components";
@@ -35,7 +35,7 @@ export default HTMLPage({
       cssClasses: "nl3 nr3",
       tabs: MANAGE_MONEY_TABS,
       selectedTabIndex: selectedTabIndex,
-      onTabChange: (tabIndex) => goToManageMoneyPage(tabIndex),
+      onTabChange: (tabIndex) => goToPage(URL.MANAGE, { tab: tabIndex }),
     }),
   }),
 });

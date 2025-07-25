@@ -1,4 +1,4 @@
-import { effect, op, signal, trap } from "@cyftech/signal";
+import { effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../@libs/common/localstorage/stores";
 import {
@@ -12,7 +12,7 @@ import {
   PeopleOrShopAccountUI,
   PERSON_OR_SHOP_ACCOUNT_TYPES_LIST,
 } from "../@libs/common/models/core";
-import { getQueryParamValue, goToAccountsPage } from "../@libs/common/utils";
+import { URL, getQueryParamValue, goToPage } from "../@libs/common/utils";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
 import {
@@ -95,7 +95,7 @@ export default HTMLPage({
       cssClasses: "nl3 nr3",
       tabs: ACCOUNTS_PAGE_TABS,
       selectedTabIndex: selectedTabIndex,
-      onTabChange: (tabIndex) => goToAccountsPage(tabIndex),
+      onTabChange: (tabIndex) => goToPage(URL.ACCOUNTS, { tab: tabIndex }),
     }),
   }),
 });
