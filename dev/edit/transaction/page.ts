@@ -22,7 +22,7 @@ import {
   DialogActionButtons,
   Icon,
   Label,
-  TabbedSelect,
+  Section,
   TextBox,
 } from "../../@libs/elements";
 import {
@@ -32,10 +32,11 @@ import {
 } from "../../@libs/kvdb";
 import { TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components/PaymentsEditor";
+import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";
 
 const now = new Date();
 const error = signal("");
-const txnType = signal<TxnType>("spent");
+const txnType = signal<TxnType>("balanceupdate");
 const txnDate = signal<Date>(now);
 const txnCreated = signal<Date>(now);
 const txnModified = signal<Date>(now);
@@ -223,7 +224,7 @@ const saveTxn = () => {
       pmtIDs.push(newPmtID);
     });
     db.txns.add({
-      type: "spent",
+      type: "balanceupdate",
       date: txnDate.value.getTime(),
       created: now,
       modified: now,
@@ -295,43 +296,57 @@ export default HTMLPage({
     header: headerLabel,
     content: m.Div({
       children: [
-        Label({ text: "Necessity of transaction" }),
-        TabbedSelect({
-          cssClasses: "ml3 mr2 mt2 mb3 pb2",
-          labelPosition: "bottom",
-          options: TXN_NECESSITIES_WITH_ICONS,
-          selectedOptionIndex: selectedNecessityOptionIndex,
-          onChange: onTxnNecessityChange,
+        // Label({ text: "Necessity of transaction" }),
+        // TabbedSelect({
+        //   cssClasses: "ml3 mr2 mt2 mb3 pb2",
+        //   labelPosition: "bottom",
+        //   options: TXN_NECESSITIES_WITH_ICONS,
+        //   selectedOptionIndex: selectedNecessityOptionIndex,
+        //   onChange: onTxnNecessityChange,
+        // }),
+        Section({
+          title: "Basic details",
+          children: [
+            Label({ text: "Transaction type" }),
+            TransactionTypeSelector({
+              txnType: txnType,
+              onChange: (newType) => (txnType.value = newType),
+            }),
+            Label({ text: "Time of transaction" }),
+            DateTimePicker({
+              cssClasses: `w-100 f6 ba b--light-silver bw1 br3 pa2 mb2`,
+              dateTime: txnDate,
+              onchange: onTxnDateChange,
+            }),
+            Label({ text: "Title of transaction" }),
+            TextBox({
+              cssClasses: `fw5 ba b--light-silver bw1 br3 pa2 mb2 outline-0 w-100`,
+              text: txnTitle,
+              placeholder: "Title",
+              onchange: onTxnTitleChange,
+            }),
+          ],
         }),
-        Label({ text: "Time of transaction" }),
-        DateTimePicker({
-          cssClasses: `w-100 f6 ph3 pv3 mb4 ba br4 b--light-silver bw1`,
-          dateTime: txnDate,
-          onchange: onTxnDateChange,
+        Section({
+          title: "Payments",
+          children: PaymentsEditor({
+            payments: txnPayments,
+            allAccounts,
+            onPaymentAdd,
+            onPaymentUpdate,
+            onPaymentDelete,
+            onNewPeopleAccountAdd,
+          }),
         }),
-        Label({ text: "Title of transaction" }),
-        TextBox({
-          cssClasses: `fw5 ba b--light-silver bw1 br4 pa3 mb3 outline-0 w-100`,
-          text: txnTitle,
-          placeholder: "Title",
-          onchange: onTxnTitleChange,
-        }),
-        Label({ unpadded: true, text: "Payments" }),
-        PaymentsEditor({
-          payments: txnPayments,
-          allAccounts,
-          onPaymentAdd,
-          onPaymentUpdate,
-          onPaymentDelete,
-          onNewPeopleAccountAdd,
-        }),
-        Label({ text: "Associated tags" }),
-        TagsSelector({
-          onTagTap: onTagTap,
-          onAdd: onTagAdd,
-          textboxPlaceholder: "search or create new tag",
-          selectedTags: trap(selectedTags).map(getPrimitiveRecordValue),
-          unSelectedTags: trap(nonSelectedTags).map(getPrimitiveRecordValue),
+        Section({
+          title: "Associated tags",
+          children: TagsSelector({
+            onTagTap: onTagTap,
+            onAdd: onTagAdd,
+            textboxPlaceholder: "search or create new tag",
+            selectedTags: trap(selectedTags).map(getPrimitiveRecordValue),
+            unSelectedTags: trap(nonSelectedTags).map(getPrimitiveRecordValue),
+          }),
         }),
       ],
     }),

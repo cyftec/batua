@@ -1,26 +1,21 @@
 import { TableRecordID } from "../../../kvdb";
-import { Prettify } from "./common";
 import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
 
-export type IncomingTxnType =
-  | "earned"
-  | "found"
-  | "received as gift"
-  | "interest earned";
-export type OutgoingTxnType = "spent" | "lost" | "gifted";
-export type FutureOutgoingTxnType =
-  | "loaned"
-  | "interest charged"
-  | "borrowed"
-  | "borrowed in group expense";
-export type ParkedMoneyTxnType = "invested" | "lent" | "lent in group expense";
-export type UnsettledTxnType = FutureOutgoingTxnType | ParkedMoneyTxnType;
-export type TransferTxnType = "settled" | "transferred";
-export type TxnType = Prettify<
-  OutgoingTxnType | IncomingTxnType | UnsettledTxnType | TransferTxnType
->;
+export type TxnType =
+  | "balanceupdate"
+  | "transfer"
+  | "moneycredit"
+  | "moneydebit"
+  | "grouppurchase";
+export const TXN_TYPES: Record<TxnType, string> = {
+  balanceupdate: "Account balance update",
+  transfer: "Money transfer",
+  moneycredit: "Money earned",
+  moneydebit: "Money spent",
+  grouppurchase: "Group purchase",
+};
 
 export type TxnNecessity = "Essential" | "Mixed" | "Luxury";
 export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Mixed", "Luxury"];

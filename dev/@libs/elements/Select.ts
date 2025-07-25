@@ -3,20 +3,15 @@ import { Child, component, m } from "@mufw/maya";
 import { handleTap } from "../common/utils";
 import { Icon } from "./Icon";
 
-export type SelectOption<D extends any> = {
-  label: string;
-  data?: D;
-};
-
 type SelectProps = {
   cssClasses?: string;
   optionsMenuClasses?: string;
   anchor?: "left" | "center" | "right";
   size?: "large" | "medium" | "small";
-  options: SelectOption<any>[];
+  options: any[];
   selectedOptionIndex: number;
-  targetFormattor?: (option: SelectOption<any>, index?: number) => Child;
-  optionFormattor?: (option: SelectOption<any>, index?: number) => Child;
+  targetFormattor?: (option: any, index?: number) => Child;
+  optionFormattor?: (option: any, index?: number) => Child;
   onChange: (optionIndex: number) => void;
 };
 
@@ -43,7 +38,7 @@ export const Select = component<SelectProps>(
     const isOptionSelectorOpen = signal(false);
     const selectedOption = trap(options).at(
       selectedOptionIndex
-    ) as DerivedSignal<SelectOption<any>>;
+    ) as DerivedSignal<any>;
     const anchorPosition = derive(() => {
       const anchorVal = anchor?.value || "center";
       return anchorVal === "left" ? 0 : anchorVal === "right" ? 100 : 50;
@@ -51,7 +46,7 @@ export const Select = component<SelectProps>(
     const formattedSelectedOption = derive(() =>
       targetFormattor
         ? targetFormattor(selectedOption.value)
-        : selectedOption.value.label
+        : `${selectedOption.value}`
     );
     const targetIconSize = derive(() =>
       size?.value === "large" ? 20 : size?.value === "medium" ? 16 : 12
@@ -105,7 +100,7 @@ export const Select = component<SelectProps>(
                     ? optionFormattor(option, index)
                     : m.Div({
                         class: "w-100 fw6 f5 tl",
-                        children: option.label,
+                        children: option,
                       }),
                 ],
               });

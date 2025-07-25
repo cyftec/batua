@@ -151,16 +151,16 @@ export default HTMLPage({
         Select({
           cssClasses: "mb2",
           anchor: "left",
-          options: CURRENCY_TYPES.map((c) => ({ label: c })),
+          options: CURRENCY_TYPES,
           selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(paymentMethodType),
-          targetFormattor: (opt) => `${capitalize(opt.label)} Payments`,
+          targetFormattor: (opt) => `${capitalize(opt)} Payments`,
           optionFormattor: (opt) =>
             m.Div({
               children: [
                 m.Div({ class: "f8 silver", children: `Can do` }),
                 m.Div({
                   class: "f5",
-                  children: `${capitalize(opt.label)} payments`,
+                  children: `${capitalize(opt)} payments`,
                 }),
               ],
             }),

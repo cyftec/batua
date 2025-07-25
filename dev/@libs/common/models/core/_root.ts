@@ -35,6 +35,7 @@ export const financialActivity = {
     settlement: {},
     lend: {},
     borrow: {},
+    gift: {},
   },
   moneycredit: {
     income: { job: {}, business: {} },
@@ -44,4 +45,5 @@ export const financialActivity = {
     expense: { purchase: {}, donation: {} },
     loss: { misplacement: {}, penalty: {} },
   },
+  grouppurchase: {},
 };

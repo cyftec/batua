@@ -1,12 +1,11 @@
-import { derive, op, signal, trap } from "@cyftech/signal";
+import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { AccountUI, Payment } from "../../../@libs/common/models/core";
 import {
-  Icon,
-  NumberBox,
-  Select,
-  type SelectOption,
-} from "../../../@libs/elements";
+  AccountUI,
+  Payment,
+  PaymentMethodUI,
+} from "../../../@libs/common/models/core";
+import { Icon, NumberBox, Select } from "../../../@libs/elements";
 
 type PaymentTileProps = {
   payment: Payment;
@@ -22,15 +21,9 @@ export const PaymentTile = component<PaymentTileProps>(
     const amountEditorFocused = signal(false);
     const { account, amount, via } = trap(payment).props;
     const accountOptions = derive(() => {
-      const allAccs = allAccounts.value.map((acc) => ({
-        label: acc.name,
-        data: acc,
-      }));
-      return [
-        ...allAccs,
-        { label: "", data: { type: "People", name: ADD_NEW_PERSON } },
-      ];
+      return [...allAccounts.value, { type: "People", name: ADD_NEW_PERSON }];
     });
+    type AccountOption = PlainValue<typeof accountOptions>[number];
     const selectedAccountIndex = trap(allAccounts).findIndex(
       (acc) => acc.id === account.value
     );
@@ -86,20 +79,19 @@ export const PaymentTile = component<PaymentTileProps>(
               options: accountOptions,
               selectedOptionIndex: selectedAccountIndex,
               onChange: onAccountChange,
-              optionFormattor(option: SelectOption<AccountUI>, index) {
+              targetFormattor: (opt: AccountOption) => opt.name,
+              optionFormattor: (opt: AccountOption) => {
                 return m.Div({
                   children: [
                     m.Div({
                       class: "f8 silver",
-                      children: option.data?.type,
+                      children: opt.type,
                     }),
                     m.Div({
                       class: `f6 black ${
-                        option.data?.name === ADD_NEW_PERSON
-                          ? "underline fw5"
-                          : "fw6"
+                        opt.name === ADD_NEW_PERSON ? "underline fw5" : "fw6"
                       }`,
-                      children: option.data?.name,
+                      children: opt.name,
                     }),
                   ],
                 });
@@ -108,10 +100,6 @@ export const PaymentTile = component<PaymentTileProps>(
             m.If({
               subject: selectedAccPaymentMethods,
               isTruthy: (nonNullPms) => {
-                const paymentMethodOptions = trap(nonNullPms).map((pm) => ({
-                  label: pm.name,
-                  data: pm,
-                }));
                 const selectedPaymentMethodIndex = trap(nonNullPms).findIndex(
                   (pm) =>
                     via?.value === undefined ? true : pm.id === via.value
@@ -125,17 +113,17 @@ export const PaymentTile = component<PaymentTileProps>(
                 return Select({
                   anchor: "right",
                   size: "small",
-                  options: paymentMethodOptions,
+                  options: nonNullPms,
                   selectedOptionIndex: selectedPaymentMethodIndex,
-                  targetFormattor: (option) => `via ${option.label}`,
-                  optionFormattor: (option) =>
+                  targetFormattor: (opt: PaymentMethodUI) => `via ${opt.name}`,
+                  optionFormattor: (opt: PaymentMethodUI) =>
                     m.Div({
                       children: [
                         m.Div({
                           class: "light-silver f8",
                           children: `paid via`,
                         }),
-                        m.Div({ class: "f6 fw6", children: option.label }),
+                        m.Div({ class: "f6 fw6", children: opt.name }),
                       ],
                     }),
                   onChange: onPaymentMethodChange,

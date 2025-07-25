@@ -232,10 +232,10 @@ export default HTMLPage({
                 Select({
                   cssClasses: "mb2 f6 br3",
                   anchor: "left",
-                  options: CURRENCY_TYPES.map((c) => ({ label: c })),
+                  options: CURRENCY_TYPES,
                   selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
-                  targetFormattor: (option) => capitalize(option.label),
-                  optionFormattor: (option) => capitalize(option.label),
+                  targetFormattor: (option) => capitalize(option),
+                  optionFormattor: (option) => capitalize(option),
                   onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
                 }),
                 Label({ text: "Payment Methods" }),
