@@ -1,4 +1,4 @@
-import { derive, effect, op, signal, trap } from "@cyftech/signal";
+import { derive, effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
 import { db } from "../../@libs/common/localstorage/stores";
@@ -14,28 +14,14 @@ import {
   areNamesSimilar,
   capitalize,
   deepTrim,
-  getQueryParamValue,
   nameRegex,
 } from "../../@libs/common/utils";
-import { HTMLPage, NavScaffold } from "../../@libs/components";
-import {
-  DialogActionButtons,
-  Icon,
-  Label,
-  Link,
-  Section,
-  Select,
-  TextBox,
-} from "../../@libs/elements";
+import { Label, Link, Section, Select, TextBox } from "../../@libs/elements";
 import { TableRecordID } from "../../@libs/kvdb";
-import { TagsSelector } from "../@components";
+import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);
-const headerLabel = derive(() =>
-  editableAccount.value
-    ? `Edit '${editableAccount.value.name}'`
-    : `Add my new account`
-);
+const editableAccountName = derive(() => editableAccount.value?.name || "");
 
 const error = signal("");
 const accountName = signal("");
@@ -53,7 +39,14 @@ const tagsSelectorPlaceholder = derive(() =>
     ? "search or create new"
     : "create new payment method"
 );
-const commitBtnLabel = op(editableAccount).ternary("Save", "Add");
+
+const onMount = (urlParams: URLSearchParams) => {
+  vaultType.value = "digital";
+  const idStr = urlParams.get("id");
+  if (!idStr) return;
+  const accID: TableRecordID = +idStr;
+  editableAccount.value = db.accounts.get(accID);
+};
 
 effect(() => {
   const vType = vaultType.value;
@@ -85,6 +78,7 @@ effect(() => {
 const resetError = () => (error.value = "");
 
 const onPaymentMethodTagTap = (tagIndex: number, isSelected: boolean) => {
+  resetError();
   const pm = isSelected
     ? unSelectedPaymentMethods.value[tagIndex]
     : selectedPaymentMethods.value[tagIndex];
@@ -131,22 +125,13 @@ const onPaymentMethodAdd = (name: string) => {
 };
 
 const validateForm = () => {
-  if (!accountName.value) {
-    error.value = "Name is empty.";
-    return;
-  }
-  if (!nameRegex.test(accountName.value)) {
-    error.value = "Invalid name for account.";
-    return;
-  }
-  error.value = "";
+  let err = "";
+  if (!accountName.value) err = "Name is empty.";
+  if (!nameRegex.test(accountName.value)) err = "Invalid name for account.";
+  error.value = err;
 };
 
-const goBack = () => history.back();
-
-const savePaymentMethod = () => {
-  validateForm();
-  if (error.value) return;
+const onAccountSave = () => {
   const uniqueIdObj = accountUniqueId.value
     ? { uniqueId: accountUniqueId.value }
     : {};
@@ -173,100 +158,75 @@ const savePaymentMethod = () => {
     };
     db.accounts.add(newAccount);
   }
-  goBack();
 };
 
-const onPageMount = () => {
-  vaultType.value = "digital";
-  const idStr = getQueryParamValue("id");
-  if (!idStr) return;
-  const accID: TableRecordID = +idStr;
-  editableAccount.value = db.accounts.get(accID);
-};
-
-export default HTMLPage({
-  onMount: onPageMount,
-  body: NavScaffold({
-    header: headerLabel,
-    content: m.Div({
-      children: [
-        m.If({
-          subject: editableAccount,
-          isTruthy: () =>
-            m.Div({
-              class: "mb4 red",
-              children: [
-                Link({
-                  onClick: () => {},
-                  children: "Delete this account",
-                }),
-              ],
-            }),
-        }),
-        Section({
-          title: "Basic details",
+export default EditPage({
+  error: error,
+  editableItemType: "account",
+  editableItemTitle: editableAccountName,
+  validateForm: validateForm,
+  onSave: onAccountSave,
+  onMount: onMount,
+  content: m.Div([
+    m.If({
+      subject: editableAccount,
+      isTruthy: () =>
+        m.Div({
+          class: "mb4 red",
           children: [
-            Label({ text: "Name of account" }),
-            TextBox({
-              cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-              text: accountName,
-              placeholder: "Account name",
-              onchange: (text) => (accountName.value = text.trim()),
-            }),
-            Label({ text: "Unique id" }),
-            TextBox({
-              cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-              text: accountUniqueId,
-              placeholder: "Unique id (optional)",
-              onchange: (text) => (accountUniqueId.value = text.trim()),
+            Link({
+              onClick: () => {},
+              children: "Delete this account",
             }),
           ],
         }),
-        m.If({
-          subject: vaultType,
-          isTruthy: (subject) =>
-            Section({
-              title: "Vault and payment methods",
-              children: [
-                Label({ text: "My money vault type" }),
-                Select({
-                  cssClasses: "mb2 f6 br3",
-                  anchor: "left",
-                  options: CURRENCY_TYPES,
-                  selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
-                  targetFormattor: (option) => capitalize(option),
-                  optionFormattor: (option) => capitalize(option),
-                  onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
-                }),
-                Label({ text: "Payment Methods" }),
-                TagsSelector({
-                  onAdd: onPaymentMethodAdd,
-                  onTagTap: onPaymentMethodTagTap,
-                  cssClasses: "",
-                  selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
-                  unSelectedTags: trap(unSelectedPaymentMethods).map(
-                    (a) => a.name
-                  ),
-                  textboxPlaceholder: tagsSelectorPlaceholder,
-                }),
-              ],
-            }),
+    }),
+    Section({
+      title: "Basic details",
+      children: [
+        Label({ text: "Name of account" }),
+        TextBox({
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
+          text: accountName,
+          placeholder: "Account name",
+          onchange: (text) => (accountName.value = text),
+        }),
+        Label({ text: "Unique id" }),
+        TextBox({
+          cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
+          text: accountUniqueId,
+          placeholder: "Unique id (optional)",
+          onchange: (text) => (accountUniqueId.value = text),
         }),
       ],
     }),
-    hideNavbar: true,
-    navbarTop: DialogActionButtons({
-      cssClasses: "sticky bottom-0 bg-near-white pv2 ph3 nl3 nr3",
-      discardLabel: [
-        Icon({ cssClasses: "nl2 mr2", iconName: "arrow_back" }),
-        "Cancel",
-      ],
-      commitLabel: [
-        Icon({ cssClasses: "nl3 mr2", iconName: commitBtnLabel }),
-        commitBtnLabel,
-      ],
-      onDiscard: goBack,
-      onCommit: savePaymentMethod,
+    m.If({
+      subject: vaultType,
+      isTruthy: (subject) =>
+        Section({
+          title: "Vault and payment methods",
+          children: [
+            Label({ text: "My money vault type" }),
+            Select({
+              cssClasses: "mb2 f6 br3",
+              anchor: "left",
+              options: CURRENCY_TYPES,
+              selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
+              targetFormattor: (option) => capitalize(option),
+              optionFormattor: (option) => capitalize(option),
+              onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
+            }),
+            Label({ text: "Payment Methods" }),
+            TagsSelector({
+              onAdd: onPaymentMethodAdd,
+              onTagTap: onPaymentMethodTagTap,
+              cssClasses: "",
+              selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
+              unSelectedTags: trap(unSelectedPaymentMethods).map((a) => a.name),
+              textboxPlaceholder: tagsSelectorPlaceholder,
+            }),
+          ],
+        }),
     }),
-  }),
+  ]),
 });
