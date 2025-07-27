@@ -6,7 +6,7 @@ export type Schema = {
   [Tabl in string]: {
     key: TableKey;
     structure: readonly [any, any];
-    foreignKeyMappings: Record<string, string>;
+    foreignKeyMappings?: Record<string, string>;
     dbToJsTypeMappings?: Record<string, DbUnsupportedType>;
   };
 };

@@ -23,6 +23,14 @@ const MONTHS = [
   "November",
   "December",
 ] as const satisfies string[];
+export const TIME_PERIODS = [
+  "Week",
+  "Month",
+  "Quarter",
+  "Year",
+  "All time",
+] as const satisfies string[];
+export type TimePeriod = (typeof TIME_PERIODS)[number];
 
 export const getDateInputLocaleValue = (gmtDate: Date) => {
   const localeDate = gmtDate

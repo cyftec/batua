@@ -1,7 +1,6 @@
-import { trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { Tag, TagsList } from "../../@libs/components";
-import { Label, SuggestiveTextbox } from "../../@libs/elements";
+import { derive } from "@cyftech/signal";
 
 type TagsSelectorProps = {
   onTagTap: (index: number, isSelected: boolean) => void;
@@ -11,6 +10,7 @@ type TagsSelectorProps = {
   unSelectedTags: string[];
   textboxPlaceholder?: string;
   suggestExact?: boolean;
+  onlyShowFiltered?: boolean;
 };
 
 export const TagsSelector = component<TagsSelectorProps>(
@@ -22,6 +22,7 @@ export const TagsSelector = component<TagsSelectorProps>(
     unSelectedTags,
     textboxPlaceholder,
     suggestExact,
+    onlyShowFiltered,
   }) => {
     return m.Div({
       class: cssClasses,
@@ -44,6 +45,7 @@ export const TagsSelector = component<TagsSelectorProps>(
           onTagAdd: onAdd,
           onTagTap: (index) => onTagTap(index, true),
           suggestExact: suggestExact,
+          onlyShowFiltered: onlyShowFiltered,
           placeholder: textboxPlaceholder,
           tagClasses: "mb2 mr2",
           tags: unSelectedTags,

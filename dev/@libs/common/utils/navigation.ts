@@ -32,6 +32,7 @@ export const URL = {
   ACCOUNTS: { href: "/accounts/" },
   EDIT: {
     ACCOUNT: { href: "/edit/account/" },
+    BUDGET: { href: "/edit/budget/" },
     PAYMENT_METHOD: { href: "/edit/payment-method/" },
     TXN: { href: "/edit/transaction/" },
   },

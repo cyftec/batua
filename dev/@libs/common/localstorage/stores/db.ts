@@ -13,6 +13,7 @@ import {
   TxnTitleUI,
   TxnUI,
 } from "../../models/core";
+import { Budget, BudgetUI } from "../../models/core/budget";
 
 const PAYMENT_METHODS_TABLE_KEY = "pm";
 const ACCOUNTS_TABLE_KEY = "a";
@@ -20,6 +21,7 @@ const PAYMENTS_TABLE_KEY = "p";
 const TAGS_TABLE_KEY = "tg";
 const TRANSACTION_TITLES_TABLE_KEY = "tt";
 const TRANSACTIONS_TABLE_KEY = "t";
+const BUDGETS_TABLE_KEY = "b";
 
 export const dbschema = {
   paymentMethods: {
@@ -59,6 +61,14 @@ export const dbschema = {
       payments: PAYMENTS_TABLE_KEY,
     },
     dbToJsTypeMappings: { date: "Date", created: "Date", modified: "Date" },
+  },
+  budgets: {
+    key: BUDGETS_TABLE_KEY,
+    structure: [{} as Budget, {} as BudgetUI],
+    foreignKeyMappings: {
+      oneOf: TAGS_TABLE_KEY,
+      allOf: TAGS_TABLE_KEY,
+    },
   },
 } as const;
 

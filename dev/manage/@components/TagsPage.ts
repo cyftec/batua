@@ -13,11 +13,7 @@ import { Icon } from "../../@libs/elements";
 import { getPrimitiveRecordValue } from "../../@libs/kvdb";
 import { TagCategory } from "./TagsCategory";
 
-type TagsPageProps = {
-  allTags?: TagUI[];
-  allPaymentMethods?: PaymentMethodUI[];
-  allAccounts?: AccountUI[];
-};
+type TagsPageProps = {};
 
 export const TagsPage = component<TagsPageProps>(({}) => {
   const allAccounts = signal<AccountUI[]>([]);

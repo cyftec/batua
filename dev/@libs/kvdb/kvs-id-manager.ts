@@ -1,4 +1,5 @@
-import { KVStore, TableRecordID } from "./models";
+import { KVStore } from "./kv-stores";
+import { TableRecordID } from "./models";
 
 export type KvsIDManager = {
   getCurrentID: () => TableRecordID;

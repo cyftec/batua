@@ -13,6 +13,7 @@ type TagsListProps = {
   placeholder?: string;
   hideSuggestion?: boolean;
   suggestExact?: boolean;
+  onlyShowFiltered?: boolean;
   tags: string[];
   tagsState?: TagState;
 };
@@ -27,6 +28,7 @@ export const TagsList = component<TagsListProps>(
     placeholder,
     hideSuggestion,
     suggestExact,
+    onlyShowFiltered,
     tags,
     tagsState,
   }) => {
@@ -35,7 +37,9 @@ export const TagsList = component<TagsListProps>(
     const textboxText = signal("");
     const filteredTags = derive(() => {
       const tbVal = textboxText.value.toLowerCase();
-      return tags.value.filter((t) => t.toLowerCase().includes(tbVal));
+      return onlyShowFiltered?.value && !tbVal
+        ? []
+        : tags.value.filter((t) => t.toLowerCase().includes(tbVal));
     });
     const suggestion = signal("");
     const suggestionText = derive(() =>
