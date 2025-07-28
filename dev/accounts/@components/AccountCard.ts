@@ -5,11 +5,11 @@ import {
   CurrencyType,
   ExpenseAccountUI,
   PaymentMethodUI,
-} from "../../@libs/common/models/core";
-import { handleTap } from "../../@libs/common/utils";
+} from "../../@controller/common/models/core";
+import { handleTap } from "../../@controller/common/utils";
 import { Tag } from "../../@view/components";
 import { Icon } from "../../@view/elements";
-import { db } from "../../@libs/common/localstorage/stores";
+import { db } from "../../@controller/common/localstorage/stores";
 
 type AccountCardProps = {
   onTap?: () => void;

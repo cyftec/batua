@@ -1,6 +1,6 @@
 import { tmpl, effect, dispose } from "@cyftech/signal";
 import { type Children, component, m } from "@mufw/maya";
-import { handleTap } from "../../@libs/common/utils";
+import { handleTap } from "../../@controller/common/utils";
 
 type ModalProps = {
   cssClasses?: string;

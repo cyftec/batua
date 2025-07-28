@@ -4,7 +4,7 @@ import {
   AccountUI,
   Payment,
   PaymentMethodUI,
-} from "../../../@libs/common/models/core";
+} from "../../../@controller/common/models/core";
 import { Icon, NumberBox, Select } from "../../../@view/elements";
 
 type PaymentTileProps = {

@@ -1,11 +1,11 @@
 import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "./@libs/common/localstorage/stores";
-import { TxnUI } from "./@libs/common/models/core";
-import { URL, goToPage, handleTap } from "./@libs/common/utils";
+import { db } from "./@controller/common/localstorage/stores";
+import { TxnUI } from "./@controller/common/models/core";
+import { URL, goToPage, handleTap } from "./@controller/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "./@view/components";
 import { Button, Icon } from "./@view/elements";
-import { getPrimitiveRecordValue } from "./@libs/kvdb";
+import { getPrimitiveRecordValue } from "./@controller/kvdb";
 
 const allTxns = signal<TxnUI[]>([]);
 

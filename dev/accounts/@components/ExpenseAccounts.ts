@@ -1,8 +1,8 @@
 import { component, m } from "@mufw/maya";
-import { ExpenseAccountUI } from "../../@libs/common/models/core";
+import { ExpenseAccountUI } from "../../@controller/common/models/core";
 import { CardButton, Section } from "../../@view/elements";
 import { AccountCard } from "./AccountCard";
-import { URL, goToPage } from "../../@libs/common/utils";
+import { URL, goToPage } from "../../@controller/common/utils";
 
 type ExpenseAccountsProps = {
   expenseAccounts: ExpenseAccountUI[];

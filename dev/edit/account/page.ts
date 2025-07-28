@@ -1,7 +1,7 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../@libs/common/localstorage/stores";
+import { db } from "../../@controller/common/localstorage/stores";
 import {
   Account,
   ACCOUNT_TYPES_LIST,
@@ -10,13 +10,13 @@ import {
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethodUI,
-} from "../../@libs/common/models/core";
+} from "../../@controller/common/models/core";
 import {
   areNamesSimilar,
   capitalize,
   deepTrim,
   nameRegex,
-} from "../../@libs/common/utils";
+} from "../../@controller/common/utils";
 import {
   Label,
   Link,
@@ -29,7 +29,7 @@ import {
   getPrimitiveRecordValue,
   ID_KEY,
   TableRecordID,
-} from "../../@libs/kvdb";
+} from "../../@controller/kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);

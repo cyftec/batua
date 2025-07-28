@@ -1,6 +1,11 @@
 import { component, m } from "@mufw/maya";
-import { PaymentMethodUI } from "../../@libs/common/models/core";
-import { URL, capitalize, goToPage, handleTap } from "../../@libs/common/utils";
+import { PaymentMethodUI } from "../../@controller/common/models/core";
+import {
+  URL,
+  capitalize,
+  goToPage,
+  handleTap,
+} from "../../@controller/common/utils";
 import { CardButton, Icon, Section } from "../../@view/elements";
 
 type PaymentMethodsProps = {

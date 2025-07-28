@@ -1,11 +1,11 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { TagUI, TxnUI } from "../../@libs/common/models/core";
+import { TagUI, TxnUI } from "../../@controller/common/models/core";
 import {
   getPrimitiveRecordValue,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
-} from "../../@libs/kvdb";
+} from "../../@controller/kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import {
   Label,
@@ -14,15 +14,15 @@ import {
   Select,
   TextBox,
 } from "../../@view/elements";
-import { db } from "../../@libs/common/localstorage/stores";
+import { db } from "../../@controller/common/localstorage/stores";
 import { Tag, TagsList } from "../../@view/components";
 import {
   deepTrimmedLowercase,
   getLowercaseTagName,
   nameRegex,
-} from "../../@libs/common/utils";
-import { Budget } from "../../@libs/common/models/core/budget";
-import { TIME_PERIODS, TimePeriod } from "../../@libs/common/transforms";
+} from "../../@controller/common/utils";
+import { Budget } from "../../@controller/common/models/core/budget";
+import { TIME_PERIODS, TimePeriod } from "../../@controller/common/transforms";
 
 const error = signal("");
 const budgetTitle = signal("");

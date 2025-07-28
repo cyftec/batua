@@ -1,17 +1,21 @@
 import { derive, effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../@libs/common/localstorage/stores";
+import { db } from "../../@controller/common/localstorage/stores";
 import {
   AccountUI,
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethod,
   PaymentMethodUI,
-} from "../../@libs/common/models/core";
-import { capitalize, nameRegex, uniqueIdRegex } from "../../@libs/common/utils";
+} from "../../@controller/common/models/core";
+import {
+  capitalize,
+  nameRegex,
+  uniqueIdRegex,
+} from "../../@controller/common/utils";
 import { Label, Link, Select, TextBox } from "../../@view/elements";
-import { TableRecordID } from "../../@libs/kvdb";
+import { TableRecordID } from "../../@controller/kvdb";
 import { EditPage } from "../@components";
 
 const error = signal("");

@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { populateInitialData } from "../../@libs/common/localstorage";
+import { populateInitialData } from "../../@controller/common/localstorage";
 import { Button, Modal } from "../elements";
 
 type AccountCreatorProps = {

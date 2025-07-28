@@ -1,6 +1,6 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../@libs/common/localstorage/stores";
+import { db } from "../../@controller/common/localstorage/stores";
 import {
   AccountUI,
   Payment,
@@ -10,16 +10,16 @@ import {
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   TxnUI,
-} from "../../@libs/common/models/core";
-import { isFutureDate } from "../../@libs/common/transforms";
-import { getLowercaseTagName, nameRegex } from "../../@libs/common/utils";
+} from "../../@controller/common/models/core";
+import { isFutureDate } from "../../@controller/common/transforms";
+import { getLowercaseTagName, nameRegex } from "../../@controller/common/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../@view/elements";
 import {
   getPrimitiveRecordValue,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
-} from "../../@libs/kvdb";
+} from "../../@controller/kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components";
 import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";

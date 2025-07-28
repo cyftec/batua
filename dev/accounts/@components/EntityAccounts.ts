@@ -1,7 +1,10 @@
 import { component, m } from "@mufw/maya";
-import { URL, goToPage, handleTap } from "../../@libs/common/utils";
+import { URL, goToPage, handleTap } from "../../@controller/common/utils";
 import { CardButton, Section } from "../../@view/elements";
-import { PeopleAccountUI, ShopAccountUI } from "../../@libs/common/models/core";
+import {
+  PeopleAccountUI,
+  ShopAccountUI,
+} from "../../@controller/common/models/core";
 
 type EntityAccountsProps = {
   allShopAccounts: ShopAccountUI[];
