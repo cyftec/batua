@@ -17,17 +17,29 @@ import {
   deepTrim,
   nameRegex,
 } from "../../@libs/common/utils";
-import { Label, Link, Section, Select, TextBox } from "../../@libs/elements";
-import { TableRecordID } from "../../@libs/kvdb";
+import {
+  Label,
+  Link,
+  NumberBox,
+  Section,
+  Select,
+  TextBox,
+} from "../../@libs/elements";
+import {
+  getPrimitiveRecordValue,
+  ID_KEY,
+  TableRecordID,
+} from "../../@libs/kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);
 const editableAccountName = derive(() => editableAccount.value?.name || "");
 
 const error = signal("");
+const accountType = signal<AccountType>("expense");
 const accountName = signal("");
 const accountUniqueId = signal("");
-const accountType = signal<AccountType>("expense");
+const accountBalance = signal(0);
 const accountTypeLabel = trap(accountType).concat(" account");
 const vaultType = signal<CurrencyType>("physical");
 const allPMs = signal<(PaymentMethodUI & { isSelected: boolean })[]>([]);
@@ -50,6 +62,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
   accountType.value = editableAcc.type;
   accountName.value = editableAcc.name;
   accountUniqueId.value = editableAcc.uniqueId || "";
+  accountBalance.value = editableAcc.balance;
   if (editableAcc.type === "expense") {
     vaultType.value = editableAcc.vault;
   }
@@ -128,7 +141,10 @@ const onAccountSave = () => {
   const uniqueIdObj = accountUniqueId.value
     ? { uniqueId: accountUniqueId.value }
     : {};
-  const vaultObj = vaultType.value ? { vault: vaultType.value } : {};
+  const vaultObj =
+    vaultType.value && accountType.value === "expense"
+      ? { vault: vaultType.value }
+      : {};
   const updates: Pick<
     Account,
     "name" | "paymentMethods" | "vault" | "uniqueId"
@@ -146,10 +162,33 @@ const onAccountSave = () => {
     const newAccount: Account = {
       isPermanent: 0,
       balance: 0,
-      type: "expense",
+      type: accountType.value,
       ...updates,
     };
-    db.accounts.add(newAccount);
+    const newAccID = db.accounts.add(newAccount);
+    if (!accountBalance.value) return;
+    const pmtID = db.payments.add({
+      amount: accountBalance.value,
+      account: newAccID,
+    });
+    const tagIDs = db.tags.getAllWhere((tag) =>
+      ["balanceupdate", "initialbalance"].includes(getPrimitiveRecordValue(tag))
+    );
+    const now = new Date().getTime();
+    const txnTitle = "Set initial balance";
+    let titleID = db.txnTitles.getWhere(
+      (tt) => getPrimitiveRecordValue(tt) === txnTitle
+    )?.[ID_KEY];
+    if (!titleID) titleID = db.txnTitles.add(txnTitle);
+    db.txns.add({
+      date: now,
+      created: now,
+      modified: now,
+      type: "balance update",
+      payments: [pmtID],
+      tags: tagIDs.map((t) => t[ID_KEY]),
+      title: titleID,
+    });
   }
 };
 
@@ -190,6 +229,19 @@ export default EditPage({
           text: accountUniqueId,
           placeholder: "Unique id (optional)",
           onchange: (text) => (accountUniqueId.value = text),
+        }),
+        m.If({
+          subject: editableAccount,
+          isFalsy: () =>
+            m.Div([
+              Label({ text: "Initial balance" }),
+              NumberBox({
+                cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
+                num: accountBalance,
+                placeholder: "Unique id (optional)",
+                onchange: (val) => (accountBalance.value = val),
+              }),
+            ]),
         }),
       ],
     }),

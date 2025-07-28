@@ -1,20 +1,20 @@
-import { derive, op, tmpl, trap } from "@cyftech/signal";
+import { derive, op, signal, tmpl, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import {
-  CapitalAccountUI,
+  AccountUI,
   CurrencyType,
   ExpenseAccountUI,
   PaymentMethodUI,
-  PeopleOrShopAccountUI,
 } from "../../@libs/common/models/core";
 import { handleTap } from "../../@libs/common/utils";
 import { Tag } from "../../@libs/components";
 import { Icon } from "../../@libs/elements";
+import { db } from "../../@libs/common/localstorage/stores";
 
 type AccountCardProps = {
   onTap?: () => void;
   cssClasses?: string;
-  account: ExpenseAccountUI | CapitalAccountUI | PeopleOrShopAccountUI;
+  account: AccountUI;
 };
 
 const getRandomBalance = () =>
@@ -24,7 +24,8 @@ const getRandomBalance = () =>
 
 export const AccountCard = component<AccountCardProps>(
   ({ onTap, cssClasses, account }) => {
-    const { isPermanent, name, uniqueId, balance, type } = trap(account).props;
+    const { isPermanent, name, uniqueId, type } = trap(account).props;
+    const accBalance = signal(0);
     const vault = derive(
       () =>
         (account.value as ExpenseAccountUI).vault as CurrencyType | undefined
@@ -35,7 +36,19 @@ export const AccountCard = component<AccountCardProps>(
           []) as PaymentMethodUI[]
     );
 
+    const onCardMount = () => {
+      console.log(account.value);
+      console.log(db.payments.getAll());
+      const allPayments = db.payments.getAllWhere(
+        (p) => p.account.id === account.value.id
+      );
+      const balance = allPayments.reduce((s, p) => s + p.amount, 0);
+      accBalance.value = balance;
+      // console.log(account.value, allPayments, balance, accBalance.value);
+    };
+
     return m.Div({
+      onmount: onCardMount,
       onclick: handleTap(onTap),
       class: tmpl`ba b--light-gray br4 pa2 flex flex-column justify-between ${cssClasses}`,
       children: [
@@ -105,23 +118,6 @@ export const AccountCard = component<AccountCardProps>(
                   }),
                 ],
               }),
-            isFalsy: () =>
-              m.Div(
-                m.If({
-                  subject: op(type).equals("loan").truthy,
-                  isTruthy: () =>
-                    m.Div({
-                      class: "mv2 flex items-center f7 light-silver",
-                      children: [
-                        Icon({
-                          cssClasses: "mr1",
-                          iconName: "credit_card_off",
-                        }),
-                        m.Div(`Loan`),
-                      ],
-                    }),
-                })
-              ),
           }),
         ]),
         m.Div({
@@ -136,9 +132,7 @@ export const AccountCard = component<AccountCardProps>(
                 }),
               ],
             }),
-            m.Div(
-              op(type).equals("Unknown").ternary("&infin;", getRandomBalance()) //trap(balance).toLocaleString()
-            ),
+            m.Div(trap(accBalance).toLocaleString()),
           ],
         }),
       ],

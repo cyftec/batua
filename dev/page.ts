@@ -2,7 +2,7 @@ import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "./@libs/common/localstorage/stores";
 import { TxnUI } from "./@libs/common/models/core";
-import { URL, goToPage } from "./@libs/common/utils";
+import { URL, goToPage, handleTap } from "./@libs/common/utils";
 import { HTMLPage, NavScaffold, Tag } from "./@libs/components";
 import { Button, Icon } from "./@libs/elements";
 import { getPrimitiveRecordValue } from "./@libs/kvdb";
@@ -25,6 +25,7 @@ export default HTMLPage({
         map: (txn) =>
           m.Div({
             class: "flex justify-between mb3",
+            onclick: handleTap(() => goToPage(URL.EDIT.TXN, { id: txn.id })),
             children: [
               m.Div({
                 class: "flex",

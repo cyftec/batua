@@ -26,8 +26,8 @@ import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";
 
 const now = new Date();
 const error = signal("");
-const txnType = signal<TxnType>("balance update");
-const txnSubType = signal<TxnSubType>("initial balance");
+const txnType = signal<TxnType>("expense");
+const txnSubType = signal<TxnSubType>("purchase");
 const txnDate = signal<Date>(now);
 const txnCreated = signal<Date>(now);
 const txnModified = signal<Date>(now);
@@ -193,8 +193,10 @@ const onTagAdd = (text: string) => {
   });
 
   if (existing) {
-    if (unselected) allTags.value = updatedAllTags;
-    else return false;
+    if (unselected) {
+      allTags.value = updatedAllTags;
+      console.log(tagName, selectedTags.value);
+    } else return false;
   } else {
     const newTagID = db.tags.add(tagName);
     const newTag = db.tags.get(newTagID);
@@ -223,12 +225,7 @@ const onTxnSave = () => {
   // const uniqueIdObj = txnUniqueID.value ? { uniqueId: txnUniqueID.value } : {};
 
   if (editableTxn.value) {
-    // txnsStore.update({
-    //   ...editableTxn.value,
-    //   name: txnTitle.value,
-    //   mode: txnMode.value,
-    //   ...uniqueIdObj,
-    // });
+    // TODO: implement txn update
   } else {
     const newTxnTitleID = db.txnTitles.add(txnTitle.value);
     const pmtIDs: TableRecordID[] = [];

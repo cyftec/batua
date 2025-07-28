@@ -38,7 +38,7 @@ export const dbschema = {
     key: PAYMENTS_TABLE_KEY,
     structure: [{} as Payment, {} as PaymentUI],
     foreignKeyMappings: {
-      accounts: ACCOUNTS_TABLE_KEY,
+      account: ACCOUNTS_TABLE_KEY,
       via: PAYMENT_METHODS_TABLE_KEY,
     },
   },

@@ -1,4 +1,4 @@
 export * from "./ExpenseAccounts";
-export * from "./CapitalAccounts";
+export * from "./FundAccounts";
 export * from "./PaymentMethods";
-export * from "./PeopleOrShopAccounts";
+export * from "./EntityAccounts";

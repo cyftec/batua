@@ -3,8 +3,11 @@ import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
 
-export type TxnType = "balance update" | "earning" | "expense" | "transfer";
+export type TxnType = "expense" | "earning" | "transfer" | "balance update";
 export const TXN_TYPE_SUBTYPE_MAP = {
+  expense: ["purchase", "unsettled purchase", "other"],
+  earning: ["salary", "sale", "interest", "find", "other"],
+  transfer: ["restructure", "settlement", "lend", "borrow", "other"],
   "balance update": [
     "initial balance",
     "interest",
@@ -12,9 +15,6 @@ export const TXN_TYPE_SUBTYPE_MAP = {
     "waive-off",
     "other",
   ],
-  earning: ["salary", "sale", "interest", "find", "other"],
-  expense: ["settled purchase", "unsettled purchase", "other"],
-  transfer: ["restructure", "settlement", "lend", "borrow", "other"],
 } as const satisfies Record<TxnType, string[]>;
 export type TxnSubType = (typeof TXN_TYPE_SUBTYPE_MAP)[TxnType][number];
 

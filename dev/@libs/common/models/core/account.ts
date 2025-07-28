@@ -6,12 +6,12 @@ import { PaymentMethodUI } from "./payment-method";
 export type ExpenseAccountType = "expense";
 export type LoanAccountType = "loan";
 export type DepositAccountType = "deposit";
-export type CapitalAccountType = LoanAccountType | DepositAccountType;
-export type PeopleAccountType = "people";
 export type ShopAccountType = "shop";
-export type PeopleOrShopAccountType = PeopleAccountType | ShopAccountType;
+export type PeopleAccountType = "people";
+export type FundAccountType = LoanAccountType | DepositAccountType;
+export type EntityAccountType = ShopAccountType | PeopleAccountType;
 export type AccountType = Prettify<
-  ExpenseAccountType | CapitalAccountType | PeopleOrShopAccountType
+  ExpenseAccountType | FundAccountType | EntityAccountType
 >;
 
 export type BaseAccount = {
@@ -30,40 +30,40 @@ export type ExpenseAccount = Prettify<
     paymentMethods: PaymentMethodUI[IDKey][];
   }
 >;
-export type CapitalAccount = Prettify<
+export type FundAccount = Prettify<
   BaseAccount & {
     isPermanent: 0;
-    type: CapitalAccountType;
+    type: FundAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
   }
 >;
 export type LoanAccount = Prettify<
-  Omit<CapitalAccount, "type"> & {
+  Omit<FundAccount, "type"> & {
     type: LoanAccountType;
   }
 >;
 export type DepositAccount = Prettify<
-  Omit<CapitalAccount, "type"> & {
+  Omit<FundAccount, "type"> & {
     type: DepositAccountType;
   }
 >;
-export type PeopleOrShopAccount = Prettify<
+export type EntityAccount = Prettify<
   BaseAccount & {
-    type: PeopleOrShopAccountType;
+    type: EntityAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
   }
 >;
-export type PeopleAccount = Prettify<
-  Omit<PeopleOrShopAccount, "type"> & {
-    isPermanent: 0;
-    type: PeopleAccountType;
+export type ShopAccount = Prettify<
+  Omit<EntityAccount, "type"> & {
+    type: ShopAccountType;
   }
 >;
-export type ShopAccount = Prettify<
-  Omit<PeopleOrShopAccount, "type"> & {
-    type: ShopAccountType;
+export type PeopleAccount = Prettify<
+  Omit<EntityAccount, "type"> & {
+    isPermanent: 0;
+    type: PeopleAccountType;
   }
 >;
 export type Account = Prettify<
@@ -87,20 +87,16 @@ export type ExpenseAccountUI = Prettify<
     }
   >
 >;
-export type CapitalAccountUI = Prettify<WithID<CapitalAccount>>;
 export type LoanAccountUI = Prettify<WithID<LoanAccount>>;
 export type DepositAccountUI = Prettify<WithID<DepositAccount>>;
-export type PeopleOrShopAccountUI = Prettify<WithID<PeopleOrShopAccount>>;
-export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
 export type ShopAccountUI = Prettify<WithID<ShopAccount>>;
+export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
 export type AccountUI =
   | ExpenseAccountUI
-  | CapitalAccountUI
   | LoanAccountUI
   | DepositAccountUI
-  | PeopleOrShopAccountUI
-  | PeopleAccountUI
-  | ShopAccountUI;
+  | ShopAccountUI
+  | PeopleAccountUI;
 
 /**
  *
@@ -108,33 +104,18 @@ export type AccountUI =
  * COMMON CONSTANTS
  */
 
-export const CAPITAL_ACCOUNT_TYPES: Record<
-  CapitalAccountType,
-  CapitalAccountType
-> = {
-  loan: "loan",
-  deposit: "deposit",
-};
-export const CAPITAL_ACCOUNT_TYPES_LIST: CapitalAccountType[] = Object.values(
-  CAPITAL_ACCOUNT_TYPES
-);
-
-export const PERSON_OR_SHOP_ACCOUNT_TYPES: Record<
-  PeopleOrShopAccountType,
-  PeopleOrShopAccountType
-> = {
-  people: "people",
-  shop: "shop",
-};
-export const PERSON_OR_SHOP_ACCOUNT_TYPES_LIST: PeopleOrShopAccountType[] =
-  Object.values(PERSON_OR_SHOP_ACCOUNT_TYPES);
+export const EXPENSE_ACCOUNT_TYPE: ExpenseAccountType = "expense";
+export const LOAN_ACCOUNT_TYPE: LoanAccountType = "loan";
+export const DEPOSIT_ACCOUNT_TYPE: DepositAccountType = "deposit";
+export const SHOP_ACCOUNT_TYPE: ShopAccountType = "shop";
+export const PEOPLE_ACCOUNT_TYPE: PeopleAccountType = "people";
 
 export const ACCOUNT_TYPES_LIST: AccountType[] = [
   "expense",
   "loan",
   "deposit",
-  "people",
   "shop",
+  "people",
 ];
 
 /**

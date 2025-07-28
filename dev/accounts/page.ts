@@ -3,23 +3,26 @@ import { m } from "@mufw/maya";
 import { db } from "../@libs/common/localstorage/stores";
 import {
   AccountUI,
-  CAPITAL_ACCOUNT_TYPES_LIST,
-  CapitalAccountType,
-  CapitalAccountUI,
   ExpenseAccountUI,
   PaymentMethodUI,
-  PeopleOrShopAccountType,
-  PeopleOrShopAccountUI,
-  PERSON_OR_SHOP_ACCOUNT_TYPES_LIST,
+  EXPENSE_ACCOUNT_TYPE,
+  LoanAccountUI,
+  DepositAccountUI,
+  PeopleAccountUI,
+  ShopAccountUI,
+  LOAN_ACCOUNT_TYPE,
+  DEPOSIT_ACCOUNT_TYPE,
+  PEOPLE_ACCOUNT_TYPE,
+  SHOP_ACCOUNT_TYPE,
 } from "../@libs/common/models/core";
 import { URL, getQueryParamValue, goToPage } from "../@libs/common/utils";
 import { HTMLPage, NavScaffold } from "../@libs/components";
 import { TabBar } from "../@libs/elements";
 import {
-  CapitalAccounts,
+  FundAccounts,
   ExpenseAccounts,
   PaymentMethods,
-  PeopleOrShopAccounts,
+  EntityAccounts,
 } from "./@components";
 
 const ACCOUNTS_PAGE_TABS = [
@@ -31,32 +34,34 @@ const selectedTabIndex = signal(1);
 const header = trap([
   "My expense accounts & their payment methods",
   "My loan and deposit accounts",
-  "People and shops as accounts",
+  "Shops and people",
 ]).at(selectedTabIndex);
 const allPaymentMethods = signal<PaymentMethodUI[]>([]);
 const allAccounts = signal<AccountUI[]>([]);
 const allExpenseAccounts = signal<ExpenseAccountUI[]>([]);
-const allCapitalAccounts = signal<CapitalAccountUI[]>([]);
-const allPeopleOrShopAccounts = signal<PeopleOrShopAccountUI[]>([]);
+const allLoanAccounts = signal<LoanAccountUI[]>([]);
+const allDepositAccounts = signal<DepositAccountUI[]>([]);
+const allShopAccounts = signal<ShopAccountUI[]>([]);
+const allPeopleAccounts = signal<PeopleAccountUI[]>([]);
 
 effect(() => {
   const expAccs: ExpenseAccountUI[] = [];
-  const capAccs: CapitalAccountUI[] = [];
-  const pspAccs: PeopleOrShopAccountUI[] = [];
+  const laonAccs: LoanAccountUI[] = [];
+  const depAccs: DepositAccountUI[] = [];
+  const shopAccs: ShopAccountUI[] = [];
+  const peopAccs: PeopleAccountUI[] = [];
   allAccounts.value.forEach((acc) => {
-    if (acc.type === "expense") expAccs.push(acc);
-    if (CAPITAL_ACCOUNT_TYPES_LIST.includes(acc.type as CapitalAccountType))
-      capAccs.push(acc as CapitalAccountUI);
-    if (
-      PERSON_OR_SHOP_ACCOUNT_TYPES_LIST.includes(
-        acc.type as PeopleOrShopAccountType
-      )
-    )
-      pspAccs.push(acc as PeopleOrShopAccountUI);
+    if (acc.type === EXPENSE_ACCOUNT_TYPE) expAccs.push(acc);
+    if (acc.type === LOAN_ACCOUNT_TYPE) laonAccs.push(acc);
+    if (acc.type === DEPOSIT_ACCOUNT_TYPE) depAccs.push(acc);
+    if (acc.type === SHOP_ACCOUNT_TYPE) shopAccs.push(acc);
+    if (acc.type === PEOPLE_ACCOUNT_TYPE) peopAccs.push(acc);
   });
   allExpenseAccounts.value = expAccs;
-  allCapitalAccounts.value = capAccs;
-  allPeopleOrShopAccounts.value = pspAccs;
+  allLoanAccounts.value = laonAccs;
+  allDepositAccounts.value = depAccs;
+  allShopAccounts.value = shopAccs;
+  allPeopleAccounts.value = peopAccs;
 });
 
 const onPageMount = () => {
@@ -82,10 +87,15 @@ export default HTMLPage({
                 ExpenseAccounts({ expenseAccounts: allExpenseAccounts }),
                 PaymentMethods({ paymentMethods: allPaymentMethods }),
               ]),
-            1: () => CapitalAccounts({ capitalAccounts: allCapitalAccounts }),
+            1: () =>
+              FundAccounts({
+                allLoanAccounts,
+                allDepositAccounts,
+              }),
             2: () =>
-              PeopleOrShopAccounts({
-                peopleOrShopAccounts: allPeopleOrShopAccounts,
+              EntityAccounts({
+                allShopAccounts,
+                allPeopleAccounts,
               }),
           },
         }),
