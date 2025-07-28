@@ -19,7 +19,7 @@ import {
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
-} from "../../@controller/kvdb";
+} from "../../@kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components";
 import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";

@@ -25,11 +25,7 @@ import {
   Select,
   TextBox,
 } from "../../@view/elements";
-import {
-  getPrimitiveRecordValue,
-  ID_KEY,
-  TableRecordID,
-} from "../../@controller/kvdb";
+import { getPrimitiveRecordValue, ID_KEY, TableRecordID } from "../../@kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);

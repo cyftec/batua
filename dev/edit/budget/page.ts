@@ -1,12 +1,16 @@
-import { derive, signal, trap } from "@cyftech/signal";
+import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { TagUI, TxnUI } from "../../@controller/models/core";
+import { db } from "../../@controller/localstorage/stores";
+import { TagUI } from "../../@controller/models/core";
+import { Budget } from "../../@controller/models/core/budget";
+import { TIME_PERIODS, TimePeriod } from "../../@controller/transforms";
 import {
-  getPrimitiveRecordValue,
-  ID_KEY,
-  PLAIN_EXTENDED_RECORD_VALUE_KEY,
-} from "../../@controller/kvdb";
-import { EditPage, TagsSelector } from "../@components";
+  deepTrimmedLowercase,
+  getLowercaseTagName,
+  nameRegex,
+} from "../../@controller/utils";
+import { getPrimitiveRecordValue, ID_KEY } from "../../@kvdb";
+import { Tag, TagsList } from "../../@view/components";
 import {
   Label,
   NumberBox,
@@ -14,15 +18,7 @@ import {
   Select,
   TextBox,
 } from "../../@view/elements";
-import { db } from "../../@controller/localstorage/stores";
-import { Tag, TagsList } from "../../@view/components";
-import {
-  deepTrimmedLowercase,
-  getLowercaseTagName,
-  nameRegex,
-} from "../../@controller/utils";
-import { Budget } from "../../@controller/models/core/budget";
-import { TIME_PERIODS, TimePeriod } from "../../@controller/transforms";
+import { EditPage } from "../@components";
 
 const error = signal("");
 const budgetTitle = signal("");

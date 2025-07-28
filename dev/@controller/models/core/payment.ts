@@ -1,4 +1,4 @@
-import { IDKey, TableRecordID } from "../../kvdb";
+import { IDKey, TableRecordID } from "../../../@kvdb";
 import { AccountUI } from "./account";
 import { Prettify } from "./common";
 import { PaymentMethodUI } from "./payment-method";

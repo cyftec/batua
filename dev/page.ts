@@ -5,7 +5,7 @@ import { TxnUI } from "./@controller/models/core";
 import { URL, goToPage, handleTap } from "./@controller/utils";
 import { HTMLPage, NavScaffold, Tag } from "./@view/components";
 import { Button, Icon } from "./@view/elements";
-import { getPrimitiveRecordValue } from "./@controller/kvdb";
+import { getPrimitiveRecordValue } from "./@kvdb";
 
 const allTxns = signal<TxnUI[]>([]);
 

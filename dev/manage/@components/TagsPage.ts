@@ -10,7 +10,7 @@ import {
 import { getLowercaseTagName } from "../../@controller/utils";
 import { Section, TagsList } from "../../@view/components";
 import { Icon } from "../../@view/elements";
-import { getPrimitiveRecordValue } from "../../@controller/kvdb";
+import { getPrimitiveRecordValue } from "../../@kvdb";
 import { TagCategory } from "./TagsCategory";
 
 type TagsPageProps = {};

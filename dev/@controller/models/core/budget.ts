@@ -1,4 +1,4 @@
-import { IDKey } from "../../kvdb";
+import { IDKey } from "../../../@kvdb";
 import { TimePeriod } from "../../transforms";
 import { Prettify, WithID } from "./common";
 import { TagUI } from "./tag";

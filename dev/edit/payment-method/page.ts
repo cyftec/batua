@@ -11,7 +11,7 @@ import {
 } from "../../@controller/models/core";
 import { capitalize, nameRegex, uniqueIdRegex } from "../../@controller/utils";
 import { Label, Link, Select, TextBox } from "../../@view/elements";
-import { TableRecordID } from "../../@controller/kvdb";
+import { TableRecordID } from "../../@kvdb";
 import { EditPage } from "../@components";
 
 const error = signal("");

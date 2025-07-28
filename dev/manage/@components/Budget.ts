@@ -4,7 +4,7 @@ import { db } from "../../@controller/localstorage/stores";
 import { BudgetUI } from "../../@controller/models/core/budget";
 import { goToPage, URL } from "../../@controller/utils";
 import { CardButton } from "../../@view/elements";
-import { getPrimitiveRecordValue } from "../../@controller/kvdb";
+import { getPrimitiveRecordValue } from "../../@kvdb";
 
 type BudgetProps = {};
 
