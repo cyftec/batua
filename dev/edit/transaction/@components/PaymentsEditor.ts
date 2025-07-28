@@ -67,7 +67,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
         isPermanent: 0,
         name: peopleAccountName.value,
         balance: 0,
-        type: "People",
+        type: "people",
       });
       onNewPeopleAccountAdd();
       const newAcc = allAccounts.value.find(

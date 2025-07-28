@@ -10,7 +10,7 @@ type CapitalAccountsProps = {
 export const CapitalAccounts = component<CapitalAccountsProps>(
   ({ capitalAccounts }) => {
     return Section({
-      title: "Loan & Investment accounts",
+      title: "Loan & Deposit accounts",
       children: m.For({
         subject: capitalAccounts,
         map: (acc) =>

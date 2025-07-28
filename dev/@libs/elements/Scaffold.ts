@@ -11,10 +11,13 @@ type ScaffoldProps = {
 export const Scaffold = component<ScaffoldProps>(
   ({ cssClasses, header, content, bottombar }) => {
     const classes = tmpl`w6-ns ${cssClasses}`;
-    const headerCss = tmpl`overflow-break-word sticky top-0 left-0 right-0 bg-inherit z-999 b pv3 mt2 ${() =>
-      typeof value(header) === "string" && (value(header) as string).length > 22
+    const getHeaderFontSizeCss = () => {
+      const headerVal = value(header);
+      return typeof headerVal === "string" && (headerVal as string).length > 20
         ? "f2dot66"
-        : "f2dot33"}`;
+        : "f2dot33";
+    };
+    const headerCss = tmpl`overflow-break-word sticky top-0 left-0 right-0 bg-inherit z-999 b pv3 mt2 ${getHeaderFontSizeCss}`;
 
     return m.Div({
       onunmount: () => dispose(classes, headerCss),

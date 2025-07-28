@@ -1,9 +1,10 @@
-import { derive, effect, signal, trap } from "@cyftech/signal";
+import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
 import { db } from "../../@libs/common/localstorage/stores";
 import {
   Account,
+  ACCOUNT_TYPES_LIST,
   AccountType,
   AccountUI,
   CURRENCY_TYPES,
@@ -26,26 +27,32 @@ const editableAccountName = derive(() => editableAccount.value?.name || "");
 const error = signal("");
 const accountName = signal("");
 const accountUniqueId = signal("");
-const accountType = signal<AccountType>("Expense");
+const accountType = signal<AccountType>("expense");
+const accountTypeLabel = trap(accountType).concat(" account");
 const vaultType = signal<CurrencyType>("physical");
-const allPaymentMethods = signal<(PaymentMethodUI & { isSelected: boolean })[]>(
-  []
-);
+const allPMs = signal<(PaymentMethodUI & { isSelected: boolean })[]>([]);
 const [selectedPaymentMethods, unSelectedPaymentMethods] = trap(
-  allPaymentMethods
+  allPMs
 ).partition((pm) => pm.isSelected);
-const tagsSelectorPlaceholder = derive(() =>
-  unSelectedPaymentMethods.value.length
-    ? "search or create new"
-    : "create new payment method"
-);
 
-const onMount = (urlParams: URLSearchParams) => {
+const onPageMount = (urlParams: URLSearchParams) => {
   vaultType.value = "digital";
+  const typeStr = urlParams.get("type");
+  if (typeStr && ACCOUNT_TYPES_LIST.includes(typeStr as AccountType)) {
+    accountType.value = typeStr as AccountType;
+  }
   const idStr = urlParams.get("id");
   if (!idStr) return;
   const accID: TableRecordID = +idStr;
+  const editableAcc = db.accounts.get(accID);
+  if (!editableAcc) return;
   editableAccount.value = db.accounts.get(accID);
+  accountType.value = editableAcc.type;
+  accountName.value = editableAcc.name;
+  accountUniqueId.value = editableAcc.uniqueId || "";
+  if (editableAcc.type === "expense") {
+    vaultType.value = editableAcc.vault;
+  }
 };
 
 effect(() => {
@@ -55,24 +62,13 @@ effect(() => {
   const initialSelectendPmIDs = editableAcc
     ? (editableAcc.paymentMethods || []).map((pm) => pm.id)
     : [];
-  allPaymentMethods.value = db.paymentMethods
+  allPMs.value = db.paymentMethods
     .getAllWhere((pm) => pm.type === vType)
     .map((pm) => ({
       ...pm,
       isSelected: initialSelectendPmIDs.includes(pm.id),
     }));
   // TODO: Filter out slave payment methods as well
-});
-
-effect(() => {
-  const editableAcc = editableAccount.value;
-  if (!editableAcc) return;
-  accountType.value = editableAcc.type;
-  accountName.value = editableAcc.name;
-  accountUniqueId.value = editableAcc.uniqueId || "";
-  if (editableAcc.type === "Expense") {
-    vaultType.value = editableAcc.vault;
-  }
 });
 
 const resetError = () => (error.value = "");
@@ -82,7 +78,7 @@ const onPaymentMethodTagTap = (tagIndex: number, isSelected: boolean) => {
   const pm = isSelected
     ? unSelectedPaymentMethods.value[tagIndex]
     : selectedPaymentMethods.value[tagIndex];
-  allPaymentMethods.value = allPaymentMethods.value.map((p) => {
+  allPMs.value = allPMs.value.map((p) => {
     if (p.id === pm.id) p.isSelected = isSelected;
     return p;
   });
@@ -93,7 +89,7 @@ const onPaymentMethodAdd = (name: string) => {
   const newPmName = deepTrim(name);
   let existing = false;
   let unselected = false;
-  const updatedAllPMs = allPaymentMethods.value.map((pm) => {
+  const updatedAllPMs = allPMs.value.map((pm) => {
     const pmFound = areNamesSimilar(pm.name, newPmName);
     if (pmFound) {
       existing = true;
@@ -104,7 +100,7 @@ const onPaymentMethodAdd = (name: string) => {
   });
 
   if (existing) {
-    if (unselected) allPaymentMethods.value = updatedAllPMs;
+    if (unselected) allPMs.value = updatedAllPMs;
     else return false;
   } else {
     const newPmID = db.paymentMethods.add({
@@ -115,10 +111,7 @@ const onPaymentMethodAdd = (name: string) => {
     });
     const newPM = db.paymentMethods.get(newPmID);
     if (!newPM) throw `Error fetching the new tag after adding it to the DB.`;
-    allPaymentMethods.value = [
-      ...allPaymentMethods.value,
-      { ...newPM, isSelected: true },
-    ];
+    allPMs.value = [...allPMs.value, { ...newPM, isSelected: true }];
   }
 
   return true;
@@ -153,7 +146,7 @@ const onAccountSave = () => {
     const newAccount: Account = {
       isPermanent: 0,
       balance: 0,
-      type: "Expense",
+      type: "expense",
       ...updates,
     };
     db.accounts.add(newAccount);
@@ -162,11 +155,11 @@ const onAccountSave = () => {
 
 export default EditPage({
   error: error,
-  editableItemType: "account",
+  editableItemType: accountTypeLabel,
   editableItemTitle: editableAccountName,
+  onMount: onPageMount,
   validateForm: validateForm,
   onSave: onAccountSave,
-  onMount: onMount,
   content: m.Div([
     m.If({
       subject: editableAccount,
@@ -201,8 +194,8 @@ export default EditPage({
       ],
     }),
     m.If({
-      subject: vaultType,
-      isTruthy: (subject) =>
+      subject: op(accountType).equals("expense").truthy,
+      isTruthy: () =>
         Section({
           title: "Vault and payment methods",
           children: [
@@ -211,7 +204,7 @@ export default EditPage({
               cssClasses: "mb2 f6 br3",
               anchor: "left",
               options: CURRENCY_TYPES,
-              selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(subject),
+              selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(vaultType),
               targetFormattor: (option) => capitalize(option),
               optionFormattor: (option) => capitalize(option),
               onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
@@ -220,10 +213,9 @@ export default EditPage({
             TagsSelector({
               onAdd: onPaymentMethodAdd,
               onTagTap: onPaymentMethodTagTap,
-              cssClasses: "",
               selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
               unSelectedTags: trap(unSelectedPaymentMethods).map((a) => a.name),
-              textboxPlaceholder: tagsSelectorPlaceholder,
+              textboxPlaceholder: "search and select, or create new",
             }),
           ],
         }),

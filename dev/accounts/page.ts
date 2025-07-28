@@ -23,15 +23,15 @@ import {
 } from "./@components";
 
 const ACCOUNTS_PAGE_TABS = [
-  "Savings Accounts",
-  "Fund Accounts",
-  "People or Shops",
+  "Expense Acc",
+  "Loan & Deposit",
+  "People & Shop",
 ] as const satisfies string[];
 const selectedTabIndex = signal(1);
 const header = trap([
-  "My expense accounts & payment methods",
-  "My loan & investment accounts",
-  "Shops & People as accounts",
+  "My expense accounts & their payment methods",
+  "My loan and deposit accounts",
+  "People and shops as accounts",
 ]).at(selectedTabIndex);
 const allPaymentMethods = signal<PaymentMethodUI[]>([]);
 const allAccounts = signal<AccountUI[]>([]);
@@ -44,7 +44,7 @@ effect(() => {
   const capAccs: CapitalAccountUI[] = [];
   const pspAccs: PeopleOrShopAccountUI[] = [];
   allAccounts.value.forEach((acc) => {
-    if (acc.type === "Expense") expAccs.push(acc);
+    if (acc.type === "expense") expAccs.push(acc);
     if (CAPITAL_ACCOUNT_TYPES_LIST.includes(acc.type as CapitalAccountType))
       capAccs.push(acc as CapitalAccountUI);
     if (

@@ -6,6 +6,7 @@ import {
   Payment,
   TagUI,
   Txn,
+  TxnSubType,
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   TxnUI,
@@ -20,21 +21,16 @@ import {
   TableRecordID,
 } from "../../@libs/kvdb";
 import { EditPage, TagsSelector } from "../@components";
-import { PaymentsEditor } from "./@components/PaymentsEditor";
+import { PaymentsEditor } from "./@components";
 import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";
 
 const now = new Date();
 const error = signal("");
-const txnType = signal<TxnType>("balanceupdate");
+const txnType = signal<TxnType>("balance update");
+const txnSubType = signal<TxnSubType>("initial balance");
 const txnDate = signal<Date>(now);
 const txnCreated = signal<Date>(now);
 const txnModified = signal<Date>(now);
-const txnNecessity = signal<Txn["necessity"]>("Essential");
-// const selectedNecessityOptionIndex = derive(() =>
-//   TXN_NECESSITIES_WITH_ICONS.findIndex(
-//     (ness) => ness.label === txnNecessity.value
-//   )
-// );
 const allAccounts = signal<AccountUI[]>([]);
 const txnPayments = signal<Payment[]>([]);
 const txnTitle = signal<string>("");
@@ -82,7 +78,6 @@ const onPageMount = (urlParams: URLSearchParams) => {
   txnDate.value = editableTxn.value.date;
   txnCreated.value = editableTxn.value.created;
   txnModified.value = editableTxn.value.modified;
-  txnNecessity.value = editableTxn.value.necessity;
   txnPayments.value = editableTxn.value.payments.map((p) => ({
     amount: p.amount,
     account: p.account.id,
@@ -242,11 +237,10 @@ const onTxnSave = () => {
       pmtIDs.push(newPmtID);
     });
     db.txns.add({
-      type: "balanceupdate",
+      type: "balance update",
       date: txnDate.value.getTime(),
       created: now,
       modified: now,
-      necessity: txnNecessity.value,
       payments: pmtIDs,
       tags: selectedTags.value.map((tg) => tg[ID_KEY]),
       title: newTxnTitleID,
@@ -276,7 +270,13 @@ export default EditPage({
         Label({ text: "Transaction type" }),
         TransactionTypeSelector({
           txnType: txnType,
-          onChange: (newType) => (txnType.value = newType),
+          txnSubType: txnSubType,
+          onChange: (type, subtype) => {
+            console.log(type, subtype);
+
+            txnType.value = type;
+            txnSubType.value = subtype;
+          },
         }),
         Label({ text: "Time of transaction" }),
         DateTimePicker({

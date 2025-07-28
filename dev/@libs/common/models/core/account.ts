@@ -3,12 +3,12 @@ import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
 import { PaymentMethodUI } from "./payment-method";
 
-export type ExpenseAccountType = "Expense";
-export type LoanAccountType = "Loan";
-export type InvestmentAccountType = "Investment";
-export type CapitalAccountType = LoanAccountType | InvestmentAccountType;
-export type PeopleAccountType = "People";
-export type ShopAccountType = "Shop";
+export type ExpenseAccountType = "expense";
+export type LoanAccountType = "loan";
+export type DepositAccountType = "deposit";
+export type CapitalAccountType = LoanAccountType | DepositAccountType;
+export type PeopleAccountType = "people";
+export type ShopAccountType = "shop";
 export type PeopleOrShopAccountType = PeopleAccountType | ShopAccountType;
 export type AccountType = Prettify<
   ExpenseAccountType | CapitalAccountType | PeopleOrShopAccountType
@@ -43,9 +43,9 @@ export type LoanAccount = Prettify<
     type: LoanAccountType;
   }
 >;
-export type InvestmentAccount = Prettify<
+export type DepositAccount = Prettify<
   Omit<CapitalAccount, "type"> & {
-    type: InvestmentAccountType;
+    type: DepositAccountType;
   }
 >;
 export type PeopleOrShopAccount = Prettify<
@@ -89,7 +89,7 @@ export type ExpenseAccountUI = Prettify<
 >;
 export type CapitalAccountUI = Prettify<WithID<CapitalAccount>>;
 export type LoanAccountUI = Prettify<WithID<LoanAccount>>;
-export type InvestmentAccountUI = Prettify<WithID<InvestmentAccount>>;
+export type DepositAccountUI = Prettify<WithID<DepositAccount>>;
 export type PeopleOrShopAccountUI = Prettify<WithID<PeopleOrShopAccount>>;
 export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
 export type ShopAccountUI = Prettify<WithID<ShopAccount>>;
@@ -97,7 +97,7 @@ export type AccountUI =
   | ExpenseAccountUI
   | CapitalAccountUI
   | LoanAccountUI
-  | InvestmentAccountUI
+  | DepositAccountUI
   | PeopleOrShopAccountUI
   | PeopleAccountUI
   | ShopAccountUI;
@@ -112,8 +112,8 @@ export const CAPITAL_ACCOUNT_TYPES: Record<
   CapitalAccountType,
   CapitalAccountType
 > = {
-  Loan: "Loan",
-  Investment: "Investment",
+  loan: "loan",
+  deposit: "deposit",
 };
 export const CAPITAL_ACCOUNT_TYPES_LIST: CapitalAccountType[] = Object.values(
   CAPITAL_ACCOUNT_TYPES
@@ -123,11 +123,19 @@ export const PERSON_OR_SHOP_ACCOUNT_TYPES: Record<
   PeopleOrShopAccountType,
   PeopleOrShopAccountType
 > = {
-  People: "People",
-  Shop: "Shop",
+  people: "people",
+  shop: "shop",
 };
 export const PERSON_OR_SHOP_ACCOUNT_TYPES_LIST: PeopleOrShopAccountType[] =
   Object.values(PERSON_OR_SHOP_ACCOUNT_TYPES);
+
+export const ACCOUNT_TYPES_LIST: AccountType[] = [
+  "expense",
+  "loan",
+  "deposit",
+  "people",
+  "shop",
+];
 
 /**
  *
@@ -140,7 +148,7 @@ export const CASH_EXPENSE_ACCOUNT: ExpenseAccount = {
   name: "Wallet",
   balance: 0,
   vault: "physical",
-  type: "Expense",
+  type: "expense",
   paymentMethods: [],
 };
 
@@ -148,5 +156,5 @@ export const MARKET: ShopAccount = {
   isPermanent: 1,
   name: "Market",
   balance: Number.MAX_SAFE_INTEGER,
-  type: "Shop",
+  type: "shop",
 };

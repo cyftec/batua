@@ -8,6 +8,7 @@ export * from "./Label";
 export * from "./Link";
 export * from "./Modal";
 export * from "./NumberBox";
+export * from "./PairSelect";
 export * from "./Scaffold";
 export * from "./Section";
 export * from "./Select";

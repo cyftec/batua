@@ -3,19 +3,20 @@ import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";
 
-export type TxnType =
-  | "balanceupdate"
-  | "transfer"
-  | "moneycredit"
-  | "moneydebit"
-  | "grouppurchase";
-export const TXN_TYPES: Record<TxnType, string> = {
-  balanceupdate: "Account balance update",
-  transfer: "Money transfer",
-  moneycredit: "Money earned",
-  moneydebit: "Money spent",
-  grouppurchase: "Group purchase",
-};
+export type TxnType = "balance update" | "earning" | "expense" | "transfer";
+export const TXN_TYPE_SUBTYPE_MAP = {
+  "balance update": [
+    "initial balance",
+    "interest",
+    "no trace",
+    "waive-off",
+    "other",
+  ],
+  earning: ["salary", "sale", "interest", "find", "other"],
+  expense: ["settled purchase", "unsettled purchase", "other"],
+  transfer: ["restructure", "settlement", "lend", "borrow", "other"],
+} as const satisfies Record<TxnType, string[]>;
+export type TxnSubType = (typeof TXN_TYPE_SUBTYPE_MAP)[TxnType][number];
 
 export type TxnNecessity = "Essential" | "Mixed" | "Luxury";
 export const TXN_NECESSITIES: TxnNecessity[] = ["Essential", "Mixed", "Luxury"];
@@ -33,7 +34,6 @@ export type Txn = {
   created: number;
   modified: number;
   type: TxnType;
-  necessity: TxnNecessity;
   payments: PaymentUI["id"][];
   tags: TagUI["id"][];
   title: TxnTitleUI["id"];

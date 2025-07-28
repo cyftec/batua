@@ -17,7 +17,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
         subject: expenseAccounts,
         n: 0,
         nthChild: CardButton({
-          onTap: () => goToPage(URL.EDIT.ACCOUNT, { type: "Expense" }),
+          onTap: () => goToPage(URL.EDIT.ACCOUNT, { type: "expense" }),
           cssClasses: "w-48 mb3",
           icon: "add",
           label: "Add new account",
@@ -27,7 +27,7 @@ export const ExpenseAccounts = component<ExpenseAccountsProps>(
             onTap: acc.isPermanent
               ? undefined
               : () =>
-                  goToPage(URL.EDIT.ACCOUNT, { id: acc.id, type: "Expense" }),
+                  goToPage(URL.EDIT.ACCOUNT, { id: acc.id, type: "expense" }),
             cssClasses: "w-48 mb3",
             account: acc,
           }),

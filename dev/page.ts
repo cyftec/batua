@@ -33,7 +33,7 @@ export default HTMLPage({
                     class: "bg-near-white br3 pa2 mr2",
                     children: txn.payments
                       .reduce((s, p) => {
-                        return p.account.type === "Expense" ? s + p.amount : s;
+                        return p.account.type === "expense" ? s + p.amount : s;
                       }, 0)
                       .toLocaleString(),
                   }),

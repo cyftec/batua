@@ -16,7 +16,7 @@ export const PeopleOrShopAccounts = component<PeopleOrShopAccountsProps>(
           subject: peopleOrShopAccounts,
           n: Infinity,
           nthChild: CardButton({
-            onTap: () => goToPage(URL.EDIT.ACCOUNT, { type: "People" }),
+            onTap: () => goToPage(URL.EDIT.ACCOUNT, { type: "people" }),
             icon: "person_add",
             label: "Add person",
           }),
@@ -25,7 +25,7 @@ export const PeopleOrShopAccounts = component<PeopleOrShopAccountsProps>(
               class: "mb3",
               children: acc.name,
               onclick: handleTap(() =>
-                goToPage(URL.EDIT.ACCOUNT, { id: acc.id, type: "People" })
+                goToPage(URL.EDIT.ACCOUNT, { id: acc.id, type: "people" })
               ),
             }),
         })

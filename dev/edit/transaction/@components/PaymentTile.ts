@@ -21,7 +21,7 @@ export const PaymentTile = component<PaymentTileProps>(
     const amountEditorFocused = signal(false);
     const { account, amount, via } = trap(payment).props;
     const accountOptions = derive(() => {
-      return [...allAccounts.value, { type: "People", name: ADD_NEW_PERSON }];
+      return [...allAccounts.value, { type: "people", name: ADD_NEW_PERSON }];
     });
     type AccountOption = PlainValue<typeof accountOptions>[number];
     const selectedAccountIndex = trap(allAccounts).findIndex(

@@ -25,7 +25,9 @@ export const EditPage = component<EditPageProps>(
   }) => {
     const headerLabel = derive(() =>
       editableItemTitle.value
-        ? `Edit '${editableItemTitle.value}'`
+        ? `Edit ${editableItemType.value.toLowerCase()} '${
+            editableItemTitle.value
+          }'`
         : `Add new ${editableItemType.value.toLowerCase()}`
     );
     const commitBtnLabel = op(editableItemTitle).ternary("Save", "Add");

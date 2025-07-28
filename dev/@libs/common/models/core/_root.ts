@@ -29,21 +29,32 @@ export const ACCOUNT = {
 };
 
 export const financialActivity = {
-  balanceupdate: {},
+  // COMMON TAGS
+  // interest, gift
+  balanceupdate: {
+    initialbalance: {},
+    interest: {},
+    notrace: {},
+    waivedoff: {},
+  },
+  earning: {
+    salary: {},
+    profit: {},
+    interest: {},
+    find: {},
+    win: {},
+    prize: {},
+  },
+  expense: {
+    purchase: {},
+    loss: {},
+    penalty: {},
+    donation: {},
+  },
   transfer: {
     restructure: {},
     settlement: {},
     lend: {},
     borrow: {},
-    gift: {},
   },
-  moneycredit: {
-    income: { job: {}, business: {} },
-    win: { find: {}, prize: {} },
-  },
-  moneydebit: {
-    expense: { purchase: {}, donation: {} },
-    loss: { misplacement: {}, penalty: {} },
-  },
-  grouppurchase: {},
 };
