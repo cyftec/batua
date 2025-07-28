@@ -13,7 +13,7 @@ import {
 } from "../../@libs/common/models/core";
 import { isFutureDate } from "../../@libs/common/transforms";
 import { getLowercaseTagName, nameRegex } from "../../@libs/common/utils";
-import { DateTimePicker, Label, Section, TextBox } from "../../@libs/elements";
+import { DateTimePicker, Label, Section, TextBox } from "../../@view/elements";
 import {
   getPrimitiveRecordValue,
   ID_KEY,

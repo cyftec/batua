@@ -13,9 +13,9 @@ import {
   Section,
   Select,
   TextBox,
-} from "../../@libs/elements";
+} from "../../@view/elements";
 import { db } from "../../@libs/common/localstorage/stores";
-import { Tag, TagsList } from "../../@libs/components";
+import { Tag, TagsList } from "../../@view/components";
 import {
   deepTrimmedLowercase,
   getLowercaseTagName,

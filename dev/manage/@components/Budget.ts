@@ -3,7 +3,7 @@ import { component, m } from "@mufw/maya";
 import { db } from "../../@libs/common/localstorage/stores";
 import { BudgetUI } from "../../@libs/common/models/core/budget";
 import { goToPage, URL } from "../../@libs/common/utils";
-import { CardButton } from "../../@libs/elements";
+import { CardButton } from "../../@view/elements";
 import { getPrimitiveRecordValue } from "../../@libs/kvdb";
 
 type BudgetProps = {};

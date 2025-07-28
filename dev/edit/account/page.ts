@@ -24,7 +24,7 @@ import {
   Section,
   Select,
   TextBox,
-} from "../../@libs/elements";
+} from "../../@view/elements";
 import {
   getPrimitiveRecordValue,
   ID_KEY,

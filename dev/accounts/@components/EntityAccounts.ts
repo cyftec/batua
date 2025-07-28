@@ -1,6 +1,6 @@
 import { component, m } from "@mufw/maya";
 import { URL, goToPage, handleTap } from "../../@libs/common/utils";
-import { CardButton, Section } from "../../@libs/elements";
+import { CardButton, Section } from "../../@view/elements";
 import { PeopleAccountUI, ShopAccountUI } from "../../@libs/common/models/core";
 
 type EntityAccountsProps = {

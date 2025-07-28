@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { Tag, TagsList } from "../../@libs/components";
+import { Tag, TagsList } from "../../@view/components";
 import { derive } from "@cyftech/signal";
 
 type TagsSelectorProps = {

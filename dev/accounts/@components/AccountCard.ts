@@ -7,8 +7,8 @@ import {
   PaymentMethodUI,
 } from "../../@libs/common/models/core";
 import { handleTap } from "../../@libs/common/utils";
-import { Tag } from "../../@libs/components";
-import { Icon } from "../../@libs/elements";
+import { Tag } from "../../@view/components";
+import { Icon } from "../../@view/elements";
 import { db } from "../../@libs/common/localstorage/stores";
 
 type AccountCardProps = {

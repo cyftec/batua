@@ -1,7 +1,7 @@
 import { derive, op } from "@cyftech/signal";
 import { Child, component } from "@mufw/maya";
-import { HTMLPage, NavScaffold } from "../../@libs/components";
-import { DialogActionButtons, Icon } from "../../@libs/elements";
+import { HTMLPage, NavScaffold } from "../../@view/components";
+import { DialogActionButtons, Icon } from "../../@view/elements";
 
 type EditPageProps = {
   error: string;

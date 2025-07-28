@@ -1,6 +1,6 @@
 import { component, m } from "@mufw/maya";
-import { Tag } from "../../@libs/components";
-import { Icon } from "../../@libs/elements";
+import { Tag } from "../../@view/components";
+import { Icon } from "../../@view/elements";
 
 type TagCategoryProps = {
   cssClasses?: string;

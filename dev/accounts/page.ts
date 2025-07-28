@@ -16,8 +16,8 @@ import {
   SHOP_ACCOUNT_TYPE,
 } from "../@libs/common/models/core";
 import { URL, getQueryParamValue, goToPage } from "../@libs/common/utils";
-import { HTMLPage, NavScaffold } from "../@libs/components";
-import { TabBar } from "../@libs/elements";
+import { HTMLPage, NavScaffold } from "../@view/components";
+import { TabBar } from "../@view/elements";
 import {
   FundAccounts,
   ExpenseAccounts,

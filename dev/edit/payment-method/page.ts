@@ -10,7 +10,7 @@ import {
   PaymentMethodUI,
 } from "../../@libs/common/models/core";
 import { capitalize, nameRegex, uniqueIdRegex } from "../../@libs/common/utils";
-import { Label, Link, Select, TextBox } from "../../@libs/elements";
+import { Label, Link, Select, TextBox } from "../../@view/elements";
 import { TableRecordID } from "../../@libs/kvdb";
 import { EditPage } from "../@components";
 

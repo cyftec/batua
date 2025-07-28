@@ -5,7 +5,7 @@ import {
   Payment,
   PaymentMethodUI,
 } from "../../../@libs/common/models/core";
-import { Icon, NumberBox, Select } from "../../../@libs/elements";
+import { Icon, NumberBox, Select } from "../../../@view/elements";
 
 type PaymentTileProps = {
   payment: Payment;

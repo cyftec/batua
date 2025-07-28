@@ -1,6 +1,6 @@
 import { component, m } from "@mufw/maya";
 import { ExpenseAccountUI } from "../../@libs/common/models/core";
-import { CardButton, Section } from "../../@libs/elements";
+import { CardButton, Section } from "../../@view/elements";
 import { AccountCard } from "./AccountCard";
 import { URL, goToPage } from "../../@libs/common/utils";
 

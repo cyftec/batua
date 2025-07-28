@@ -6,7 +6,7 @@ import {
   TxnType,
 } from "../../../@libs/common/models/core";
 import { capitalize } from "../../../@libs/common/utils";
-import { PairSelect, Select } from "../../../@libs/elements";
+import { PairSelect, Select } from "../../../@view/elements";
 
 type TransactionTypeSelectorProps = {
   txnType: TxnType;

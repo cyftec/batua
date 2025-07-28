@@ -8,8 +8,8 @@ import {
   TXN_NECESSITIES,
 } from "../../@libs/common/models/core";
 import { getLowercaseTagName } from "../../@libs/common/utils";
-import { Section, TagsList } from "../../@libs/components";
-import { Icon } from "../../@libs/elements";
+import { Section, TagsList } from "../../@view/components";
+import { Icon } from "../../@view/elements";
 import { getPrimitiveRecordValue } from "../../@libs/kvdb";
 import { TagCategory } from "./TagsCategory";
 

@@ -3,8 +3,8 @@ import { m } from "@mufw/maya";
 import { db } from "./@libs/common/localstorage/stores";
 import { TxnUI } from "./@libs/common/models/core";
 import { URL, goToPage, handleTap } from "./@libs/common/utils";
-import { HTMLPage, NavScaffold, Tag } from "./@libs/components";
-import { Button, Icon } from "./@libs/elements";
+import { HTMLPage, NavScaffold, Tag } from "./@view/components";
+import { Button, Icon } from "./@view/elements";
 import { getPrimitiveRecordValue } from "./@libs/kvdb";
 
 const allTxns = signal<TxnUI[]>([]);

@@ -8,7 +8,7 @@ import {
   Link,
   Modal,
   TextBox,
-} from "../../../@libs/elements";
+} from "../../../@view/elements";
 import { PaymentTile } from "./PaymentTile";
 
 type PaymentsEditorProps = {
