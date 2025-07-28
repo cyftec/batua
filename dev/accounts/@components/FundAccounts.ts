@@ -1,11 +1,8 @@
 import { component, m } from "@mufw/maya";
-import {
-  DepositAccountUI,
-  LoanAccountUI,
-} from "../../@controller/common/models/core";
+import { DepositAccountUI, LoanAccountUI } from "../../@controller/models/core";
 import { CardButton, Section } from "../../@view/elements";
 import { AccountCard } from "./AccountCard";
-import { goToPage, URL } from "../../@controller/common/utils";
+import { goToPage, URL } from "../../@controller/utils";
 
 type FundAccountsProps = {
   allLoanAccounts: LoanAccountUI[];

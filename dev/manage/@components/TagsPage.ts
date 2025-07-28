@@ -1,13 +1,13 @@
 import { signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { db } from "../../@controller/common/localstorage/stores";
+import { db } from "../../@controller/localstorage/stores";
 import {
   AccountUI,
   PaymentMethodUI,
   TagUI,
   TXN_NECESSITIES,
-} from "../../@controller/common/models/core";
-import { getLowercaseTagName } from "../../@controller/common/utils";
+} from "../../@controller/models/core";
+import { getLowercaseTagName } from "../../@controller/utils";
 import { Section, TagsList } from "../../@view/components";
 import { Icon } from "../../@view/elements";
 import { getPrimitiveRecordValue } from "../../@controller/kvdb";

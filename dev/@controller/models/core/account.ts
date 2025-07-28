@@ -1,4 +1,4 @@
-import { IDKey } from "../../../kvdb";
+import { IDKey } from "../../kvdb";
 import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
 import { PaymentMethodUI } from "./payment-method";

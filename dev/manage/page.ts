@@ -1,6 +1,6 @@
 import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { URL, getQueryParamValue, goToPage } from "../@controller/common/utils";
+import { URL, getQueryParamValue, goToPage } from "../@controller/utils";
 import { HTMLPage, NavScaffold } from "../@view/components";
 import { TabBar } from "../@view/elements";
 import { Budget, TagsPage } from "./@components";

@@ -1,6 +1,6 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { TagUI, TxnUI } from "../../@controller/common/models/core";
+import { TagUI, TxnUI } from "../../@controller/models/core";
 import {
   getPrimitiveRecordValue,
   ID_KEY,
@@ -14,15 +14,15 @@ import {
   Select,
   TextBox,
 } from "../../@view/elements";
-import { db } from "../../@controller/common/localstorage/stores";
+import { db } from "../../@controller/localstorage/stores";
 import { Tag, TagsList } from "../../@view/components";
 import {
   deepTrimmedLowercase,
   getLowercaseTagName,
   nameRegex,
-} from "../../@controller/common/utils";
-import { Budget } from "../../@controller/common/models/core/budget";
-import { TIME_PERIODS, TimePeriod } from "../../@controller/common/transforms";
+} from "../../@controller/utils";
+import { Budget } from "../../@controller/models/core/budget";
+import { TIME_PERIODS, TimePeriod } from "../../@controller/transforms";
 
 const error = signal("");
 const budgetTitle = signal("");

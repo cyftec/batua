@@ -1,6 +1,6 @@
 import { signal } from "@cyftech/signal";
 import { Child, component, m } from "@mufw/maya";
-import { isNewToApp } from "../../@controller/common/localstorage";
+import { isNewToApp } from "../../@controller/localstorage";
 import { AccountCreator } from "./AccountCreator";
 
 type HTMLPageProps = {

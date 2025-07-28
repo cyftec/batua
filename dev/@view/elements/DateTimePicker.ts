@@ -3,7 +3,7 @@ import { component, m } from "@mufw/maya";
 import {
   getDateInputLocaleValue,
   getDiffDaysFromToday,
-} from "../../@controller/common/transforms";
+} from "../../@controller/transforms";
 
 type DateTimePickerProps = {
   cssClasses?: string;

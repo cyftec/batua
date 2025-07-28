@@ -1,6 +1,6 @@
 import { dispose, tmpl, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { handleTap } from "../../@controller/common/utils";
+import { handleTap } from "../../@controller/utils";
 
 type TabBarProps = {
   cssClasses?: string;

@@ -1,4 +1,4 @@
-import { TableRecordID } from "../../../kvdb";
+import { TableRecordID } from "../../kvdb";
 import { PaymentUI } from "./payment";
 import { TagUI } from "./tag";
 import { TxnTitleUI } from "./transaction-title";

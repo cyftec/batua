@@ -1,6 +1,6 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../@controller/common/localstorage/stores";
+import { db } from "../../@controller/localstorage/stores";
 import {
   AccountUI,
   Payment,
@@ -10,9 +10,9 @@ import {
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   TxnUI,
-} from "../../@controller/common/models/core";
-import { isFutureDate } from "../../@controller/common/transforms";
-import { getLowercaseTagName, nameRegex } from "../../@controller/common/utils";
+} from "../../@controller/models/core";
+import { isFutureDate } from "../../@controller/transforms";
+import { getLowercaseTagName, nameRegex } from "../../@controller/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../@view/elements";
 import {
   getPrimitiveRecordValue,

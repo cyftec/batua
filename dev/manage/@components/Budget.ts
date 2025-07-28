@@ -1,8 +1,8 @@
 import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { db } from "../../@controller/common/localstorage/stores";
-import { BudgetUI } from "../../@controller/common/models/core/budget";
-import { goToPage, URL } from "../../@controller/common/utils";
+import { db } from "../../@controller/localstorage/stores";
+import { BudgetUI } from "../../@controller/models/core/budget";
+import { goToPage, URL } from "../../@controller/utils";
 import { CardButton } from "../../@view/elements";
 import { getPrimitiveRecordValue } from "../../@controller/kvdb";
 

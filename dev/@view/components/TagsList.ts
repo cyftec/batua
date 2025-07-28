@@ -1,7 +1,7 @@
 import { derive, effect, op, signal, tmpl, trap } from "@cyftech/signal";
 import { component, m, MHtmlElement } from "@mufw/maya";
 import { Tag, TagState } from ".";
-import { deepTrimmedLowercase } from "../../@controller/common/utils";
+import { deepTrimmedLowercase } from "../../@controller/utils";
 import { CustomKeyDownEvent, SuggestiveTextbox } from "../elements";
 
 type TagsListProps = {

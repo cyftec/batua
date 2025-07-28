@@ -1,19 +1,15 @@
 import { derive, effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../@controller/common/localstorage/stores";
+import { db } from "../../@controller/localstorage/stores";
 import {
   AccountUI,
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethod,
   PaymentMethodUI,
-} from "../../@controller/common/models/core";
-import {
-  capitalize,
-  nameRegex,
-  uniqueIdRegex,
-} from "../../@controller/common/utils";
+} from "../../@controller/models/core";
+import { capitalize, nameRegex, uniqueIdRegex } from "../../@controller/utils";
 import { Label, Link, Select, TextBox } from "../../@view/elements";
 import { TableRecordID } from "../../@controller/kvdb";
 import { EditPage } from "../@components";

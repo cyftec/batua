@@ -1,6 +1,6 @@
 import { dispose, op, tmpl } from "@cyftech/signal";
 import { Children, component, m } from "@mufw/maya";
-import { handleTap } from "../../@controller/common/utils";
+import { handleTap } from "../../@controller/utils";
 
 type LinkProps = {
   cssClasses?: string;
