@@ -6,7 +6,7 @@ import {
   INITIAL_SETTINGS,
   INITIAL_STORAGE_DATA,
   StorageDetails,
-} from "../../models";
+} from "../../../@models";
 import { validLocalStorageKeys, parseObjectJsonString } from "../../utils";
 
 export const updateSettings = (settings: AppSettings) => {

@@ -1,7 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { db } from "../../../@controller/localstorage/stores";
-import { AccountUI, Payment } from "../../../@controller/models/core";
+import { AccountUI, Payment } from "../../../@models/core";
 import { areNamesSimilar, nameRegex } from "../../../@controller/utils";
 import {
   DialogActionButtons,

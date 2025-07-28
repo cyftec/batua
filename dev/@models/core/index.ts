@@ -1,4 +1,5 @@
 export * from "./account";
+export * from "./budget";
 export * from "./common";
 export * from "./currency";
 export * from "./payment";

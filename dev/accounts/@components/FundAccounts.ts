@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { DepositAccountUI, LoanAccountUI } from "../../@controller/models/core";
+import { DepositAccountUI, LoanAccountUI } from "../../@models/core";
 import { CardButton, Section } from "../../@view/elements";
 import { AccountCard } from "./AccountCard";
 import { goToPage, URL } from "../../@controller/utils";

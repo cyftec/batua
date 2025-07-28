@@ -10,7 +10,7 @@ import {
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethodUI,
-} from "../../@controller/models/core";
+} from "../../@models/core";
 import {
   areNamesSimilar,
   capitalize,

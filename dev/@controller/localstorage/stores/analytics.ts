@@ -4,7 +4,7 @@ import {
   AS_ANALYTICS_ID_KEY,
   AS_ANALYTICS_KEY,
   INITIAL_ANALYTICS,
-} from "../../models";
+} from "../../../@models";
 import { parseObjectJsonString } from "../../utils";
 
 export const updateAnalytics = (analytics: Analytics) => {

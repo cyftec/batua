@@ -8,7 +8,7 @@ import {
   CurrencyType,
   PaymentMethod,
   PaymentMethodUI,
-} from "../../@controller/models/core";
+} from "../../@models/core";
 import { capitalize, nameRegex, uniqueIdRegex } from "../../@controller/utils";
 import { Label, Link, Select, TextBox } from "../../@view/elements";
 import { TableRecordID } from "../../@kvdb";

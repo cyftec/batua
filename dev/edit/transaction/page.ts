@@ -10,7 +10,7 @@ import {
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   TxnUI,
-} from "../../@controller/models/core";
+} from "../../@models/core";
 import { isFutureDate } from "../../@controller/transforms";
 import { getLowercaseTagName, nameRegex } from "../../@controller/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../@view/elements";

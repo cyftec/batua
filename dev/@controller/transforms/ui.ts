@@ -1,5 +1,5 @@
 import { getLastInteraction } from "../localstorage";
-import { NavbarLink } from "../models";
+import { NavbarLink } from "../../@models";
 import { getMinutesInMS } from "./date-time";
 
 export const isLastInteractionLongBack = () => {

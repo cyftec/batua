@@ -6,7 +6,7 @@ import {
   PaymentMethodUI,
   TagUI,
   TXN_NECESSITIES,
-} from "../../@controller/models/core";
+} from "../../@models/core";
 import { getLowercaseTagName } from "../../@controller/utils";
 import { Section, TagsList } from "../../@view/components";
 import { Icon } from "../../@view/elements";

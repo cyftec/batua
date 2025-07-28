@@ -12,8 +12,8 @@ import {
   TxnTitle,
   TxnTitleUI,
   TxnUI,
-} from "../../models/core";
-import { Budget, BudgetUI } from "../../models/core/budget";
+} from "../../../@models/core";
+import { Budget, BudgetUI } from "../../@models/core/budget";
 
 const PAYMENT_METHODS_TABLE_KEY = "pm";
 const ACCOUNTS_TABLE_KEY = "a";

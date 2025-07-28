@@ -5,7 +5,7 @@ import {
   CurrencyType,
   ExpenseAccountUI,
   PaymentMethodUI,
-} from "../../@controller/models/core";
+} from "../../@models/core";
 import { handleTap } from "../../@controller/utils";
 import { Tag } from "../../@view/components";
 import { Icon } from "../../@view/elements";

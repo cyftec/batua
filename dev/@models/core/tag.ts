@@ -1,4 +1,4 @@
-import { PrimitiveExtendedRecord } from "../../../@kvdb";
+import { PrimitiveExtendedRecord } from "../../@kvdb";
 
 export type Tag = string;
 

@@ -1,5 +1,5 @@
 import { phase } from "@mufw/maya/utils";
-import { INITIAL_ANALYTICS, StorageDetails } from "../models";
+import { INITIAL_ANALYTICS, StorageDetails } from "../../@models";
 import {
   db,
   fetchAnalytics,
@@ -12,7 +12,7 @@ import {
   INITIAL_TAGS,
   NET_BANKING_PAYMENT_METHOD,
   MARKET,
-} from "../models/core";
+} from "../../@models/core";
 
 /**
  *

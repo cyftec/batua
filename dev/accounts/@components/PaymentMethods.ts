@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { PaymentMethodUI } from "../../@controller/models/core";
+import { PaymentMethodUI } from "../../@models/core";
 import { URL, capitalize, goToPage, handleTap } from "../../@controller/utils";
 import { CardButton, Icon, Section } from "../../@view/elements";
 

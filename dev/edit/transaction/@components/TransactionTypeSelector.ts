@@ -4,7 +4,7 @@ import {
   TXN_TYPE_SUBTYPE_MAP,
   TxnSubType,
   TxnType,
-} from "../../../@controller/models/core";
+} from "../../../@models/core";
 import { capitalize } from "../../../@controller/utils";
 import { PairSelect, Select } from "../../../@view/elements";
 

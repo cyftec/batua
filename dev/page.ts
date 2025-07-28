@@ -1,7 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "./@controller/localstorage/stores";
-import { TxnUI } from "./@controller/models/core";
+import { TxnUI } from "./@models/core";
 import { URL, goToPage, handleTap } from "./@controller/utils";
 import { HTMLPage, NavScaffold, Tag } from "./@view/components";
 import { Button, Icon } from "./@view/elements";

@@ -14,7 +14,7 @@ import {
   DEPOSIT_ACCOUNT_TYPE,
   PEOPLE_ACCOUNT_TYPE,
   SHOP_ACCOUNT_TYPE,
-} from "../@controller/models/core";
+} from "../@models/core";
 import { URL, getQueryParamValue, goToPage } from "../@controller/utils";
 import { HTMLPage, NavScaffold } from "../@view/components";
 import { TabBar } from "../@view/elements";

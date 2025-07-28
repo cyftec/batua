@@ -1,8 +1,7 @@
 import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../@controller/localstorage/stores";
-import { TagUI } from "../../@controller/models/core";
-import { Budget } from "../../@controller/models/core/budget";
+import { Budget, TagUI } from "../../@models/core";
 import { TIME_PERIODS, TimePeriod } from "../../@controller/transforms";
 import {
   deepTrimmedLowercase,

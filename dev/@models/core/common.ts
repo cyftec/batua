@@ -1,4 +1,4 @@
-import { TableRecordID, ID_KEY } from "../../../@kvdb";
+import { ID_KEY, TableRecordID } from "../../@kvdb";
 
 export type NumBoolean = 0 | 1;
 

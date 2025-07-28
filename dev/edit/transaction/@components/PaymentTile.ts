@@ -1,10 +1,6 @@
 import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import {
-  AccountUI,
-  Payment,
-  PaymentMethodUI,
-} from "../../../@controller/models/core";
+import { AccountUI, Payment, PaymentMethodUI } from "../../../@models/core";
 import { Icon, NumberBox, Select } from "../../../@view/elements";
 
 type PaymentTileProps = {
