@@ -11,7 +11,7 @@ const allTxns = signal<TxnUI[]>([]);
 
 const onPageMount = () => {
   allTxns.value = db.txns
-    .getAll()
+    .get([])
     .sort((a, b) => b.date.getTime() - a.date.getTime());
 };
 

@@ -30,7 +30,7 @@ effect(() => {
   const editablePm = editablePaymentMethod.value;
   if (!phase.currentIs("run")) return;
   allAccounts.value = db.accounts
-    .getAll()
+    .get([])
     .map((acc) => ({
       ...acc,
       isSelected: !!acc.paymentMethods
@@ -74,10 +74,10 @@ const onPaymentMethodSave = () => {
       type: paymentMethodType.value,
       ...uniqueIdObj,
     };
-    db.paymentMethods.update(editablePaymentMethod.value.id, updates);
+    db.paymentMethods.set(editablePaymentMethod.value.id, updates);
   } else {
     // TODO: Check existing method before adding
-    db.paymentMethods.add({
+    db.paymentMethods.push({
       isPermanent: 0,
       name: paymentMethodName.value,
       type: paymentMethodType.value,

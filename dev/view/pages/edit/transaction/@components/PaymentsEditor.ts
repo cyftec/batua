@@ -50,7 +50,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
         error.value = `Name should be alpha-numeric max 36 chars, should not repeat, start or end with (allowed) special chars.`;
         return;
       }
-      const existingAccount = db.accounts.getWhere((acc) =>
+      const existingAccount = db.accounts.find((acc) =>
         areNamesSimilar(acc.name, peopleAccountName.value)
       );
       if (existingAccount) {
@@ -63,7 +63,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
     const onPeopleAccountAdd = () => {
       validate();
       if (error.value) return;
-      db.accounts.add({
+      db.accounts.push({
         isPermanent: 0,
         name: peopleAccountName.value,
         balance: 0,

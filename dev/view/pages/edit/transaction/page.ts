@@ -47,11 +47,11 @@ const editableTxnName = derive(
 
 const onPageMount = (urlParams: URLSearchParams) => {
   allTags.value = db.tags
-    .getAll()
+    .get([])
     .map((t) => ({ ...t, isSelected: false }))
     .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
   allAccounts.value = db.accounts
-    .getAll()
+    .get([])
     .sort((a, b) => a.type.localeCompare(b.type));
   const txnIDStr = urlParams.get("id");
   if (!txnIDStr) {
@@ -110,7 +110,7 @@ const onNewPeopleAccountAdd = () => {
   resetError();
   console.log(`Adding new Friend`);
   allAccounts.value = db.accounts
-    .getAll()
+    .get([])
     .sort((a, b) => a.type.localeCompare(b.type));
 };
 
@@ -194,7 +194,7 @@ const onTagAdd = (text: string) => {
       console.log(tagName, selectedTags.value);
     } else return false;
   } else {
-    const newTagID = db.tags.add(tagName);
+    const newTagID = db.tags.push(tagName);
     const newTag = db.tags.get(newTagID);
     if (!newTag) throw `Error fetching the new tag after adding it to the DB.`;
     allTags.value = [...allTags.value, { ...newTag, isSelected: true }];
@@ -223,13 +223,13 @@ const onTxnSave = () => {
   if (editableTxn.value) {
     // TODO: implement txn update
   } else {
-    const newTxnTitleID = db.txnTitles.add(txnTitle.value);
+    const newTxnTitleID = db.txnTitles.push(txnTitle.value);
     const pmtIDs: TableRecordID[] = [];
     txnPayments.value.forEach((pmt) => {
-      const newPmtID = db.payments.add(pmt);
+      const newPmtID = db.payments.push(pmt);
       pmtIDs.push(newPmtID);
     });
-    db.txns.add({
+    db.txns.push({
       type: "balance update",
       date: txnDate.value.getTime(),
       created: now,

@@ -51,7 +51,9 @@ export const getExtendedValue = (
 ) => {
   // rawValue can only be undefined | TableRecordID | TableRecordID[]
   if (typeof rawValue === "number") return table.get(rawValue as TableRecordID);
-  if (Array.isArray(rawValue)) return table.getAll(rawValue as TableRecordID[]);
+  if (Array.isArray(rawValue)) {
+    return rawValue.length ? table.get(rawValue as TableRecordID[]) : rawValue;
+  }
   return rawValue;
 };
 

@@ -72,7 +72,7 @@ effect(() => {
     ? (editableAcc.paymentMethods || []).map((pm) => pm.id)
     : [];
   allPMs.value = db.paymentMethods
-    .getAllWhere((pm) => pm.type === vType)
+    .filter((pm) => pm.type === vType)
     .map((pm) => ({
       ...pm,
       isSelected: initialSelectendPmIDs.includes(pm.id),
@@ -112,7 +112,7 @@ const onPaymentMethodAdd = (name: string) => {
     if (unselected) allPMs.value = updatedAllPMs;
     else return false;
   } else {
-    const newPmID = db.paymentMethods.add({
+    const newPmID = db.paymentMethods.push({
       isPermanent: 0,
       name: newPmName,
       type: vaultType.value,
@@ -152,7 +152,7 @@ const onAccountSave = () => {
   };
 
   if (editableAccount.value) {
-    db.accounts.update(editableAccount.value.id, updates);
+    db.accounts.set(editableAccount.value.id, updates);
   } else {
     // TODO: Check existing account before adding new
     const newAccount: Account = {
@@ -161,28 +161,28 @@ const onAccountSave = () => {
       type: accountType.value,
       ...updates,
     };
-    const newAccID = db.accounts.add(newAccount);
+    const newAccID = db.accounts.push(newAccount);
     if (!accountBalance.value) return;
-    const pmtID = db.payments.add({
+    const pmtID = db.payments.push({
       amount: accountBalance.value,
       account: newAccID,
     });
-    const tagIDs = db.tags.getAllWhere((tag) =>
+    const firstBalanceUpdateTags = db.tags.filter((tag) =>
       ["balanceupdate", "initialbalance"].includes(primitiveValue(tag))
     );
     const now = new Date().getTime();
     const txnTitle = "Set initial balance";
-    let titleID = db.txnTitles.getWhere(
-      (tt) => primitiveValue(tt) === txnTitle
-    )?.[ID_KEY];
-    if (!titleID) titleID = db.txnTitles.add(txnTitle);
-    db.txns.add({
+    let titleID = db.txnTitles.find((tt) => primitiveValue(tt) === txnTitle)?.[
+      ID_KEY
+    ];
+    if (!titleID) titleID = db.txnTitles.push(txnTitle);
+    db.txns.push({
       date: now,
       created: now,
       modified: now,
       type: "balance update",
       payments: [pmtID],
-      tags: tagIDs.map((t) => t[ID_KEY]),
+      tags: firstBalanceUpdateTags.map((t) => t[ID_KEY]),
       title: titleID,
     });
   }

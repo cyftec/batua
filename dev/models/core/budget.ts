@@ -1,5 +1,5 @@
-import { IDKey } from "../../../_kvdb";
-import { TimePeriod } from "../../transforms";
+import { IDKey } from "../../_kvdb";
+import { TimePeriod } from "../../state/transforms";
 import { Prettify, WithID } from "./common";
 import { TagUI } from "./tag";
 

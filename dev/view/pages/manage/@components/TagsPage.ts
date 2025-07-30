@@ -22,20 +22,20 @@ export const TagsPage = component<TagsPageProps>(({}) => {
 
   const onTagAdd = (newTag: string): boolean => {
     const newTagName = getLowercaseTagName(newTag);
-    const existingTag = db.tags.getWhere(
+    const existingTag = db.tags.find(
       (tag) => primitiveValue(tag) === newTagName
     );
     if (existingTag) return false;
-    db.tags.add(newTagName);
-    allTags.value = db.tags.getAll();
+    db.tags.push(newTagName);
+    allTags.value = db.tags.get([]);
     return true;
   };
 
   const onTagsPageMount = () => {
-    allAccounts.value = db.accounts.getAll();
-    allPaymentMethods.value = db.paymentMethods.getAll();
+    allAccounts.value = db.accounts.get([]);
+    allPaymentMethods.value = db.paymentMethods.get([]);
     allTags.value = db.tags
-      .getAll()
+      .get([])
       .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
   };
 

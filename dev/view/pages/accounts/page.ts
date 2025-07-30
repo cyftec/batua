@@ -68,9 +68,9 @@ const onPageMount = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   allPaymentMethods.value = db.paymentMethods
-    .getAll()
+    .get([])
     .sort((a, b) => b.isPermanent - a.isPermanent);
-  allAccounts.value = db.accounts.getAll();
+  allAccounts.value = db.accounts.get([]);
 };
 
 export default HTMLPage({

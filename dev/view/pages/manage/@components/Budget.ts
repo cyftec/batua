@@ -12,7 +12,7 @@ export const Budget = component<BudgetProps>(({}) => {
   const budgets = signal<BudgetUI[]>([]);
 
   const onMount = () => {
-    budgets.value = db.budgets.getAll();
+    budgets.value = db.budgets.get([]);
   };
 
   return m.Div({

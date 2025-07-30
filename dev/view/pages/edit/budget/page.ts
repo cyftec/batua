@@ -27,7 +27,7 @@ const [andTags, orTags] = trap(seletedTags).partition((t) => t.andOr === "and");
 
 const onPageMount = (urlParams: URLSearchParams) => {
   allTags.value = db.tags
-    .getAll()
+    .get([])
     .map((t) => ({ ...t, isSelected: false, andOr: "and" }));
 };
 
@@ -65,7 +65,7 @@ const onTagAdd = (
 
   if (tagIndex < 0) {
     const newTagName = getLowercaseTagName(tagName);
-    const newTagID = db.tags.add(newTagName);
+    const newTagID = db.tags.push(newTagName);
     const newTag = db.tags.get(newTagID);
     if (!newTag) throw `Error fetching the new tag after adding it to the DB.`;
     allTags.value = [
@@ -84,7 +84,7 @@ const validateForm = () => {
   if (budgetAmount.value < 1) err = "Budget amount should be greater than zero";
   if (andTags.value.length === 0 && orTags.value.length === 0)
     err = "Add at least one tag for this budget";
-  const existing = db.budgets.getWhere(
+  const existing = db.budgets.find(
     (b) =>
       deepTrimmedLowercase(b.title) === deepTrimmedLowercase(budgetTitle.value)
   );
@@ -100,7 +100,7 @@ const onBudgetSave = () => {
     oneOf: orTags.value.map((t) => t[ID_KEY]),
     allOf: andTags.value.map((t) => t[ID_KEY]),
   };
-  db.budgets.add(budget);
+  db.budgets.push(budget);
 };
 
 export default EditPage({

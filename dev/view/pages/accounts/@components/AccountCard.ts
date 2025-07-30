@@ -38,8 +38,8 @@ export const AccountCard = component<AccountCardProps>(
 
     const onCardMount = () => {
       console.log(account.value);
-      console.log(db.payments.getAll());
-      const allPayments = db.payments.getAllWhere(
+      console.log(db.payments.get([]));
+      const allPayments = db.payments.filter(
         (p) => p.account.id === account.value.id
       );
       const balance = allPayments.reduce((s, p) => s + p.amount, 0);
