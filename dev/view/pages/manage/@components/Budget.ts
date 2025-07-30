@@ -4,7 +4,7 @@ import { db } from "../../../../state/localstorage/stores";
 import { BudgetUI } from "../../../../models/core";
 import { goToPage, URL } from "../../../../state/utils";
 import { CardButton } from "../../../elements";
-import { getPrimitiveRecordValue } from "../../../../_kvdb";
+import { primitiveValue } from "../../../../_kvdb";
 
 type BudgetProps = {};
 
@@ -53,7 +53,7 @@ export const Budget = component<BudgetProps>(({}) => {
                                   }),
                                   m.B({
                                     class: "black",
-                                    children: getPrimitiveRecordValue(tag),
+                                    children: primitiveValue(tag),
                                   }),
                                 ],
                               }),
@@ -74,7 +74,7 @@ export const Budget = component<BudgetProps>(({}) => {
                                   }),
                                   m.B({
                                     class: "black",
-                                    children: getPrimitiveRecordValue(tag),
+                                    children: primitiveValue(tag),
                                   }),
                                 ],
                               }),

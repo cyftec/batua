@@ -25,11 +25,7 @@ import {
   Select,
   TextBox,
 } from "../../../elements";
-import {
-  getPrimitiveRecordValue,
-  ID_KEY,
-  TableRecordID,
-} from "../../../../_kvdb";
+import { primitiveValue, ID_KEY, TableRecordID } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<AccountUI | undefined>(undefined);
@@ -172,12 +168,12 @@ const onAccountSave = () => {
       account: newAccID,
     });
     const tagIDs = db.tags.getAllWhere((tag) =>
-      ["balanceupdate", "initialbalance"].includes(getPrimitiveRecordValue(tag))
+      ["balanceupdate", "initialbalance"].includes(primitiveValue(tag))
     );
     const now = new Date().getTime();
     const txnTitle = "Set initial balance";
     let titleID = db.txnTitles.getWhere(
-      (tt) => getPrimitiveRecordValue(tt) === txnTitle
+      (tt) => primitiveValue(tt) === txnTitle
     )?.[ID_KEY];
     if (!titleID) titleID = db.txnTitles.add(txnTitle);
     db.txns.add({

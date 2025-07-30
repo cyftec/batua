@@ -8,7 +8,7 @@ import {
   getLowercaseTagName,
   nameRegex,
 } from "../../../../state/utils";
-import { getPrimitiveRecordValue, ID_KEY } from "../../../../_kvdb";
+import { primitiveValue, ID_KEY } from "../../../../_kvdb";
 import { Tag, TagsList } from "../../../components";
 import { Label, NumberBox, Section, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
@@ -58,12 +58,10 @@ const onTagAdd = (
   andOr: "and" | "or"
 ) => {
   const tagIndex = isSelected
-    ? unSelectedTags.value.findIndex(
-        (t) => getPrimitiveRecordValue(t) === tagName
-      )
+    ? unSelectedTags.value.findIndex((t) => primitiveValue(t) === tagName)
     : andOr === "and"
-    ? andTags.value.findIndex((t) => getPrimitiveRecordValue(t) === tagName)
-    : orTags.value.findIndex((t) => getPrimitiveRecordValue(t) === tagName);
+    ? andTags.value.findIndex((t) => primitiveValue(t) === tagName)
+    : orTags.value.findIndex((t) => primitiveValue(t) === tagName);
 
   if (tagIndex < 0) {
     const newTagName = getLowercaseTagName(tagName);
@@ -163,9 +161,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(andTags).map((t) =>
-                      getPrimitiveRecordValue(t)
-                    ),
+                    subject: trap(andTags).map((t) => primitiveValue(t)),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -190,9 +186,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map((t) =>
-                    getPrimitiveRecordValue(t)
-                  ),
+                  tags: trap(unSelectedTags).map((t) => primitiveValue(t)),
                 }),
               ],
             }),
@@ -212,9 +206,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(orTags).map((t) =>
-                      getPrimitiveRecordValue(t)
-                    ),
+                    subject: trap(orTags).map((t) => primitiveValue(t)),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -239,9 +231,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map((t) =>
-                    getPrimitiveRecordValue(t)
-                  ),
+                  tags: trap(unSelectedTags).map((t) => primitiveValue(t)),
                 }),
               ],
             }),

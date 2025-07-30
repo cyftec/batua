@@ -5,7 +5,7 @@ import { TxnUI } from "../../models/core";
 import { URL, goToPage, handleTap } from "../../state/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";
 import { Button, Icon } from "../elements";
-import { getPrimitiveRecordValue } from "../../_kvdb";
+import { primitiveValue } from "../../_kvdb";
 
 const allTxns = signal<TxnUI[]>([]);
 
@@ -43,7 +43,7 @@ export default HTMLPage({
                     children: [
                       m.Div({
                         class: "f6 mb1",
-                        children: getPrimitiveRecordValue(txn.title),
+                        children: primitiveValue(txn.title),
                       }),
                       m.Div({
                         class: "flex flex-wrap",
@@ -53,7 +53,7 @@ export default HTMLPage({
                             Tag({
                               size: "xsmall",
                               state: "selected",
-                              children: getPrimitiveRecordValue(tag),
+                              children: primitiveValue(tag),
                             }),
                         }),
                       }),

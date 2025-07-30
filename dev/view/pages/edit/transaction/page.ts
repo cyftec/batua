@@ -15,7 +15,7 @@ import { isFutureDate } from "../../../../state/transforms";
 import { getLowercaseTagName, nameRegex } from "../../../../state/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../../elements";
 import {
-  getPrimitiveRecordValue,
+  primitiveValue,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableRecordID,
@@ -49,9 +49,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
   allTags.value = db.tags
     .getAll()
     .map((t) => ({ ...t, isSelected: false }))
-    .sort((a, b) =>
-      getPrimitiveRecordValue(a).localeCompare(getPrimitiveRecordValue(b))
-    );
+    .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
   allAccounts.value = db.accounts
     .getAll()
     .sort((a, b) => a.type.localeCompare(b.type));
@@ -83,13 +81,11 @@ const onPageMount = (urlParams: URLSearchParams) => {
     account: p.account.id,
     via: p.via?.id,
   }));
-  txnTitle.value = getPrimitiveRecordValue(editableTxn.value.title);
-  const editableTxnTagNames = editableTxn.value.tags.map(
-    getPrimitiveRecordValue
-  );
+  txnTitle.value = primitiveValue(editableTxn.value.title);
+  const editableTxnTagNames = editableTxn.value.tags.map(primitiveValue);
   allTags.value = allTags.value.map((t) => ({
     ...t,
-    isSelected: editableTxnTagNames.includes(getPrimitiveRecordValue(t)),
+    isSelected: editableTxnTagNames.includes(primitiveValue(t)),
   }));
 };
 
@@ -183,7 +179,7 @@ const onTagAdd = (text: string) => {
   let existing = false;
   let unselected = false;
   const updatedAllTags = allTags.value.map((t) => {
-    const tagFound = getPrimitiveRecordValue(t) === tagName;
+    const tagFound = primitiveValue(t) === tagName;
     if (tagFound) {
       existing = true;
       unselected = !t.isSelected;
@@ -307,8 +303,8 @@ export default EditPage({
         onTagTap: onTagTap,
         onAdd: onTagAdd,
         textboxPlaceholder: "search or create new tag",
-        selectedTags: trap(selectedTags).map(getPrimitiveRecordValue),
-        unSelectedTags: trap(nonSelectedTags).map(getPrimitiveRecordValue),
+        selectedTags: trap(selectedTags).map(primitiveValue),
+        unSelectedTags: trap(nonSelectedTags).map(primitiveValue),
       }),
     }),
   ]),
