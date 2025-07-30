@@ -1,6 +1,6 @@
 import { effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../../controller/localstorage/stores";
+import { db } from "../../../state/localstorage/stores";
 import {
   AccountUI,
   ExpenseAccountUI,
@@ -15,7 +15,7 @@ import {
   PEOPLE_ACCOUNT_TYPE,
   SHOP_ACCOUNT_TYPE,
 } from "../../../models/core";
-import { URL, getQueryParamValue, goToPage } from "../../../controller/utils";
+import { URL, getQueryParamValue, goToPage } from "../../../state/utils";
 import { HTMLPage, NavScaffold } from "../../components";
 import { TabBar } from "../../elements";
 import {

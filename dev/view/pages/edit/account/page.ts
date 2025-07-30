@@ -1,7 +1,7 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../../../controller/localstorage/stores";
+import { db } from "../../../../state/localstorage/stores";
 import {
   Account,
   ACCOUNT_TYPES_LIST,
@@ -16,7 +16,7 @@ import {
   capitalize,
   deepTrim,
   nameRegex,
-} from "../../../../controller/utils";
+} from "../../../../state/utils";
 import {
   Label,
   Link,

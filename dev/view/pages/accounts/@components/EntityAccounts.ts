@@ -1,5 +1,5 @@
 import { component, m } from "@mufw/maya";
-import { URL, goToPage, handleTap } from "../../../../controller/utils";
+import { URL, goToPage, handleTap } from "../../../../state/utils";
 import { CardButton, Section } from "../../../elements";
 import { PeopleAccountUI, ShopAccountUI } from "../../../../models/core";
 

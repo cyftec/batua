@@ -1,8 +1,8 @@
 import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../controller/localstorage/stores";
+import { db } from "../../state/localstorage/stores";
 import { TxnUI } from "../../models/core";
-import { URL, goToPage, handleTap } from "../../controller/utils";
+import { URL, goToPage, handleTap } from "../../state/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";
 import { Button, Icon } from "../elements";
 import { getPrimitiveRecordValue } from "../../_kvdb";

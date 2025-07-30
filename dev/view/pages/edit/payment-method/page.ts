@@ -1,7 +1,7 @@
 import { derive, effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../../../controller/localstorage/stores";
+import { db } from "../../../../state/localstorage/stores";
 import {
   AccountUI,
   CURRENCY_TYPES,
@@ -9,11 +9,7 @@ import {
   PaymentMethod,
   PaymentMethodUI,
 } from "../../../../models/core";
-import {
-  capitalize,
-  nameRegex,
-  uniqueIdRegex,
-} from "../../../../controller/utils";
+import { capitalize, nameRegex, uniqueIdRegex } from "../../../../state/utils";
 import { Label, Link, Select, TextBox } from "../../../elements";
 import { TableRecordID } from "../../../../_kvdb";
 import { EditPage } from "../@components";

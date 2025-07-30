@@ -6,10 +6,10 @@ import {
   ExpenseAccountUI,
   PaymentMethodUI,
 } from "../../../../models/core";
-import { handleTap } from "../../../../controller/utils";
+import { handleTap } from "../../../../state/utils";
 import { Tag } from "../../../components";
 import { Icon } from "../../../elements";
-import { db } from "../../../../controller/localstorage/stores";
+import { db } from "../../../../state/localstorage/stores";
 
 type AccountCardProps = {
   onTap?: () => void;
