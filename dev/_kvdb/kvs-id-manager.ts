@@ -1,14 +1,14 @@
-import { KVStore } from "./kv-stores";
-import { TableRecordID } from "./models";
+import { KvStore } from "./kv-stores";
+import { DbRecordID } from "./models";
 
 export type KvsIDManager = {
-  getCurrentID: () => TableRecordID;
-  useNewID: (callback: (newId: TableRecordID) => void) => TableRecordID;
+  getCurrentID: () => DbRecordID;
+  useNewID: (callback: (newId: DbRecordID) => void) => DbRecordID;
 };
 
-export const getKVStoreIDManager = (kvStore: KVStore): KvsIDManager => {
+export const getKvStoreIDManager = (kvStore: KvStore): KvsIDManager => {
   return {
-    getCurrentID: function (): TableRecordID {
+    getCurrentID: function (): DbRecordID {
       let maxID = kvStore.getItem("maxID");
       if (!maxID) kvStore.setItem("maxID", "0");
       maxID = kvStore.getItem("maxID");
@@ -16,9 +16,7 @@ export const getKVStoreIDManager = (kvStore: KVStore): KvsIDManager => {
         throw `Error setting the value for key 'maxID' in KV Store.`;
       return +maxID;
     },
-    useNewID: function (
-      callback: (newId: TableRecordID) => void
-    ): TableRecordID {
+    useNewID: function (callback: (newId: DbRecordID) => void): DbRecordID {
       const thisIDGen = this as KvsIDManager;
       const newID = thisIDGen.getCurrentID() + 1;
       callback(newID);

@@ -1,34 +1,34 @@
 import {
   DbUnsupportedType,
-  KVSRecordID,
-  KVSRecordIDPrefix,
+  KvsRecordID,
+  KvsRecordIDPrefix,
   TableKey,
-  TableRecordID,
+  DbRecordID,
 } from "./models";
 import { Table } from "./table";
 
 export const parseNum = (str: string) =>
   Number.isNaN(+str) ? undefined : +str;
 
-export const getKVSRecordIDPrefix = (tableKey: TableKey): KVSRecordIDPrefix =>
+export const getKvsRecordIDPrefix = (tableKey: TableKey): KvsRecordIDPrefix =>
   `${tableKey}_`;
 
-export const getTableRecordIDFromKVSRecordID = (
+export const getDbRecordIDFromKvsRecordID = (
   tableKey: TableKey,
   kvStoreRecordID: string
-): TableRecordID | undefined => {
-  const recordIDPrefix = getKVSRecordIDPrefix(tableKey);
+): DbRecordID | undefined => {
+  const recordIDPrefix = getKvsRecordIDPrefix(tableKey);
   if (!kvStoreRecordID.startsWith(recordIDPrefix)) return;
   const recordIdStr = kvStoreRecordID.split(recordIDPrefix)[1] || "";
   return parseNum(recordIdStr);
 };
 
-export const getKVSRecordIDFromTableRecordID = (
+export const getKvsRecordIDFromDbRecordID = (
   tableKey: TableKey,
-  tableRecordID: TableRecordID
-): KVSRecordID => {
-  const recordIDPrefix = getKVSRecordIDPrefix(tableKey);
-  return `${recordIDPrefix}${tableRecordID}`;
+  dbRecordID: DbRecordID
+): KvsRecordID => {
+  const recordIDPrefix = getKvsRecordIDPrefix(tableKey);
+  return `${recordIDPrefix}${dbRecordID}`;
 };
 
 export const getJsValue = (
@@ -47,12 +47,12 @@ export const getJsValue = (
 
 export const getExtendedValue = (
   table: Table<any, any>,
-  rawValue?: TableRecordID | TableRecordID[]
+  rawValue?: DbRecordID | DbRecordID[]
 ) => {
-  // rawValue can only be undefined | TableRecordID | TableRecordID[]
-  if (typeof rawValue === "number") return table.get(rawValue as TableRecordID);
+  // rawValue can only be undefined | DbRecordID | DbRecordID[]
+  if (typeof rawValue === "number") return table.get(rawValue as DbRecordID);
   if (Array.isArray(rawValue)) {
-    return rawValue.length ? table.get(rawValue as TableRecordID[]) : rawValue;
+    return rawValue.length ? table.get(rawValue as DbRecordID[]) : rawValue;
   }
   return rawValue;
 };

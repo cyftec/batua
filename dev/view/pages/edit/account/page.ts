@@ -25,7 +25,7 @@ import {
   Select,
   TextBox,
 } from "../../../elements";
-import { primitiveValue, ID_KEY, TableRecordID } from "../../../../_kvdb";
+import { primitiveValue, ID_KEY, DbRecordID } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<Account | undefined>(undefined);
@@ -51,7 +51,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
   }
   const idStr = urlParams.get("id");
   if (!idStr) return;
-  const accID: TableRecordID = +idStr;
+  const accID: DbRecordID = +idStr;
   const editableAcc = db.accounts.get(accID);
   if (!editableAcc) return;
   editableAccount.value = db.accounts.get(accID);

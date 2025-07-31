@@ -1,4 +1,4 @@
-import { KVStore, LOCALSTORAGE_AS_KVSTORE } from "./kv-stores";
+import { KvStore, LOCALSTORAGE_AS_KVSTORE } from "./kv-stores";
 import { DbUnsupportedType, TableKey } from "./models";
 import { createTable, Table } from "./table";
 
@@ -20,9 +20,9 @@ export type DB<DbSchema extends Schema> = {
 
 export const createDb = <DbSchema extends Schema>(
   schema: DbSchema,
-  kvStore?: KVStore
+  kvStore?: KvStore
 ): DB<DbSchema> => {
-  const store: KVStore = kvStore || LOCALSTORAGE_AS_KVSTORE;
+  const store: KvStore = kvStore || LOCALSTORAGE_AS_KVSTORE;
   const db = {};
 
   const getTableFromTableKey = (key: TableKey) => {

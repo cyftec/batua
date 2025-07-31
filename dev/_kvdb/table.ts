@@ -1,35 +1,35 @@
-import { KVStore } from "./kv-stores";
-import { getKVStoreIDManager } from "./kvs-id-manager";
+import { KvStore } from "./kv-stores";
+import { getKvStoreIDManager } from "./kvs-id-manager";
 import {
   DbUnsupportedType,
   Extend,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
   TableKey,
-  TableRecordID,
+  DbRecordID,
 } from "./models";
 import {
   getMappedObject,
-  getKVSRecordIDFromTableRecordID,
-  getTableRecordIDFromKVSRecordID,
+  getKvsRecordIDFromDbRecordID,
+  getDbRecordIDFromKvsRecordID,
   getExtendedValue,
   getJsValue,
 } from "./transforms";
 
 type RecordMatcher<ExtendedRecord> = (record: ExtendedRecord) => boolean;
 
-type GetResponse<In, ExtendedRecord> = In extends TableRecordID
+type GetResponse<In, ExtendedRecord> = In extends DbRecordID
   ? ExtendedRecord | undefined
   : ExtendedRecord[];
 
 export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
   length: number;
-  get: <In extends TableRecordID | TableRecordID[]>(
+  get: <In extends DbRecordID | DbRecordID[]>(
     input: In,
     count?: number
   ) => GetResponse<In, ExtendedRecord>;
   set: (
-    id: TableRecordID,
+    id: DbRecordID,
     newOrPartiallyNewRecord: RawRecord extends object
       ? Partial<RawRecord>
       : RawRecord
@@ -41,29 +41,29 @@ export type Table<RawRecord, ExtendedRecord extends Extend<RawRecord>> = {
     recordMatcher: RecordMatcher<ExtendedRecord>,
     count?: number
   ) => ExtendedRecord[];
-  push: (record: RawRecord) => TableRecordID;
-  pop: (tableRecordID: TableRecordID) => void;
+  push: (record: RawRecord) => DbRecordID;
+  pop: (dbRecordID: DbRecordID) => void;
 };
 
 export const createTable = <
   RawRecord,
   ExtendedRecord extends Extend<RawRecord>
 >(
-  kvStore: KVStore,
+  kvStore: KvStore,
   tableKey: TableKey,
   getForeignTableFromKey: (tableKey: TableKey) => Table<any, any>,
   foreignKeyMappings?: Partial<{ [k in keyof RawRecord]: TableKey }>,
   dbToJsTypeMappings?: Partial<{ [k in keyof RawRecord]: DbUnsupportedType }>
 ): Table<RawRecord, ExtendedRecord> => {
-  const kvsIdManager = getKVStoreIDManager(kvStore);
+  const kvsIdManager = getKvStoreIDManager(kvStore);
 
   const getAllIDs = () => {
     const kvStoreRecordIDs = kvStore.getAllKeys();
-    const validIDs: TableRecordID[] = [];
+    const validIDs: DbRecordID[] = [];
     for (const id of kvStoreRecordIDs) {
-      const validTableRecordID = getTableRecordIDFromKVSRecordID(tableKey, id);
-      if (validTableRecordID === undefined) continue;
-      validIDs.push(validTableRecordID);
+      const validDbRecordID = getDbRecordIDFromKvsRecordID(tableKey, id);
+      if (validDbRecordID === undefined) continue;
+      validIDs.push(validDbRecordID);
     }
     return validIDs;
   };
@@ -72,15 +72,15 @@ export const createTable = <
     return getAllIDs().length;
   };
 
-  const getRawRecord = (id: TableRecordID) => {
-    const kvsRecordID = getKVSRecordIDFromTableRecordID(tableKey, id);
+  const getRawRecord = (id: DbRecordID) => {
+    const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, id);
     const kvsRecordValue = kvStore.getItem(kvsRecordID);
     if (kvsRecordValue === undefined) return;
     const record = JSON.parse(kvsRecordValue);
     return record as RawRecord;
   };
 
-  const getRecord = (id: TableRecordID) => {
+  const getRecord = (id: DbRecordID) => {
     let record = getRawRecord(id);
 
     if (!record) return;
@@ -122,10 +122,10 @@ export const createTable = <
     return { id, ...record } as unknown as ExtendedRecord;
   };
 
-  const getAllRecords = (ids: TableRecordID[]) => {
+  const getAllRecords = (ids: DbRecordID[]) => {
     if (!Array.isArray(ids))
       throw `Invalid 'ids' passed for getting records list. It should be an array.`;
-    const validIDs: TableRecordID[] = ids.length ? ids : getAllIDs();
+    const validIDs: DbRecordID[] = ids.length ? ids : getAllIDs();
     const records: ExtendedRecord[] = [];
     for (const id of validIDs) {
       const record = getRecord(id);
@@ -139,7 +139,7 @@ export const createTable = <
     recordMatcher: RecordMatcher<ExtendedRecord>,
     count?: number
   ) => {
-    const validIDs: TableRecordID[] = getAllIDs();
+    const validIDs: DbRecordID[] = getAllIDs();
     const matchingRecords: ExtendedRecord[] = [];
     const idsLength = validIDs.length;
     const recordsLength = count || idsLength;
@@ -154,24 +154,21 @@ export const createTable = <
   };
 
   const addRecord = (record: RawRecord) => {
-    const tableRecordID = kvsIdManager.useNewID((newTableRecordID) => {
-      const kvsRecordID = getKVSRecordIDFromTableRecordID(
-        tableKey,
-        newTableRecordID
-      );
+    const dbRecordID = kvsIdManager.useNewID((newDbRecordID) => {
+      const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, newDbRecordID);
       const kvsRecordValue = JSON.stringify(record);
       kvStore.setItem(kvsRecordID, kvsRecordValue);
     });
-    return tableRecordID;
+    return dbRecordID;
   };
 
   const setRecord = (
-    id: TableRecordID,
+    id: DbRecordID,
     newOrPartiallyNewRecord: RawRecord extends object
       ? Partial<RawRecord>
       : RawRecord
   ) => {
-    const kvsRecordID = getKVSRecordIDFromTableRecordID(tableKey, id);
+    const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, id);
     const previousRecord = getRawRecord(id);
     if (previousRecord === undefined) throw `No record found for id - '${id}'`;
     const newRecord =
@@ -186,11 +183,8 @@ export const createTable = <
     kvStore.setItem(kvsRecordID, newKvsRecordValue);
   };
 
-  const deleteRecord = (tableRecordID: TableRecordID) => {
-    const kvsRecordID = getKVSRecordIDFromTableRecordID(
-      tableKey,
-      tableRecordID
-    );
+  const deleteRecord = (dbRecordID: DbRecordID) => {
+    const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, dbRecordID);
     kvStore.removeItem(kvsRecordID);
   };
 

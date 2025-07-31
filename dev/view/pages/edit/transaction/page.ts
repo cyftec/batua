@@ -18,7 +18,7 @@ import {
   primitiveValue,
   ID_KEY,
   PLAIN_EXTENDED_RECORD_VALUE_KEY,
-  TableRecordID,
+  DbRecordID,
 } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components";
@@ -68,7 +68,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
     return;
   }
 
-  const txnID: TableRecordID = +txnIDStr;
+  const txnID: DbRecordID = +txnIDStr;
   const txn = db.txns.get(txnID);
   if (!txn) throw `Error fetching transaction for id - ${txnID}`;
   editableTxn.value = txn;
@@ -224,7 +224,7 @@ const onTxnSave = () => {
     // TODO: implement txn update
   } else {
     const newTitleID = db.titles.push(title.value);
-    const pmtIDs: TableRecordID[] = [];
+    const pmtIDs: DbRecordID[] = [];
     txnPayments.value.forEach((pmt) => {
       const newPmtID = db.payments.push(pmt);
       pmtIDs.push(newPmtID);

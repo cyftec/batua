@@ -1,4 +1,4 @@
-import { IDKey, TableRecordID } from "../../_kvdb";
+import { IDKey, DbRecordID } from "../../_kvdb";
 import { Payment } from "./payment";
 import { Tag } from "./tag";
 import { Title } from "./title";
@@ -49,7 +49,7 @@ export type Txn = Omit<
   TxnRaw,
   "date" | "created" | "modified" | "payments" | "tags" | "title"
 > & {
-  id: TableRecordID;
+  id: DbRecordID;
   date: Date;
   created: Date;
   modified: Date;

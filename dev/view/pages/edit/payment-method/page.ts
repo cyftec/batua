@@ -11,7 +11,7 @@ import {
 } from "../../../../models/core";
 import { capitalize, nameRegex, uniqueIdRegex } from "../../../../state/utils";
 import { Label, Link, Select, TextBox } from "../../../elements";
-import { TableRecordID } from "../../../../_kvdb";
+import { DbRecordID } from "../../../../_kvdb";
 import { EditPage } from "../@components";
 
 const error = signal("");
@@ -96,7 +96,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
   paymentMethodType.value = "digital";
   const idStr = urlParams.get("id");
   if (!idStr) return;
-  const pmID: TableRecordID = +idStr;
+  const pmID: DbRecordID = +idStr;
   editablePaymentMethod.value = db.paymentMethods.get(pmID);
 };
 

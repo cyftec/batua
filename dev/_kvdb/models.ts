@@ -1,10 +1,10 @@
 export type DbUnsupportedType = "Date" | "Boolean";
 export type IDKey = "id";
 export const ID_KEY: IDKey = "id";
-export type TableRecordID = number;
+export type DbRecordID = number;
 export type TableKey = string;
-export type KVSRecordIDPrefix = `${TableKey}_`;
-export type KVSRecordID = `${KVSRecordIDPrefix}${TableRecordID}`;
+export type KvsRecordIDPrefix = `${TableKey}_`;
+export type KvsRecordID = `${KvsRecordIDPrefix}${DbRecordID}`;
 
 export type PrimitiveExtendedRecordValueKey = "value";
 export const PLAIN_EXTENDED_RECORD_VALUE_KEY: PrimitiveExtendedRecordValueKey =
@@ -17,11 +17,11 @@ export const PLAIN_EXTENDED_RECORD_VALUE_KEY: PrimitiveExtendedRecordValueKey =
 export type PrimitiveExtendedRecord<Record> = Record extends object
   ? never
   : {
-      [ID_KEY]: TableRecordID;
+      [ID_KEY]: DbRecordID;
       [PLAIN_EXTENDED_RECORD_VALUE_KEY]: Record;
     };
 export type ObjectExtendedRecord<Record> = Record extends object
-  ? object & { [ID_KEY]: TableRecordID }
+  ? object & { [ID_KEY]: DbRecordID }
   : never;
 export type Extend<RawRecord> = RawRecord extends object
   ? ObjectExtendedRecord<RawRecord>
