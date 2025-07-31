@@ -2,14 +2,14 @@ import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../../../state/localstorage/stores";
 import {
-  AccountUI,
-  Payment,
-  TagUI,
-  Txn,
+  Account,
+  PaymentRaw,
+  Tag,
+  TxnRaw,
   TxnSubType,
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
-  TxnUI,
+  Txn,
 } from "../../../../models/core";
 import { isFutureDate } from "../../../../state/transforms";
 import { getLowercaseTagName, nameRegex } from "../../../../state/utils";
@@ -31,16 +31,16 @@ const txnSubType = signal<TxnSubType>("purchase");
 const txnDate = signal<Date>(now);
 const txnCreated = signal<Date>(now);
 const txnModified = signal<Date>(now);
-const allAccounts = signal<AccountUI[]>([]);
-const txnPayments = signal<Payment[]>([]);
-const txnTitle = signal<string>("");
+const allAccounts = signal<Account[]>([]);
+const txnPayments = signal<PaymentRaw[]>([]);
+const title = signal<string>("");
 
-const allTags = signal<(TagUI & { isSelected: boolean })[]>([]);
+const allTags = signal<(Tag & { isSelected: boolean })[]>([]);
 const [selectedTags, nonSelectedTags] = trap(allTags).partition(
   (t) => t.isSelected
 );
 
-const editableTxn = signal<TxnUI | undefined>(undefined);
+const editableTxn = signal<Txn | undefined>(undefined);
 const editableTxnName = derive(
   () => editableTxn.value?.title?.[PLAIN_EXTENDED_RECORD_VALUE_KEY] || ""
 );
@@ -81,7 +81,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
     account: p.account.id,
     via: p.via?.id,
   }));
-  txnTitle.value = primitiveValue(editableTxn.value.title);
+  title.value = primitiveValue(editableTxn.value.title);
   const editableTxnTagNames = editableTxn.value.tags.map(primitiveValue);
   allTags.value = allTags.value.map((t) => ({
     ...t,
@@ -101,9 +101,9 @@ const onTxnDateChange = (newDate: Date) => {
   txnDate.value = newDate;
 };
 
-const onTxnTitleChange = (newTitle: string) => {
+const onTitleChange = (newTitle: string) => {
   resetError();
-  txnTitle.value = newTitle.trim();
+  title.value = newTitle.trim();
 };
 
 const onNewPeopleAccountAdd = () => {
@@ -127,7 +127,7 @@ const onPaymentAdd = () => {
   ];
 };
 
-const onPaymentUpdate = (newPayment: Payment, paymentIndex: number) => {
+const onPaymentUpdate = (newPayment: PaymentRaw, paymentIndex: number) => {
   resetError();
   const payments = txnPayments.value;
   const oldPayment = payments[paymentIndex];
@@ -205,8 +205,8 @@ const onTagAdd = (text: string) => {
 
 const validateForm = () => {
   let err = "";
-  if (!txnTitle.value) err = "Name is empty.";
-  if (!nameRegex.test(txnTitle.value)) err = "Invalid method name.";
+  if (!title.value) err = "Name is empty.";
+  if (!nameRegex.test(title.value)) err = "Invalid method name.";
   if (isFutureDate(txnDate.value))
     err = "Transaction date cannot be in future.";
   const sumOfAllPmts = txnPayments.value.reduce((s, p) => s + p.amount, 0);
@@ -223,7 +223,7 @@ const onTxnSave = () => {
   if (editableTxn.value) {
     // TODO: implement txn update
   } else {
-    const newTxnTitleID = db.txnTitles.push(txnTitle.value);
+    const newTitleID = db.titles.push(title.value);
     const pmtIDs: TableRecordID[] = [];
     txnPayments.value.forEach((pmt) => {
       const newPmtID = db.payments.push(pmt);
@@ -236,7 +236,7 @@ const onTxnSave = () => {
       modified: now,
       payments: pmtIDs,
       tags: selectedTags.value.map((tg) => tg[ID_KEY]),
-      title: newTxnTitleID,
+      title: newTitleID,
     });
   }
 };
@@ -280,9 +280,9 @@ export default EditPage({
         Label({ text: "Title of transaction" }),
         TextBox({
           cssClasses: `fw5 ba b--light-silver bw1 br3 pa2 mb2 outline-0 w-100`,
-          text: txnTitle,
+          text: title,
           placeholder: "Title",
-          onchange: onTxnTitleChange,
+          onchange: onTitleChange,
         }),
       ],
     }),

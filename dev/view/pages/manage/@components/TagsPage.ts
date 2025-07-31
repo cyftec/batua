@@ -2,9 +2,9 @@ import { signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { db } from "../../../../state/localstorage/stores";
 import {
-  AccountUI,
-  PaymentMethodUI,
-  TagUI,
+  Account,
+  PaymentMethod,
+  Tag,
   TXN_NECESSITIES,
 } from "../../../../models/core";
 import { getLowercaseTagName } from "../../../../state/utils";
@@ -16,9 +16,9 @@ import { TagCategory } from "./TagsCategory";
 type TagsPageProps = {};
 
 export const TagsPage = component<TagsPageProps>(({}) => {
-  const allAccounts = signal<AccountUI[]>([]);
-  const allPaymentMethods = signal<PaymentMethodUI[]>([]);
-  const allTags = signal<TagUI[]>([]);
+  const allAccounts = signal<Account[]>([]);
+  const allPaymentMethods = signal<PaymentMethod[]>([]);
+  const allTags = signal<Tag[]>([]);
 
   const onTagAdd = (newTag: string): boolean => {
     const newTagName = getLowercaseTagName(newTag);

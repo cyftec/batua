@@ -1,13 +1,13 @@
 import { PrimitiveExtendedRecord } from "../../_kvdb";
 
-export type Tag = string;
+export type TagRaw = string;
 
 /**
  *
  *
  * UI Models
  */
-export type TagUI = PrimitiveExtendedRecord<Tag>;
+export type Tag = PrimitiveExtendedRecord<TagRaw>;
 
 /**
  *
@@ -15,7 +15,7 @@ export type TagUI = PrimitiveExtendedRecord<Tag>;
  * DATABASE's INITIAL DATA CONSTANTS
  */
 
-export const INITIAL_TAGS: Tag[] = [
+export const INITIAL_TAGS: TagRaw[] = [
   "expense",
   "earning",
   "transfer",

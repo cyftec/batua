@@ -1,7 +1,7 @@
 import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../../../state/localstorage/stores";
-import { Budget, TagUI } from "../../../../models/core";
+import { BudgetRaw, Budget, Tag as TagModel } from "../../../../models/core";
 import { TIME_PERIODS, TimePeriod } from "../../../../state/transforms";
 import {
   deepTrimmedLowercase,
@@ -14,11 +14,17 @@ import { Label, NumberBox, Section, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
 
 const error = signal("");
-const budgetTitle = signal("");
-const budgetPeriod = signal<TimePeriod>("Month");
-const budgetAmount = signal(0);
+const budget = signal<BudgetRaw>({
+  title: "",
+  period: "Week",
+  amount: 0,
+  oneOf: [],
+  allOf: [],
+});
+const { title, period, amount, oneOf, allOf } = trap(budget).props;
+const editableBudget = signal<Budget | undefined>(undefined);
 const allTags = signal<
-  (TagUI & { isSelected: boolean; andOr: "and" | "or" })[]
+  (TagModel & { isSelected: boolean; andOr: "and" | "or" })[]
 >([]);
 const [seletedTags, unSelectedTags] = trap(allTags).partition(
   (t) => t.isSelected
@@ -26,6 +32,12 @@ const [seletedTags, unSelectedTags] = trap(allTags).partition(
 const [andTags, orTags] = trap(seletedTags).partition((t) => t.andOr === "and");
 
 const onPageMount = (urlParams: URLSearchParams) => {
+  const budgetId = +(urlParams.get("id") || "");
+  if (!budgetId)
+    throw `Invalid budget id - '${budgetId}' passed in url params.`;
+  const fetchedBudget = db.budgets.get(budgetId);
+  if (!fetchedBudget) throw `No budget found in DB for id - ${budgetId}`;
+  editableBudget.value = fetchedBudget;
   allTags.value = db.tags
     .get([])
     .map((t) => ({ ...t, isSelected: false, andOr: "and" }));
@@ -80,27 +92,19 @@ const onTagAdd = (
 
 const validateForm = () => {
   let err = "";
-  if (!nameRegex.test(budgetTitle.value)) err = "Invalid title for budget";
-  if (budgetAmount.value < 1) err = "Budget amount should be greater than zero";
+  if (!nameRegex.test(title.value)) err = "Invalid title for budget";
+  if (amount.value < 1) err = "Budget amount should be greater than zero";
   if (andTags.value.length === 0 && orTags.value.length === 0)
     err = "Add at least one tag for this budget";
   const existing = db.budgets.find(
-    (b) =>
-      deepTrimmedLowercase(b.title) === deepTrimmedLowercase(budgetTitle.value)
+    (b) => deepTrimmedLowercase(b.title) === deepTrimmedLowercase(title.value)
   );
   if (existing) err = `Budget with similar name '${existing.title}' exists.`;
   error.value = err;
 };
 
 const onBudgetSave = () => {
-  const budget: Budget = {
-    title: budgetTitle.value,
-    period: "Week",
-    amount: budgetAmount.value,
-    oneOf: orTags.value.map((t) => t[ID_KEY]),
-    allOf: andTags.value.map((t) => t[ID_KEY]),
-  };
-  db.budgets.push(budget);
+  db.budgets.push(budget.value);
 };
 
 export default EditPage({
@@ -118,22 +122,23 @@ export default EditPage({
         Select({
           anchor: "left",
           options: TIME_PERIODS,
-          selectedOptionIndex: trap(TIME_PERIODS).indexOf(budgetPeriod),
-          onChange: (index) => (budgetPeriod.value = TIME_PERIODS[index]),
+          selectedOptionIndex: trap(TIME_PERIODS).indexOf(period),
+          onChange: (index) =>
+            (budget.value = { ...budget.value, period: TIME_PERIODS[index] }),
         }),
         Label({ text: "Budget title" }),
         TextBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
-          text: budgetTitle,
+          text: title,
           placeholder: "title of the budget",
-          onchange: (text) => (budgetTitle.value = text),
+          onchange: (text) => (budget.value = { ...budget.value, title: text }),
         }),
         Label({ text: "Budget limit" }),
         NumberBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
-          num: budgetAmount,
+          num: amount,
           placeholder: "title of the budget",
-          onchange: (num) => (budgetAmount.value = num),
+          onchange: (num) => (budget.value = { ...budget.value, amount: num }),
         }),
       ],
     }),
@@ -148,7 +153,7 @@ export default EditPage({
               children: [
                 `For a transaction to be included in `,
                 m.If({
-                  subject: budgetTitle,
+                  subject: title,
                   isTruthy: (title) => `'${title.value}'`,
                   isFalsy: () => `this`,
                 }),

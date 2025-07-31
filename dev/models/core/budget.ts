@@ -1,14 +1,14 @@
 import { IDKey } from "../../_kvdb";
 import { TimePeriod } from "../../state/transforms";
 import { Prettify, WithID } from "./common";
-import { TagUI } from "./tag";
+import { Tag } from "./tag";
 
-export type Budget = {
+export type BudgetRaw = {
   title: string;
   period: TimePeriod;
   amount: number;
-  oneOf: TagUI[IDKey][];
-  allOf: TagUI[IDKey][];
+  allOf: Tag[IDKey][];
+  oneOf: Tag[IDKey][];
 };
 
 /**
@@ -17,11 +17,11 @@ export type Budget = {
  * UI Models
  */
 
-export type BudgetUI = Prettify<
+export type Budget = Prettify<
   WithID<
-    Omit<Budget, "oneOf" | "allOf"> & {
-      oneOf: TagUI[];
-      allOf: TagUI[];
+    Omit<BudgetRaw, "oneOf" | "allOf"> & {
+      allOf: Tag[];
+      oneOf: Tag[];
     }
   >
 >;

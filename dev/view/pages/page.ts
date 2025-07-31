@@ -1,13 +1,13 @@
 import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../state/localstorage/stores";
-import { TxnUI } from "../../models/core";
+import { Txn } from "../../models/core";
 import { URL, goToPage, handleTap } from "../../state/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";
 import { Button, Icon } from "../elements";
 import { primitiveValue } from "../../_kvdb";
 
-const allTxns = signal<TxnUI[]>([]);
+const allTxns = signal<Txn[]>([]);
 
 const onPageMount = () => {
   allTxns.value = db.txns

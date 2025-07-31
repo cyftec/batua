@@ -1,7 +1,7 @@
 import { IDKey } from "../../_kvdb";
 import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
-import { PaymentMethodUI } from "./payment-method";
+import { PaymentMethod } from "./payment-method";
 
 export type ExpenseAccountType = "expense";
 export type LoanAccountType = "loan";
@@ -14,63 +14,62 @@ export type AccountType = Prettify<
   ExpenseAccountType | FundAccountType | EntityAccountType
 >;
 
-export type BaseAccount = {
+export type BaseAccountRaw = {
   isPermanent: NumBoolean;
   name: string;
-  balance: number;
   uniqueId?: string;
   vault?: CurrencyType;
-  paymentMethods?: PaymentMethodUI[IDKey][];
+  paymentMethods?: PaymentMethod[IDKey][];
 };
-export type ExpenseAccount = Prettify<
-  BaseAccount & {
+export type ExpenseAccountRaw = Prettify<
+  BaseAccountRaw & {
     isPermanent: 0;
     type: ExpenseAccountType;
     vault: CurrencyType;
-    paymentMethods: PaymentMethodUI[IDKey][];
+    paymentMethods: PaymentMethod[IDKey][];
   }
 >;
-export type FundAccount = Prettify<
-  BaseAccount & {
+export type FundAccountRaw = Prettify<
+  BaseAccountRaw & {
     isPermanent: 0;
     type: FundAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
   }
 >;
-export type LoanAccount = Prettify<
-  Omit<FundAccount, "type"> & {
+export type LoanAccountRaw = Prettify<
+  Omit<FundAccountRaw, "type"> & {
     type: LoanAccountType;
   }
 >;
-export type DepositAccount = Prettify<
-  Omit<FundAccount, "type"> & {
+export type DepositAccountRaw = Prettify<
+  Omit<FundAccountRaw, "type"> & {
     type: DepositAccountType;
   }
 >;
-export type EntityAccount = Prettify<
-  BaseAccount & {
+export type EntityAccountRaw = Prettify<
+  BaseAccountRaw & {
     type: EntityAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
   }
 >;
-export type ShopAccount = Prettify<
-  Omit<EntityAccount, "type"> & {
+export type ShopAccountRaw = Prettify<
+  Omit<EntityAccountRaw, "type"> & {
     type: ShopAccountType;
   }
 >;
-export type PeopleAccount = Prettify<
-  Omit<EntityAccount, "type"> & {
+export type PeopleAccountRaw = Prettify<
+  Omit<EntityAccountRaw, "type"> & {
     isPermanent: 0;
     type: PeopleAccountType;
   }
 >;
-export type Account = Prettify<
-  BaseAccount & {
+export type AccountRaw = Prettify<
+  BaseAccountRaw & {
     type: AccountType;
     vault?: CurrencyType;
-    paymentMethods?: PaymentMethodUI[IDKey][];
+    paymentMethods?: PaymentMethod[IDKey][];
   }
 >;
 
@@ -80,23 +79,23 @@ export type Account = Prettify<
  * UI Models
  */
 
-export type ExpenseAccountUI = Prettify<
+export type ExpenseAccount = Prettify<
   WithID<
-    Omit<ExpenseAccount, "paymentMethods"> & {
-      paymentMethods: PaymentMethodUI[];
+    Omit<ExpenseAccountRaw, "paymentMethods"> & {
+      paymentMethods: PaymentMethod[];
     }
   >
 >;
-export type LoanAccountUI = Prettify<WithID<LoanAccount>>;
-export type DepositAccountUI = Prettify<WithID<DepositAccount>>;
-export type ShopAccountUI = Prettify<WithID<ShopAccount>>;
-export type PeopleAccountUI = Prettify<WithID<PeopleAccount>>;
-export type AccountUI =
-  | ExpenseAccountUI
-  | LoanAccountUI
-  | DepositAccountUI
-  | ShopAccountUI
-  | PeopleAccountUI;
+export type LoanAccount = Prettify<WithID<LoanAccountRaw>>;
+export type DepositAccount = Prettify<WithID<DepositAccountRaw>>;
+export type ShopAccount = Prettify<WithID<ShopAccountRaw>>;
+export type PeopleAccount = Prettify<WithID<PeopleAccountRaw>>;
+export type Account =
+  | ExpenseAccount
+  | LoanAccount
+  | DepositAccount
+  | ShopAccount
+  | PeopleAccount;
 
 /**
  *
@@ -124,18 +123,16 @@ export const ACCOUNT_TYPES_LIST: AccountType[] = [
  * DATABASE's INITIAL DATA CONSTANTS
  */
 
-export const CASH_EXPENSE_ACCOUNT: ExpenseAccount = {
+export const CASH_EXPENSE_ACCOUNT: ExpenseAccountRaw = {
   isPermanent: 0,
   name: "Wallet",
-  balance: 0,
   vault: "physical",
   type: "expense",
   paymentMethods: [],
 };
 
-export const MARKET: ShopAccount = {
+export const MARKET: ShopAccountRaw = {
   isPermanent: 1,
   name: "Market",
-  balance: Number.MAX_SAFE_INTEGER,
   type: "shop",
 };

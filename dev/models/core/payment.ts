@@ -1,12 +1,12 @@
-import { IDKey, TableRecordID } from "../../../_kvdb";
-import { AccountUI } from "./account";
+import { IDKey, TableRecordID } from "../../_kvdb";
+import { Account } from "./account";
 import { Prettify } from "./common";
-import { PaymentMethodUI } from "./payment-method";
+import { PaymentMethod } from "./payment-method";
 
-export type Payment = {
+export type PaymentRaw = {
   amount: number;
-  account: AccountUI[IDKey];
-  via?: PaymentMethodUI[IDKey];
+  account: Account[IDKey];
+  via?: PaymentMethod[IDKey];
 };
 
 /**
@@ -15,10 +15,10 @@ export type Payment = {
  * UI Models
  */
 
-export type PaymentUI = Prettify<
-  Omit<Payment, "account" | "via"> & {
+export type Payment = Prettify<
+  Omit<PaymentRaw, "account" | "via"> & {
     id: TableRecordID;
-    account: AccountUI;
-    via?: PaymentMethodUI;
+    account: Account;
+    via?: PaymentMethod;
   }
 >;

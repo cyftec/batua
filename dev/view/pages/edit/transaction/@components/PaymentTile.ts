@@ -1,17 +1,13 @@
 import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import {
-  AccountUI,
-  Payment,
-  PaymentMethodUI,
-} from "../../../../../models/core";
+import { Account, PaymentRaw, PaymentMethod } from "../../../../../models/core";
 import { Icon, NumberBox, Select } from "../../../../elements";
 
 type PaymentTileProps = {
-  payment: Payment;
-  allAccounts: AccountUI[];
+  payment: PaymentRaw;
+  allAccounts: Account[];
   onPeopleAccountAdd: () => void;
-  onChange: (newPayment: Payment) => void;
+  onChange: (newPayment: PaymentRaw) => void;
   onRemove: () => void;
 };
 
@@ -115,8 +111,8 @@ export const PaymentTile = component<PaymentTileProps>(
                   size: "small",
                   options: nonNullPms,
                   selectedOptionIndex: selectedPaymentMethodIndex,
-                  targetFormattor: (opt: PaymentMethodUI) => `via ${opt.name}`,
-                  optionFormattor: (opt: PaymentMethodUI) =>
+                  targetFormattor: (opt: PaymentMethod) => `via ${opt.name}`,
+                  optionFormattor: (opt: PaymentMethod) =>
                     m.Div({
                       children: [
                         m.Div({

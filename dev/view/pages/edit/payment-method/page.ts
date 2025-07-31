@@ -3,11 +3,11 @@ import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
 import { db } from "../../../../state/localstorage/stores";
 import {
-  AccountUI,
+  Account,
   CURRENCY_TYPES,
   CurrencyType,
+  PaymentMethodRaw,
   PaymentMethod,
-  PaymentMethodUI,
 } from "../../../../models/core";
 import { capitalize, nameRegex, uniqueIdRegex } from "../../../../state/utils";
 import { Label, Link, Select, TextBox } from "../../../elements";
@@ -18,9 +18,9 @@ const error = signal("");
 const paymentMethodType = signal<CurrencyType>("physical");
 const paymentMethodName = signal("");
 const paymentMethodUniqueID = signal("");
-const paymentMethodSlaveOf = signal<AccountUI | undefined>(undefined);
-const allAccounts = signal<(AccountUI & { isSelected: boolean })[]>([]);
-const editablePaymentMethod = signal<PaymentMethodUI | undefined>(undefined);
+const paymentMethodSlaveOf = signal<Account | undefined>(undefined);
+const allAccounts = signal<(Account & { isSelected: boolean })[]>([]);
+const editablePaymentMethod = signal<PaymentMethod | undefined>(undefined);
 const editablePaymentMethodName = derive(
   () => editablePaymentMethod.value?.name || ""
 );
@@ -69,7 +69,7 @@ const onPaymentMethodSave = () => {
     : {};
 
   if (editablePaymentMethod.value) {
-    const updates: Partial<PaymentMethod> = {
+    const updates: Partial<PaymentMethodRaw> = {
       name: paymentMethodName.value,
       type: paymentMethodType.value,
       ...uniqueIdObj,

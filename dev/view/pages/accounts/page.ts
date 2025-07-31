@@ -2,14 +2,14 @@ import { effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../../state/localstorage/stores";
 import {
-  AccountUI,
-  ExpenseAccountUI,
-  PaymentMethodUI,
+  Account,
+  ExpenseAccount,
+  PaymentMethod,
   EXPENSE_ACCOUNT_TYPE,
-  LoanAccountUI,
-  DepositAccountUI,
-  PeopleAccountUI,
-  ShopAccountUI,
+  LoanAccount,
+  DepositAccount,
+  PeopleAccount,
+  ShopAccount,
   LOAN_ACCOUNT_TYPE,
   DEPOSIT_ACCOUNT_TYPE,
   PEOPLE_ACCOUNT_TYPE,
@@ -36,20 +36,20 @@ const header = trap([
   "My loan and deposit accounts",
   "Shops and people",
 ]).at(selectedTabIndex);
-const allPaymentMethods = signal<PaymentMethodUI[]>([]);
-const allAccounts = signal<AccountUI[]>([]);
-const allExpenseAccounts = signal<ExpenseAccountUI[]>([]);
-const allLoanAccounts = signal<LoanAccountUI[]>([]);
-const allDepositAccounts = signal<DepositAccountUI[]>([]);
-const allShopAccounts = signal<ShopAccountUI[]>([]);
-const allPeopleAccounts = signal<PeopleAccountUI[]>([]);
+const allPaymentMethods = signal<PaymentMethod[]>([]);
+const allAccounts = signal<Account[]>([]);
+const allExpenseAccounts = signal<ExpenseAccount[]>([]);
+const allLoanAccounts = signal<LoanAccount[]>([]);
+const allDepositAccounts = signal<DepositAccount[]>([]);
+const allShopAccounts = signal<ShopAccount[]>([]);
+const allPeopleAccounts = signal<PeopleAccount[]>([]);
 
 effect(() => {
-  const expAccs: ExpenseAccountUI[] = [];
-  const laonAccs: LoanAccountUI[] = [];
-  const depAccs: DepositAccountUI[] = [];
-  const shopAccs: ShopAccountUI[] = [];
-  const peopAccs: PeopleAccountUI[] = [];
+  const expAccs: ExpenseAccount[] = [];
+  const laonAccs: LoanAccount[] = [];
+  const depAccs: DepositAccount[] = [];
+  const shopAccs: ShopAccount[] = [];
+  const peopAccs: PeopleAccount[] = [];
   allAccounts.value.forEach((acc) => {
     if (acc.type === EXPENSE_ACCOUNT_TYPE) expAccs.push(acc);
     if (acc.type === LOAN_ACCOUNT_TYPE) laonAccs.push(acc);

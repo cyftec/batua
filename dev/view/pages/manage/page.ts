@@ -3,7 +3,7 @@ import { m } from "@mufw/maya";
 import { URL, getQueryParamValue, goToPage } from "../../../state/utils";
 import { HTMLPage, NavScaffold } from "../../components";
 import { TabBar } from "../../elements";
-import { Budget, TagsPage } from "./@components";
+import { Budgets, TagsPage } from "./@components";
 
 const MANAGE_MONEY_TABS = ["Budget", "Tags"] as const satisfies string[];
 const selectedTabIndex = signal(0);
@@ -25,7 +25,7 @@ export default HTMLPage({
         m.Switch({
           subject: selectedTabIndex,
           cases: {
-            0: () => Budget({}),
+            0: () => Budgets({}),
             1: () => TagsPage({}),
           },
         }),

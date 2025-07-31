@@ -3,13 +3,13 @@ import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
 import { db } from "../../../../state/localstorage/stores";
 import {
-  Account,
+  AccountRaw,
   ACCOUNT_TYPES_LIST,
   AccountType,
-  AccountUI,
+  Account,
   CURRENCY_TYPES,
   CurrencyType,
-  PaymentMethodUI,
+  PaymentMethod,
 } from "../../../../models/core";
 import {
   areNamesSimilar,
@@ -28,7 +28,7 @@ import {
 import { primitiveValue, ID_KEY, TableRecordID } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
-const editableAccount = signal<AccountUI | undefined>(undefined);
+const editableAccount = signal<Account | undefined>(undefined);
 const editableAccountName = derive(() => editableAccount.value?.name || "");
 
 const error = signal("");
@@ -38,7 +38,7 @@ const accountUniqueId = signal("");
 const accountBalance = signal(0);
 const accountTypeLabel = trap(accountType).concat(" account");
 const vaultType = signal<CurrencyType>("physical");
-const allPMs = signal<(PaymentMethodUI & { isSelected: boolean })[]>([]);
+const allPMs = signal<(PaymentMethod & { isSelected: boolean })[]>([]);
 const [selectedPaymentMethods, unSelectedPaymentMethods] = trap(
   allPMs
 ).partition((pm) => pm.isSelected);
@@ -142,7 +142,7 @@ const onAccountSave = () => {
       ? { vault: vaultType.value }
       : {};
   const updates: Pick<
-    Account,
+    AccountRaw,
     "name" | "paymentMethods" | "vault" | "uniqueId"
   > = {
     name: accountName.value,
@@ -155,7 +155,7 @@ const onAccountSave = () => {
     db.accounts.set(editableAccount.value.id, updates);
   } else {
     // TODO: Check existing account before adding new
-    const newAccount: Account = {
+    const newAccount: AccountRaw = {
       isPermanent: 0,
       balance: 0,
       type: accountType.value,
@@ -171,11 +171,11 @@ const onAccountSave = () => {
       ["balanceupdate", "initialbalance"].includes(primitiveValue(tag))
     );
     const now = new Date().getTime();
-    const txnTitle = "Set initial balance";
-    let titleID = db.txnTitles.find((tt) => primitiveValue(tt) === txnTitle)?.[
+    const title = "Set initial balance";
+    let titleID = db.titles.find((tt) => primitiveValue(tt) === title)?.[
       ID_KEY
     ];
-    if (!titleID) titleID = db.txnTitles.push(txnTitle);
+    if (!titleID) titleID = db.titles.push(title);
     db.txns.push({
       date: now,
       created: now,

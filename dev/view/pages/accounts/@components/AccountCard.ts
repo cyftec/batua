@@ -1,10 +1,10 @@
 import { derive, op, signal, tmpl, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import {
-  AccountUI,
+  Account,
   CurrencyType,
-  ExpenseAccountUI,
-  PaymentMethodUI,
+  ExpenseAccount,
+  PaymentMethod,
 } from "../../../../models/core";
 import { handleTap } from "../../../../state/utils";
 import { Tag } from "../../../components";
@@ -14,7 +14,7 @@ import { db } from "../../../../state/localstorage/stores";
 type AccountCardProps = {
   onTap?: () => void;
   cssClasses?: string;
-  account: AccountUI;
+  account: Account;
 };
 
 const getRandomBalance = () =>
@@ -27,13 +27,12 @@ export const AccountCard = component<AccountCardProps>(
     const { isPermanent, name, uniqueId, type } = trap(account).props;
     const accBalance = signal(0);
     const vault = derive(
-      () =>
-        (account.value as ExpenseAccountUI).vault as CurrencyType | undefined
+      () => (account.value as ExpenseAccount).vault as CurrencyType | undefined
     );
     const paymentMethods = derive(
       () =>
-        ((account.value as ExpenseAccountUI).paymentMethods ||
-          []) as PaymentMethodUI[]
+        ((account.value as ExpenseAccount).paymentMethods ||
+          []) as PaymentMethod[]
     );
 
     const onCardMount = () => {

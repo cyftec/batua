@@ -1,11 +1,11 @@
 import { component, m } from "@mufw/maya";
 import { URL, goToPage, handleTap } from "../../../../state/utils";
 import { CardButton, Section } from "../../../elements";
-import { PeopleAccountUI, ShopAccountUI } from "../../../../models/core";
+import { PeopleAccount, ShopAccount } from "../../../../models/core";
 
 type EntityAccountsProps = {
-  allShopAccounts: ShopAccountUI[];
-  allPeopleAccounts: PeopleAccountUI[];
+  allShopAccounts: ShopAccount[];
+  allPeopleAccounts: PeopleAccount[];
 };
 
 export const EntityAccounts = component<EntityAccountsProps>(

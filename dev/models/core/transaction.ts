@@ -1,7 +1,7 @@
-import { TableRecordID } from "../../../_kvdb";
-import { PaymentUI } from "./payment";
-import { TagUI } from "./tag";
-import { TxnTitleUI } from "./transaction-title";
+import { IDKey, TableRecordID } from "../../_kvdb";
+import { Payment } from "./payment";
+import { Tag } from "./tag";
+import { Title } from "./title";
 
 export type TxnType = "expense" | "earning" | "transfer" | "balance update";
 export const TXN_TYPE_SUBTYPE_MAP = {
@@ -29,14 +29,14 @@ export const TXN_NECESSITIES_WITH_ICONS: {
   { label: "Luxury", icon: "diamond_shine" },
 ];
 
-export type Txn = {
+export type TxnRaw = {
   date: number;
   created: number;
   modified: number;
   type: TxnType;
-  payments: PaymentUI["id"][];
-  tags: TagUI["id"][];
-  title: TxnTitleUI["id"];
+  payments: Payment[IDKey][];
+  tags: Tag[IDKey][];
+  title: Title[IDKey];
 };
 
 /**
@@ -45,15 +45,15 @@ export type Txn = {
  * UI Models
  */
 
-export type TxnUI = Omit<
-  Txn,
+export type Txn = Omit<
+  TxnRaw,
   "date" | "created" | "modified" | "payments" | "tags" | "title"
 > & {
   id: TableRecordID;
   date: Date;
   created: Date;
   modified: Date;
-  payments: PaymentUI[];
-  tags: TagUI[];
-  title: TxnTitleUI;
+  payments: Payment[];
+  tags: Tag[];
+  title: Title;
 };

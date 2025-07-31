@@ -1,12 +1,12 @@
 import { component, m } from "@mufw/maya";
-import { DepositAccountUI, LoanAccountUI } from "../../../../models/core";
+import { DepositAccount, LoanAccount } from "../../../../models/core";
 import { CardButton, Section } from "../../../elements";
 import { goToPage, URL } from "../../../../state/utils";
 import { AccountCard } from "./AccountCard";
 
 type FundAccountsProps = {
-  allLoanAccounts: LoanAccountUI[];
-  allDepositAccounts: DepositAccountUI[];
+  allLoanAccounts: LoanAccount[];
+  allDepositAccounts: DepositAccount[];
 };
 
 export const FundAccounts = component<FundAccountsProps>(

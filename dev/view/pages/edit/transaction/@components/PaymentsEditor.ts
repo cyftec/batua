@@ -1,7 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { db } from "../../../../../state/localstorage/stores";
-import { AccountUI, Payment } from "../../../../../models/core";
+import { Account, PaymentRaw } from "../../../../../models/core";
 import { areNamesSimilar, nameRegex } from "../../../../../state/utils";
 import {
   DialogActionButtons,
@@ -13,10 +13,10 @@ import { PaymentTile } from "./PaymentTile";
 
 type PaymentsEditorProps = {
   cssClasses?: string;
-  payments: Payment[];
-  allAccounts: AccountUI[];
+  payments: PaymentRaw[];
+  allAccounts: Account[];
   onPaymentAdd: () => void;
-  onPaymentUpdate: (newPayment: Payment, index: number) => void;
+  onPaymentUpdate: (newPayment: PaymentRaw, index: number) => void;
   onPaymentDelete: (index: number) => void;
   onNewPeopleAccountAdd: () => void;
 };
@@ -75,7 +75,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
       );
       if (!newAcc) throw ``;
       const newPaymentIndex = paymentIndexForAddingPersonAcc.value;
-      const newPayment: Payment = {
+      const newPayment: PaymentRaw = {
         amount: payments.value[newPaymentIndex].amount,
         account: newAcc.id,
       };

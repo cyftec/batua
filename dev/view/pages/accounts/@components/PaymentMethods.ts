@@ -1,10 +1,10 @@
 import { component, m } from "@mufw/maya";
-import { PaymentMethodUI } from "../../../../models/core";
+import { PaymentMethod } from "../../../../models/core";
 import { URL, capitalize, goToPage, handleTap } from "../../../../state/utils";
 import { CardButton, Icon, Section } from "../../../elements";
 
 type PaymentMethodsProps = {
-  paymentMethods: PaymentMethodUI[];
+  paymentMethods: PaymentMethod[];
 };
 
 export const PaymentMethods = component<PaymentMethodsProps>(

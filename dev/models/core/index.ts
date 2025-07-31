@@ -6,4 +6,4 @@ export * from "./payment";
 export * from "./payment-method";
 export * from "./tag";
 export * from "./transaction";
-export * from "./transaction-title";
+export * from "./title";

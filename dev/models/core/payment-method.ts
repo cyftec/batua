@@ -1,7 +1,7 @@
 import { NumBoolean, Prettify, WithID } from "./common";
 import { CurrencyType } from "./currency";
 
-export type PaymentMethod = {
+export type PaymentMethodRaw = {
   isPermanent: NumBoolean;
   uniqueId?: string;
   name: string;
@@ -15,7 +15,7 @@ export type PaymentMethod = {
  * UI Models
  */
 
-export type PaymentMethodUI = Prettify<WithID<PaymentMethod>>;
+export type PaymentMethod = Prettify<WithID<PaymentMethodRaw>>;
 
 /**
  *
@@ -23,14 +23,14 @@ export type PaymentMethodUI = Prettify<WithID<PaymentMethod>>;
  * DATABASE's INITIAL DATA CONSTANTS
  */
 
-export const NET_BANKING_PAYMENT_METHOD: PaymentMethod = {
+export const NET_BANKING_PAYMENT_METHOD: PaymentMethodRaw = {
   isPermanent: 1,
   name: "Net Banking",
   type: "digital",
   slave: false,
 };
 
-export const CASH_PAYMENT_METHOD: PaymentMethod = {
+export const CASH_PAYMENT_METHOD: PaymentMethodRaw = {
   isPermanent: 1,
   name: "Notes & Coins",
   type: "physical",
