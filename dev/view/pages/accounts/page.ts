@@ -57,6 +57,8 @@ effect(() => {
     if (acc.type === SHOP_ACCOUNT_TYPE) shopAccs.push(acc);
     if (acc.type === PEOPLE_ACCOUNT_TYPE) peopAccs.push(acc);
   });
+  console.log(allAccounts.value);
+
   allExpenseAccounts.value = expAccs;
   allLoanAccounts.value = laonAccs;
   allDepositAccounts.value = depAccs;
@@ -68,9 +70,9 @@ const onPageMount = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   allPaymentMethods.value = db.paymentMethods
-    .get([])
+    .get()
     .sort((a, b) => b.isPermanent - a.isPermanent);
-  allAccounts.value = db.accounts.get([]);
+  allAccounts.value = db.accounts.get();
 };
 
 export default HTMLPage({

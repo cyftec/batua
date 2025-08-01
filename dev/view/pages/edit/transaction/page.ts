@@ -10,6 +10,7 @@ import {
   // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   Txn,
+  Payment,
 } from "../../../../models/core";
 import { isFutureDate } from "../../../../state/transforms";
 import { getLowercaseTagName, nameRegex } from "../../../../state/utils";
@@ -47,22 +48,22 @@ const editableTxnName = derive(
 
 const onPageMount = (urlParams: URLSearchParams) => {
   allTags.value = db.tags
-    .get([])
+    .get()
     .map((t) => ({ ...t, isSelected: false }))
     .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
   allAccounts.value = db.accounts
-    .get([])
+    .get()
     .sort((a, b) => a.type.localeCompare(b.type));
   const txnIDStr = urlParams.get("id");
   if (!txnIDStr) {
     txnPayments.value = [
       {
         amount: -100,
-        account: allAccounts.value[1].id,
+        account: allAccounts.value[1],
       },
       {
         amount: 100,
-        account: allAccounts.value[0].id,
+        account: allAccounts.value[0],
       },
     ];
     return;
@@ -76,11 +77,7 @@ const onPageMount = (urlParams: URLSearchParams) => {
   txnDate.value = editableTxn.value.date;
   txnCreated.value = editableTxn.value.created;
   txnModified.value = editableTxn.value.modified;
-  txnPayments.value = editableTxn.value.payments.map((p) => ({
-    amount: p.amount,
-    account: p.account.id,
-    via: p.via?.id,
-  }));
+  txnPayments.value = editableTxn.value.payments;
   title.value = primitiveValue(editableTxn.value.title);
   const editableTxnTagNames = editableTxn.value.tags.map(primitiveValue);
   allTags.value = allTags.value.map((t) => ({
@@ -110,7 +107,7 @@ const onNewPeopleAccountAdd = () => {
   resetError();
   console.log(`Adding new Friend`);
   allAccounts.value = db.accounts
-    .get([])
+    .get()
     .sort((a, b) => a.type.localeCompare(b.type));
 };
 
@@ -122,7 +119,7 @@ const onPaymentAdd = () => {
     ...oldPayments,
     {
       amount: sum === 0 ? 0 : -sum,
-      account: allAccounts.value[0].id,
+      account: allAccounts.value[0],
     },
   ];
 };
@@ -194,9 +191,7 @@ const onTagAdd = (text: string) => {
       console.log(tagName, selectedTags.value);
     } else return false;
   } else {
-    const newTagID = db.tags.push(tagName);
-    const newTag = db.tags.get(newTagID);
-    if (!newTag) throw `Error fetching the new tag after adding it to the DB.`;
+    const newTag = db.tags.push(tagName);
     allTags.value = [...allTags.value, { ...newTag, isSelected: true }];
   }
 
@@ -217,26 +212,29 @@ const validateForm = () => {
 };
 
 const onTxnSave = () => {
-  const now = new Date().getTime();
+  const now = new Date();
   // const uniqueIdObj = txnUniqueID.value ? { uniqueId: txnUniqueID.value } : {};
 
   if (editableTxn.value) {
     // TODO: implement txn update
   } else {
-    const newTitleID = db.titles.push(title.value);
-    const pmtIDs: DbRecordID[] = [];
+    let existingTitle = db.titles.find(
+      (tt) => primitiveValue(tt) === title.value
+    );
+    if (!existingTitle) existingTitle = db.titles.push(title.value);
+    const pmts: Payment[] = [];
     txnPayments.value.forEach((pmt) => {
-      const newPmtID = db.payments.push(pmt);
-      pmtIDs.push(newPmtID);
+      const newPmt = db.payments.push(pmt);
+      pmts.push(newPmt);
     });
     db.txns.push({
       type: "balance update",
-      date: txnDate.value.getTime(),
+      date: txnDate.value,
       created: now,
       modified: now,
-      payments: pmtIDs,
-      tags: selectedTags.value.map((tg) => tg[ID_KEY]),
-      title: newTitleID,
+      payments: pmts,
+      tags: selectedTags.value,
+      title: existingTitle,
     });
   }
 };

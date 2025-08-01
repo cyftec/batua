@@ -30,7 +30,7 @@ effect(() => {
   const editablePm = editablePaymentMethod.value;
   if (!phase.currentIs("run")) return;
   allAccounts.value = db.accounts
-    .get([])
+    .get()
     .map((acc) => ({
       ...acc,
       isSelected: !!acc.paymentMethods

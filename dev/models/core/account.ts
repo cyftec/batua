@@ -1,5 +1,5 @@
-import { IDKey } from "../../_kvdb";
-import { NumBoolean, Prettify, WithID } from "./common";
+import { WithID } from "../../_kvdb";
+import { NumBoolean, Prettify } from "./common";
 import { CurrencyType } from "./currency";
 import { PaymentMethod } from "./payment-method";
 
@@ -19,22 +19,20 @@ export type BaseAccountRaw = {
   name: string;
   uniqueId?: string;
   vault?: CurrencyType;
-  paymentMethods?: PaymentMethod[IDKey][];
+  paymentMethods?: PaymentMethod[];
 };
 export type ExpenseAccountRaw = Prettify<
   BaseAccountRaw & {
-    isPermanent: 0;
     type: ExpenseAccountType;
     vault: CurrencyType;
-    paymentMethods: PaymentMethod[IDKey][];
+    paymentMethods: PaymentMethod[];
   }
 >;
 export type FundAccountRaw = Prettify<
   BaseAccountRaw & {
-    isPermanent: 0;
-    type: FundAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
+    type: FundAccountType;
   }
 >;
 export type LoanAccountRaw = Prettify<
@@ -49,9 +47,9 @@ export type DepositAccountRaw = Prettify<
 >;
 export type EntityAccountRaw = Prettify<
   BaseAccountRaw & {
-    type: EntityAccountType;
     vault?: undefined;
     paymentMethods?: undefined;
+    type: EntityAccountType;
   }
 >;
 export type ShopAccountRaw = Prettify<
@@ -61,15 +59,14 @@ export type ShopAccountRaw = Prettify<
 >;
 export type PeopleAccountRaw = Prettify<
   Omit<EntityAccountRaw, "type"> & {
-    isPermanent: 0;
     type: PeopleAccountType;
   }
 >;
 export type AccountRaw = Prettify<
   BaseAccountRaw & {
-    type: AccountType;
     vault?: CurrencyType;
-    paymentMethods?: PaymentMethod[IDKey][];
+    paymentMethods?: PaymentMethod[];
+    type: AccountType;
   }
 >;
 
@@ -79,13 +76,7 @@ export type AccountRaw = Prettify<
  * UI Models
  */
 
-export type ExpenseAccount = Prettify<
-  WithID<
-    Omit<ExpenseAccountRaw, "paymentMethods"> & {
-      paymentMethods: PaymentMethod[];
-    }
-  >
->;
+export type ExpenseAccount = Prettify<WithID<ExpenseAccountRaw>>;
 export type LoanAccount = Prettify<WithID<LoanAccountRaw>>;
 export type DepositAccount = Prettify<WithID<DepositAccountRaw>>;
 export type ShopAccount = Prettify<WithID<ShopAccountRaw>>;

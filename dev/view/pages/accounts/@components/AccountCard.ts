@@ -17,11 +17,6 @@ type AccountCardProps = {
   account: Account;
 };
 
-const getRandomBalance = () =>
-  (Math.random() * 25000).toLocaleString(undefined, {
-    maximumFractionDigits: 0,
-  });
-
 export const AccountCard = component<AccountCardProps>(
   ({ onTap, cssClasses, account }) => {
     const { isPermanent, name, uniqueId, type } = trap(account).props;
@@ -37,7 +32,7 @@ export const AccountCard = component<AccountCardProps>(
 
     const onCardMount = () => {
       console.log(account.value);
-      console.log(db.payments.get([]));
+      console.log(db.payments.get());
       const allPayments = db.payments.filter(
         (p) => p.account.id === account.value.id
       );

@@ -2,6 +2,7 @@ import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { Account, PaymentRaw, PaymentMethod } from "../../../../../models/core";
 import { Icon, NumberBox, Select } from "../../../../elements";
+import { ID_KEY } from "../../../../../_kvdb";
 
 type PaymentTileProps = {
   payment: PaymentRaw;
@@ -21,7 +22,7 @@ export const PaymentTile = component<PaymentTileProps>(
     });
     type AccountOption = PlainValue<typeof accountOptions>[number];
     const selectedAccountIndex = trap(allAccounts).findIndex(
-      (acc) => acc.id === account.value
+      (acc) => acc.id === account.value[ID_KEY]
     );
     const selectedAccPaymentMethods = derive(() =>
       amount.value >= 0
@@ -39,8 +40,8 @@ export const PaymentTile = component<PaymentTileProps>(
       }
       onChange({
         ...payment.value,
-        account: allAccounts.value[newAccountIndex].id,
-        via: allAccounts.value[newAccountIndex]?.paymentMethods?.[0].id,
+        account: allAccounts.value[newAccountIndex],
+        via: allAccounts.value[newAccountIndex]?.paymentMethods?.[0],
       });
     };
 
@@ -98,12 +99,14 @@ export const PaymentTile = component<PaymentTileProps>(
               isTruthy: (nonNullPms) => {
                 const selectedPaymentMethodIndex = trap(nonNullPms).findIndex(
                   (pm) =>
-                    via?.value === undefined ? true : pm.id === via.value
+                    via?.value === undefined
+                      ? true
+                      : pm.id === via.value[ID_KEY]
                 );
                 const onPaymentMethodChange = (newPmIndex: number) =>
                   onChange({
                     ...payment.value,
-                    via: nonNullPms.value[newPmIndex].id,
+                    via: nonNullPms.value[newPmIndex],
                   });
 
                 return Select({

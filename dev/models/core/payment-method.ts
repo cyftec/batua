@@ -1,4 +1,5 @@
-import { NumBoolean, Prettify, WithID } from "./common";
+import { WithID } from "../../_kvdb";
+import { NumBoolean, Prettify } from "./common";
 import { CurrencyType } from "./currency";
 
 export type PaymentMethodRaw = {

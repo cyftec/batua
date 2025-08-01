@@ -27,7 +27,7 @@ export const createDb = <DbSchema extends Schema>(
 
   const getTableFromTableKey = (key: TableKey) => {
     const tableName = Object.keys(schema).find(
-      (tableKey) => schema[tableKey]["key"] === key
+      (tblName) => schema[tblName]["key"] === key
     );
     if (!tableName)
       throw `Invalid key '${key}' passed to find table name from schema - '${JSON.stringify(

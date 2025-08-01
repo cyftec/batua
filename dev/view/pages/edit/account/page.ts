@@ -58,7 +58,6 @@ const onPageMount = (urlParams: URLSearchParams) => {
   accountType.value = editableAcc.type;
   accountName.value = editableAcc.name;
   accountUniqueId.value = editableAcc.uniqueId || "";
-  accountBalance.value = editableAcc.balance;
   if (editableAcc.type === "expense") {
     vaultType.value = editableAcc.vault;
   }
@@ -112,14 +111,12 @@ const onPaymentMethodAdd = (name: string) => {
     if (unselected) allPMs.value = updatedAllPMs;
     else return false;
   } else {
-    const newPmID = db.paymentMethods.push({
+    const newPM = db.paymentMethods.push({
       isPermanent: 0,
       name: newPmName,
       type: vaultType.value,
       slave: false,
     });
-    const newPM = db.paymentMethods.get(newPmID);
-    if (!newPM) throw `Error fetching the new tag after adding it to the DB.`;
     allPMs.value = [...allPMs.value, { ...newPM, isSelected: true }];
   }
 
@@ -146,7 +143,7 @@ const onAccountSave = () => {
     "name" | "paymentMethods" | "vault" | "uniqueId"
   > = {
     name: accountName.value,
-    paymentMethods: selectedPaymentMethods.value.map((pm) => pm.id),
+    paymentMethods: selectedPaymentMethods.value,
     ...vaultObj,
     ...uniqueIdObj,
   };
@@ -157,33 +154,30 @@ const onAccountSave = () => {
     // TODO: Check existing account before adding new
     const newAccount: AccountRaw = {
       isPermanent: 0,
-      balance: 0,
       type: accountType.value,
       ...updates,
     };
-    const newAccID = db.accounts.push(newAccount);
+    const newAcc = db.accounts.push(newAccount);
     if (!accountBalance.value) return;
     const pmtID = db.payments.push({
       amount: accountBalance.value,
-      account: newAccID,
+      account: newAcc,
     });
     const firstBalanceUpdateTags = db.tags.filter((tag) =>
       ["balanceupdate", "initialbalance"].includes(primitiveValue(tag))
     );
-    const now = new Date().getTime();
+    const now = new Date();
     const title = "Set initial balance";
-    let titleID = db.titles.find((tt) => primitiveValue(tt) === title)?.[
-      ID_KEY
-    ];
-    if (!titleID) titleID = db.titles.push(title);
+    let existingTitle = db.titles.find((tt) => primitiveValue(tt) === title);
+    if (!existingTitle) existingTitle = db.titles.push(title);
     db.txns.push({
       date: now,
       created: now,
       modified: now,
       type: "balance update",
       payments: [pmtID],
-      tags: firstBalanceUpdateTags.map((t) => t[ID_KEY]),
-      title: titleID,
+      tags: firstBalanceUpdateTags,
+      title: existingTitle,
     });
   }
 };

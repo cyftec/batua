@@ -27,15 +27,15 @@ export const TagsPage = component<TagsPageProps>(({}) => {
     );
     if (existingTag) return false;
     db.tags.push(newTagName);
-    allTags.value = db.tags.get([]);
+    allTags.value = db.tags.get();
     return true;
   };
 
   const onTagsPageMount = () => {
-    allAccounts.value = db.accounts.get([]);
-    allPaymentMethods.value = db.paymentMethods.get([]);
+    allAccounts.value = db.accounts.get();
+    allPaymentMethods.value = db.paymentMethods.get();
     allTags.value = db.tags
-      .get([])
+      .get()
       .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
   };
 

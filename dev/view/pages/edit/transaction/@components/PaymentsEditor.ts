@@ -66,7 +66,6 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
       db.accounts.push({
         isPermanent: 0,
         name: peopleAccountName.value,
-        balance: 0,
         type: "people",
       });
       onNewPeopleAccountAdd();
@@ -77,7 +76,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
       const newPaymentIndex = paymentIndexForAddingPersonAcc.value;
       const newPayment: PaymentRaw = {
         amount: payments.value[newPaymentIndex].amount,
-        account: newAcc.id,
+        account: newAcc,
       };
       onPaymentUpdate(newPayment, newPaymentIndex);
       peopleAccountName.value = "";

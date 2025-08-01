@@ -1,4 +1,5 @@
-import { IDKey, DbRecordID } from "../../_kvdb";
+import { WithID } from "../../_kvdb";
+import { Prettify } from "./common";
 import { Payment } from "./payment";
 import { Tag } from "./tag";
 import { Title } from "./title";
@@ -30,13 +31,13 @@ export const TXN_NECESSITIES_WITH_ICONS: {
 ];
 
 export type TxnRaw = {
-  date: number;
-  created: number;
-  modified: number;
+  date: Date;
+  created: Date;
+  modified: Date;
   type: TxnType;
-  payments: Payment[IDKey][];
-  tags: Tag[IDKey][];
-  title: Title[IDKey];
+  payments: Payment[];
+  tags: Tag[];
+  title: Title;
 };
 
 /**
@@ -45,15 +46,4 @@ export type TxnRaw = {
  * UI Models
  */
 
-export type Txn = Omit<
-  TxnRaw,
-  "date" | "created" | "modified" | "payments" | "tags" | "title"
-> & {
-  id: DbRecordID;
-  date: Date;
-  created: Date;
-  modified: Date;
-  payments: Payment[];
-  tags: Tag[];
-  title: Title;
-};
+export type Txn = Prettify<WithID<TxnRaw>>;

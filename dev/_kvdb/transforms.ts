@@ -1,9 +1,11 @@
+import { NumBoolean } from "../models/core";
 import {
   DbUnsupportedType,
   KvsRecordID,
   KvsRecordIDPrefix,
   TableKey,
   DbRecordID,
+  Extend,
 } from "./models";
 import { Table } from "./table";
 
@@ -32,17 +34,34 @@ export const getKvsRecordIDFromDbRecordID = (
 };
 
 export const getJsValue = (
-  rawValue: number | undefined,
+  dbValue: number | undefined,
   jsType: DbUnsupportedType
 ) => {
-  // jsType can only be one of DbUnsupportedType
-  if (typeof rawValue === "number" && jsType === "Date") {
-    return new Date(rawValue);
+  // dbValue can only be one of DbUnsupportedType
+  if (typeof dbValue === "number" && jsType === "Date") {
+    return new Date(dbValue);
   }
-  if (typeof rawValue === "number" && jsType === "Boolean") {
-    return !!rawValue;
+  if (typeof dbValue === "number" && jsType === "Boolean") {
+    return !!dbValue;
   }
-  return rawValue;
+  return dbValue;
+};
+
+type ReturnType<In> = In extends Date
+  ? number
+  : In extends boolean
+  ? NumBoolean
+  : In;
+export const getDbValue = <Val extends Date | boolean | undefined>(
+  jsValue: Val
+): ReturnType<Val> => {
+  if (jsValue instanceof Date) {
+    return jsValue.getTime() as ReturnType<typeof jsValue>;
+  }
+  if (typeof jsValue === "boolean") {
+    return +jsValue as ReturnType<typeof jsValue>;
+  }
+  return jsValue as ReturnType<typeof jsValue>;
 };
 
 export const getExtendedValue = (
@@ -57,9 +76,35 @@ export const getExtendedValue = (
   return rawValue;
 };
 
+export const getDbForeignIdValue = <In extends object>(
+  extendedValue: Extend<In> | Extend<In>[] | undefined
+) => {
+  // rawValue can only be undefined | object | object[]
+  if (Array.isArray(extendedValue)) {
+    return extendedValue.map((rec) => rec.id);
+  }
+  if (typeof extendedValue === "object" && extendedValue !== null)
+    return extendedValue.id;
+  return extendedValue;
+};
+
 export const getMappedObject = (
   valueConverter: (value: any) => any,
   obj: object,
+  /**
+   * If the converted type is nested deep within the record (object),
+   * pass the path as ["nestedLevel1", "nestedLeve2"..."nestedLevelN"]
+   * for the object
+   * const obj = {
+   *   ...,
+   *   nestedLevel1: {
+   *     ...,
+   *     nestedLevel2: {
+   *       nestedLevel3: valueWhichNeedsConversion,
+   *     }
+   *   }
+   * }
+   */
   pathArray: string[]
 ) => {
   if (typeof obj !== "object" || obj === null) return obj;

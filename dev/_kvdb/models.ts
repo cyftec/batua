@@ -16,12 +16,10 @@ export const PLAIN_EXTENDED_RECORD_VALUE_KEY: PrimitiveExtendedRecordValueKey =
 // objects are required to be stored in the db. Hence the suggestion.
 export type PrimitiveExtendedRecord<Record> = Record extends object
   ? never
-  : {
-      [ID_KEY]: DbRecordID;
-      [PLAIN_EXTENDED_RECORD_VALUE_KEY]: Record;
-    };
+  : WithID<{ [PLAIN_EXTENDED_RECORD_VALUE_KEY]: Record }>;
+export type WithID<Record extends object> = { [ID_KEY]: DbRecordID } & Record;
 export type ObjectExtendedRecord<Record> = Record extends object
-  ? object & { [ID_KEY]: DbRecordID }
+  ? WithID<Record>
   : never;
 export type Extend<RawRecord> = RawRecord extends object
   ? ObjectExtendedRecord<RawRecord>

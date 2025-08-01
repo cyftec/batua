@@ -1,4 +1,4 @@
-import { signal, trap } from "@cyftech/signal";
+import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { db } from "../../../../state/localstorage/stores";
 import { BudgetRaw, Budget, Tag as TagModel } from "../../../../models/core";
@@ -23,24 +23,24 @@ const budget = signal<BudgetRaw>({
 });
 const { title, period, amount, oneOf, allOf } = trap(budget).props;
 const editableBudget = signal<Budget | undefined>(undefined);
-const allTags = signal<
-  (TagModel & { isSelected: boolean; andOr: "and" | "or" })[]
->([]);
-const [seletedTags, unSelectedTags] = trap(allTags).partition(
-  (t) => t.isSelected
-);
-const [andTags, orTags] = trap(seletedTags).partition((t) => t.andOr === "and");
+const allTags = signal<TagModel[]>([]);
+const unSelectedTags = derive(() => {
+  const selectedTagNames = [
+    ...allOf.value.map(primitiveValue),
+    ...oneOf.value.map(primitiveValue),
+  ];
+  return allTags.value.filter(
+    (t) => !selectedTagNames.includes(primitiveValue(t))
+  );
+});
 
 const onPageMount = (urlParams: URLSearchParams) => {
+  allTags.value = db.tags.get();
   const budgetId = +(urlParams.get("id") || "");
-  if (!budgetId)
-    throw `Invalid budget id - '${budgetId}' passed in url params.`;
+  if (!budgetId) return;
   const fetchedBudget = db.budgets.get(budgetId);
   if (!fetchedBudget) throw `No budget found in DB for id - ${budgetId}`;
   editableBudget.value = fetchedBudget;
-  allTags.value = db.tags
-    .get([])
-    .map((t) => ({ ...t, isSelected: false, andOr: "and" }));
 };
 
 const resetError = () => (error.value = "");
@@ -50,18 +50,26 @@ const onTagSelect = (
   isSelected: boolean,
   andOr: "and" | "or"
 ) => {
-  const tag = isSelected
-    ? unSelectedTags.value[tagIndex]
-    : andOr === "and"
-    ? andTags.value[tagIndex]
-    : orTags.value[tagIndex];
-  allTags.value = allTags.value.map((t) => {
-    if (tag[ID_KEY] === t[ID_KEY]) {
-      t.isSelected = isSelected;
-      t.andOr = andOr;
-    }
-    return t;
-  });
+  if (isSelected) {
+    const tag = unSelectedTags.value[tagIndex];
+    budget.value = {
+      ...budget.value,
+      allOf: andOr === "and" ? [...allOf.value, tag] : allOf.value,
+      oneOf: andOr === "or" ? [...oneOf.value, tag] : oneOf.value,
+    };
+  } else {
+    const isAnd = andOr === "and";
+    let tag = isAnd ? allOf.value[tagIndex] : oneOf.value[tagIndex];
+    budget.value = {
+      ...budget.value,
+      allOf: allOf.value.filter((t) =>
+        isAnd ? primitiveValue(t) !== primitiveValue(tag) : true
+      ),
+      oneOf: oneOf.value.filter((t) =>
+        isAnd ? true : primitiveValue(t) !== primitiveValue(tag)
+      ),
+    };
+  }
 };
 
 const onTagAdd = (
@@ -69,21 +77,21 @@ const onTagAdd = (
   isSelected: boolean,
   andOr: "and" | "or"
 ) => {
-  const tagIndex = isSelected
-    ? unSelectedTags.value.findIndex((t) => primitiveValue(t) === tagName)
+  const tagsList = isSelected
+    ? unSelectedTags.value
     : andOr === "and"
-    ? andTags.value.findIndex((t) => primitiveValue(t) === tagName)
-    : orTags.value.findIndex((t) => primitiveValue(t) === tagName);
+    ? allOf.value
+    : oneOf.value;
+  const tagIndex = tagsList.findIndex((t) => primitiveValue(t) === tagName);
 
   if (tagIndex < 0) {
     const newTagName = getLowercaseTagName(tagName);
-    const newTagID = db.tags.push(newTagName);
-    const newTag = db.tags.get(newTagID);
-    if (!newTag) throw `Error fetching the new tag after adding it to the DB.`;
-    allTags.value = [
-      ...allTags.value,
-      { ...newTag, isSelected: true, andOr: andOr },
-    ];
+    try {
+      db.tags.push(newTagName);
+    } catch (error) {
+      return false;
+    }
+    allTags.value = db.tags.get();
     return true;
   }
   onTagSelect(tagIndex, isSelected, andOr);
@@ -94,7 +102,7 @@ const validateForm = () => {
   let err = "";
   if (!nameRegex.test(title.value)) err = "Invalid title for budget";
   if (amount.value < 1) err = "Budget amount should be greater than zero";
-  if (andTags.value.length === 0 && orTags.value.length === 0)
+  if (allOf.value.length === 0 && oneOf.value.length === 0)
     err = "Add at least one tag for this budget";
   const existing = db.budgets.find(
     (b) => deepTrimmedLowercase(b.title) === deepTrimmedLowercase(title.value)
@@ -166,7 +174,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(andTags).map((t) => primitiveValue(t)),
+                    subject: trap(allOf).map(primitiveValue),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -178,7 +186,7 @@ export default EditPage({
                             children: tag,
                           }),
                           m.If({
-                            subject: index !== andTags.value.length - 1,
+                            subject: index !== allOf.value.length - 1,
                             isTruthy: () => "&nbsp;&&nbsp;",
                           }),
                         ],
@@ -191,7 +199,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map((t) => primitiveValue(t)),
+                  tags: trap(unSelectedTags).map(primitiveValue),
                 }),
               ],
             }),
@@ -211,7 +219,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(orTags).map((t) => primitiveValue(t)),
+                    subject: trap(oneOf).map(primitiveValue),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -223,7 +231,7 @@ export default EditPage({
                             children: tag,
                           }),
                           m.If({
-                            subject: index !== orTags.value.length - 1,
+                            subject: index !== oneOf.value.length - 1,
                             isTruthy: () => "&nbsp;/&nbsp;",
                           }),
                         ],
@@ -236,7 +244,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map((t) => primitiveValue(t)),
+                  tags: trap(unSelectedTags).map(primitiveValue),
                 }),
               ],
             }),

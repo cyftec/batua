@@ -13,6 +13,7 @@ import {
   NET_BANKING_PAYMENT_METHOD,
   MARKET,
 } from "../../models/core";
+import { ID_KEY } from "../../_kvdb";
 
 /**
  *
@@ -68,12 +69,13 @@ export const isNewToApp = (): boolean => {
 export const populateInitialData = () => {
   INITIAL_TAGS.forEach((tag) => db.tags.push(tag));
   db.paymentMethods.push(NET_BANKING_PAYMENT_METHOD);
-  const cashPmID = db.paymentMethods.push(CASH_PAYMENT_METHOD);
-  const cashAccID = db.accounts.push(CASH_EXPENSE_ACCOUNT);
+  const cashPm = db.paymentMethods.push(CASH_PAYMENT_METHOD);
+  if (!cashPm) throw `Error getting CASH_PAYMENT_METHOD saving in DB`;
+  const cashAcc = db.accounts.push(CASH_EXPENSE_ACCOUNT);
   db.accounts.push(MARKET);
   // Add Notes & Coins payment method to Cash account
-  db.accounts.set(cashAccID, {
+  db.accounts.set(cashAcc[ID_KEY], {
     ...CASH_EXPENSE_ACCOUNT,
-    paymentMethods: [cashPmID],
+    paymentMethods: [cashPm],
   });
 };
