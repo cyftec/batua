@@ -1,16 +1,17 @@
 import { derive, effect, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
 import { phase } from "@mufw/maya/utils";
-import { db } from "../../../../state/localstorage/stores";
+import { DbRecordID, primitiveValue } from "../../../../_kvdb";
 import {
-  AccountRaw,
-  ACCOUNT_TYPES_LIST,
-  AccountType,
   Account,
+  ACCOUNT_TYPES_LIST,
+  AccountRaw,
+  AccountType,
   CURRENCY_TYPES,
   CurrencyType,
   PaymentMethod,
 } from "../../../../models/core";
+import { db } from "../../../../state/localstorage/stores";
 import {
   areNamesSimilar,
   capitalize,
@@ -25,7 +26,6 @@ import {
   Select,
   TextBox,
 } from "../../../elements";
-import { primitiveValue, ID_KEY, DbRecordID } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 
 const editableAccount = signal<Account | undefined>(undefined);

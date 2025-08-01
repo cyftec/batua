@@ -101,11 +101,11 @@ export const SHOP_ACCOUNT_TYPE: ShopAccountType = "shop";
 export const PEOPLE_ACCOUNT_TYPE: PeopleAccountType = "people";
 
 export const ACCOUNT_TYPES_LIST: AccountType[] = [
-  "expense",
-  "loan",
-  "deposit",
-  "shop",
-  "people",
+  EXPENSE_ACCOUNT_TYPE,
+  LOAN_ACCOUNT_TYPE,
+  DEPOSIT_ACCOUNT_TYPE,
+  SHOP_ACCOUNT_TYPE,
+  PEOPLE_ACCOUNT_TYPE,
 ];
 
 /**
