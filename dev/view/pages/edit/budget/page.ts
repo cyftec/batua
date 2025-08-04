@@ -1,14 +1,18 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import {
+  ID_KEY,
+  UNSTRUCTURED_RECORD_VALUE_KEY,
+  unstructuredValue,
+} from "../../../../_kvdb";
+import { Budget, BudgetRaw, Tag as TagModel } from "../../../../models/core";
 import { db } from "../../../../state/localstorage/stores";
-import { BudgetRaw, Budget, Tag as TagModel } from "../../../../models/core";
-import { TIME_PERIODS, TimePeriod } from "../../../../state/transforms";
+import { TIME_PERIODS } from "../../../../state/transforms";
 import {
   deepTrimmedLowercase,
   getLowercaseTagName,
   nameRegex,
 } from "../../../../state/utils";
-import { primitiveValue, ID_KEY } from "../../../../_kvdb";
 import { Tag, TagsList } from "../../../components";
 import { Label, NumberBox, Section, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
@@ -26,11 +30,11 @@ const editableBudget = signal<Budget | undefined>(undefined);
 const allTags = signal<TagModel[]>([]);
 const unSelectedTags = derive(() => {
   const selectedTagNames = [
-    ...allOf.value.map(primitiveValue),
-    ...oneOf.value.map(primitiveValue),
+    ...allOf.value.map(unstructuredValue),
+    ...oneOf.value.map(unstructuredValue),
   ];
   return allTags.value.filter(
-    (t) => !selectedTagNames.includes(primitiveValue(t))
+    (t) => !selectedTagNames.includes(unstructuredValue(t))
   );
 });
 
@@ -45,30 +49,44 @@ const onPageMount = (urlParams: URLSearchParams) => {
 
 const resetError = () => (error.value = "");
 
+const onPeriodSelect = (index: number) => {
+  resetError();
+  budget.set({ period: TIME_PERIODS[index] });
+};
+
+const onTitleChange = (title: string) => {
+  resetError();
+  budget.set({ title });
+};
+
+const onAmountChange = (amount: number) => {
+  resetError();
+  budget.set({ amount });
+};
+
 const onTagSelect = (
   tagIndex: number,
   isSelected: boolean,
   andOr: "and" | "or"
 ) => {
+  resetError();
   if (isSelected) {
     const tag = unSelectedTags.value[tagIndex];
-    budget.value = {
-      ...budget.value,
+    budget.set({
       allOf: andOr === "and" ? [...allOf.value, tag] : allOf.value,
       oneOf: andOr === "or" ? [...oneOf.value, tag] : oneOf.value,
-    };
+    });
   } else {
     const isAnd = andOr === "and";
     let tag = isAnd ? allOf.value[tagIndex] : oneOf.value[tagIndex];
-    budget.value = {
-      ...budget.value,
+    budget.set({
       allOf: allOf.value.filter((t) =>
-        isAnd ? primitiveValue(t) !== primitiveValue(tag) : true
+        isAnd ? unstructuredValue(t) !== unstructuredValue(tag) : true
       ),
       oneOf: oneOf.value.filter((t) =>
-        isAnd ? true : primitiveValue(t) !== primitiveValue(tag)
+        isAnd ? true : unstructuredValue(t) !== unstructuredValue(tag)
       ),
-    };
+    });
   }
 };
 
@@ -82,7 +100,7 @@ const onTagAdd = (
     : andOr === "and"
     ? allOf.value
     : oneOf.value;
-  const tagIndex = tagsList.findIndex((t) => primitiveValue(t) === tagName);
+  const tagIndex = tagsList.findIndex((t) => unstructuredValue(t) === tagName);
 
   if (tagIndex < 0) {
     const newTagName = getLowercaseTagName(tagName);
@@ -131,22 +149,21 @@ export default EditPage({
           anchor: "left",
           options: TIME_PERIODS,
           selectedOptionIndex: trap(TIME_PERIODS).indexOf(period),
-          onChange: (index) =>
-            (budget.value = { ...budget.value, period: TIME_PERIODS[index] }),
+          onChange: onPeriodSelect,
         }),
         Label({ text: "Budget title" }),
         TextBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
           text: title,
           placeholder: "title of the budget",
-          onchange: (text) => (budget.value = { ...budget.value, title: text }),
+          onchange: onTitleChange,
         }),
         Label({ text: "Budget limit" }),
         NumberBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
           num: amount,
           placeholder: "title of the budget",
-          onchange: (num) => (budget.value = { ...budget.value, amount: num }),
+          onchange: onAmountChange,
         }),
       ],
     }),
@@ -174,7 +191,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(allOf).map(primitiveValue),
+                    subject: trap(allOf).map(unstructuredValue),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -199,7 +216,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map(primitiveValue),
+                  tags: trap(unSelectedTags).map(unstructuredValue),
                 }),
               ],
             }),
@@ -219,7 +236,7 @@ export default EditPage({
                 m.Div({
                   class: "flex flex-wrap",
                   children: m.For({
-                    subject: trap(oneOf).map(primitiveValue),
+                    subject: trap(oneOf).map(unstructuredValue),
                     map: (tag, index) =>
                       m.Span({
                         class: "f8 fw5 flex items-center mb2 silver",
@@ -244,7 +261,7 @@ export default EditPage({
                   onlyShowFiltered: true,
                   placeholder: "search and select, or create new",
                   tagClasses: "mb2 mr2",
-                  tags: trap(unSelectedTags).map(primitiveValue),
+                  tags: trap(unSelectedTags).map(unstructuredValue),
                 }),
               ],
             }),

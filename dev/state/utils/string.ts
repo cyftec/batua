@@ -20,4 +20,4 @@ export const getLowercaseTagName = (input: string): string => {
 };
 
 export const areNamesSimilar = (str1: string, str2: string) =>
-  getLowercaseTagName(str1) === getLowercaseTagName(str2);
+  deepTrimmedLowercase(str1) === deepTrimmedLowercase(str2);

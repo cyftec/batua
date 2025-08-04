@@ -10,7 +10,7 @@ import {
 import { getLowercaseTagName } from "../../../../state/utils";
 import { Section, TagsList } from "../../../components";
 import { Icon } from "../../../elements";
-import { primitiveValue } from "../../../../_kvdb";
+import { unstructuredValue } from "../../../../_kvdb";
 import { TagCategory } from "./TagsCategory";
 
 type TagsPageProps = {};
@@ -23,7 +23,7 @@ export const TagsPage = component<TagsPageProps>(({}) => {
   const onTagAdd = (newTag: string): boolean => {
     const newTagName = getLowercaseTagName(newTag);
     const existingTag = db.tags.find(
-      (tag) => primitiveValue(tag) === newTagName
+      (tag) => unstructuredValue(tag) === newTagName
     );
     if (existingTag) return false;
     db.tags.push(newTagName);
@@ -36,7 +36,7 @@ export const TagsPage = component<TagsPageProps>(({}) => {
     allPaymentMethods.value = db.paymentMethods.get();
     allTags.value = db.tags
       .get()
-      .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
+      .sort((a, b) => unstructuredValue(a).localeCompare(unstructuredValue(b)));
   };
 
   return m.Div({
@@ -57,7 +57,7 @@ export const TagsPage = component<TagsPageProps>(({}) => {
             tagsState: "idle",
             hideSuggestion: true,
             tagClasses: "mt2 mr2",
-            tags: trap(allTags).map(primitiveValue),
+            tags: trap(allTags).map(unstructuredValue),
           }),
         ],
       }),

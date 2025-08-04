@@ -5,7 +5,7 @@ import { Txn } from "../../models/core";
 import { URL, goToPage, handleTap } from "../../state/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";
 import { Button, Icon } from "../elements";
-import { primitiveValue } from "../../_kvdb";
+import { unstructuredValue } from "../../_kvdb";
 
 const allTxns = signal<Txn[]>([]);
 
@@ -43,7 +43,7 @@ export default HTMLPage({
                     children: [
                       m.Div({
                         class: "f6 mb1",
-                        children: primitiveValue(txn.title),
+                        children: unstructuredValue(txn.title),
                       }),
                       m.Div({
                         class: "flex flex-wrap",
@@ -53,7 +53,7 @@ export default HTMLPage({
                             Tag({
                               size: "xsmall",
                               state: "selected",
-                              children: primitiveValue(tag),
+                              children: unstructuredValue(tag),
                             }),
                         }),
                       }),

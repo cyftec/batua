@@ -1,8 +1,8 @@
 import {
-  PLAIN_EXTENDED_RECORD_VALUE_KEY,
-  PrimitiveExtendedRecord,
+  UNSTRUCTURED_RECORD_VALUE_KEY,
+  UnstructuredExtendedRecord,
 } from "./models";
 
-export const primitiveValue = <T>(
-  record: PrimitiveExtendedRecord<T extends object ? never : T>
-) => record[PLAIN_EXTENDED_RECORD_VALUE_KEY];
+export const unstructuredValue = <T>(
+  record: UnstructuredExtendedRecord<T extends object ? never : T>
+) => record[UNSTRUCTURED_RECORD_VALUE_KEY];

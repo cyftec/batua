@@ -16,17 +16,26 @@ import { isFutureDate } from "../../../../state/transforms";
 import { getLowercaseTagName, nameRegex } from "../../../../state/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../../elements";
 import {
-  primitiveValue,
+  unstructuredValue,
   ID_KEY,
-  PLAIN_EXTENDED_RECORD_VALUE_KEY,
+  UNSTRUCTURED_RECORD_VALUE_KEY,
   DbRecordID,
 } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components";
 import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";
 
-const now = new Date();
 const error = signal("");
+const now = new Date();
+const txn = signal<TxnRaw>({
+  date: now,
+  created: now,
+  modified: now,
+  type: "expense",
+  payments: [],
+  tags: [],
+  title: { id: 0, value: "" },
+});
 const txnType = signal<TxnType>("expense");
 const txnSubType = signal<TxnSubType>("purchase");
 const txnDate = signal<Date>(now);
@@ -43,14 +52,14 @@ const [selectedTags, nonSelectedTags] = trap(allTags).partition(
 
 const editableTxn = signal<Txn | undefined>(undefined);
 const editableTxnName = derive(
-  () => editableTxn.value?.title?.[PLAIN_EXTENDED_RECORD_VALUE_KEY] || ""
+  () => editableTxn.value?.title?.[UNSTRUCTURED_RECORD_VALUE_KEY] || ""
 );
 
 const onPageMount = (urlParams: URLSearchParams) => {
   allTags.value = db.tags
     .get()
     .map((t) => ({ ...t, isSelected: false }))
-    .sort((a, b) => primitiveValue(a).localeCompare(primitiveValue(b)));
+    .sort((a, b) => unstructuredValue(a).localeCompare(unstructuredValue(b)));
   allAccounts.value = db.accounts
     .get()
     .sort((a, b) => a.type.localeCompare(b.type));
@@ -78,11 +87,11 @@ const onPageMount = (urlParams: URLSearchParams) => {
   txnCreated.value = editableTxn.value.created;
   txnModified.value = editableTxn.value.modified;
   txnPayments.value = editableTxn.value.payments;
-  title.value = primitiveValue(editableTxn.value.title);
-  const editableTxnTagNames = editableTxn.value.tags.map(primitiveValue);
+  title.value = unstructuredValue(editableTxn.value.title);
+  const editableTxnTagNames = editableTxn.value.tags.map(unstructuredValue);
   allTags.value = allTags.value.map((t) => ({
     ...t,
-    isSelected: editableTxnTagNames.includes(primitiveValue(t)),
+    isSelected: editableTxnTagNames.includes(unstructuredValue(t)),
   }));
 };
 
@@ -176,7 +185,7 @@ const onTagAdd = (text: string) => {
   let existing = false;
   let unselected = false;
   const updatedAllTags = allTags.value.map((t) => {
-    const tagFound = primitiveValue(t) === tagName;
+    const tagFound = unstructuredValue(t) === tagName;
     if (tagFound) {
       existing = true;
       unselected = !t.isSelected;
@@ -219,7 +228,7 @@ const onTxnSave = () => {
     // TODO: implement txn update
   } else {
     let existingTitle = db.titles.find(
-      (tt) => primitiveValue(tt) === title.value
+      (tt) => unstructuredValue(tt) === title.value
     );
     if (!existingTitle) existingTitle = db.titles.push(title.value);
     const pmts: Payment[] = [];
@@ -301,8 +310,8 @@ export default EditPage({
         onTagTap: onTagTap,
         onAdd: onTagAdd,
         textboxPlaceholder: "search or create new tag",
-        selectedTags: trap(selectedTags).map(primitiveValue),
-        unSelectedTags: trap(nonSelectedTags).map(primitiveValue),
+        selectedTags: trap(selectedTags).map(unstructuredValue),
+        unSelectedTags: trap(nonSelectedTags).map(unstructuredValue),
       }),
     }),
   ]),

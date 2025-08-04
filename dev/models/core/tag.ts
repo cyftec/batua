@@ -1,4 +1,4 @@
-import { PrimitiveExtendedRecord } from "../../_kvdb";
+import { UnstructuredExtendedRecord } from "../../_kvdb";
 
 export type TagRaw = string;
 
@@ -7,7 +7,7 @@ export type TagRaw = string;
  *
  * UI Models
  */
-export type Tag = PrimitiveExtendedRecord<TagRaw>;
+export type Tag = UnstructuredExtendedRecord<TagRaw>;
 
 /**
  *

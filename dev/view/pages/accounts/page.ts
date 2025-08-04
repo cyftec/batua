@@ -57,8 +57,6 @@ effect(() => {
     if (acc.type === SHOP_ACCOUNT_TYPE) shopAccs.push(acc);
     if (acc.type === PEOPLE_ACCOUNT_TYPE) peopAccs.push(acc);
   });
-  console.log(allAccounts.value);
-
   allExpenseAccounts.value = expAccs;
   allLoanAccounts.value = laonAccs;
   allDepositAccounts.value = depAccs;

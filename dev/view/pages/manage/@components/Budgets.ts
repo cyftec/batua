@@ -4,7 +4,7 @@ import { db } from "../../../../state/localstorage/stores";
 import { Budget } from "../../../../models/core";
 import { goToPage, handleTap, URL } from "../../../../state/utils";
 import { CardButton } from "../../../elements";
-import { primitiveValue } from "../../../../_kvdb";
+import { unstructuredValue } from "../../../../_kvdb";
 
 type BudgetProps = {};
 
@@ -56,7 +56,7 @@ export const Budgets = component<BudgetProps>(({}) => {
                                   }),
                                   m.B({
                                     class: "black",
-                                    children: primitiveValue(tag),
+                                    children: unstructuredValue(tag),
                                   }),
                                 ],
                               }),
@@ -77,7 +77,7 @@ export const Budgets = component<BudgetProps>(({}) => {
                                   }),
                                   m.B({
                                     class: "black",
-                                    children: primitiveValue(tag),
+                                    children: unstructuredValue(tag),
                                   }),
                                 ],
                               }),

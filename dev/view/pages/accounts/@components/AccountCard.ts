@@ -31,14 +31,11 @@ export const AccountCard = component<AccountCardProps>(
     );
 
     const onCardMount = () => {
-      console.log(account.value);
-      console.log(db.payments.get());
       const allPayments = db.payments.filter(
         (p) => p.account.id === account.value.id
       );
       const balance = allPayments.reduce((s, p) => s + p.amount, 0);
       accBalance.value = balance;
-      // console.log(account.value, allPayments, balance, accBalance.value);
     };
 
     return m.Div({

@@ -1,7 +1,6 @@
-import { derive, effect, op, signal, trap } from "@cyftech/signal";
+import { derive, DerivedSignal, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { phase } from "@mufw/maya/utils";
-import { DbRecordID, primitiveValue } from "../../../../_kvdb";
+import { DbRecordID, ID_KEY, unstructuredValue } from "../../../../_kvdb";
 import {
   Account,
   ACCOUNT_TYPES_LIST,
@@ -32,22 +31,34 @@ const editableAccount = signal<Account | undefined>(undefined);
 const editableAccountName = derive(() => editableAccount.value?.name || "");
 
 const error = signal("");
-const accountType = signal<AccountType>("expense");
-const accountName = signal("");
-const accountUniqueId = signal("");
-const accountBalance = signal(0);
-const accountTypeLabel = trap(accountType).concat(" account");
-const vaultType = signal<CurrencyType>("physical");
-const allPMs = signal<(PaymentMethod & { isSelected: boolean })[]>([]);
-const [selectedPaymentMethods, unSelectedPaymentMethods] = trap(
-  allPMs
-).partition((pm) => pm.isSelected);
+const account = signal<AccountRaw>({
+  isPermanent: 0,
+  name: "",
+  type: "expense",
+  uniqueId: undefined,
+  vault: undefined,
+  paymentMethods: undefined,
+});
+const {
+  name: accName,
+  type,
+  uniqueId,
+  vault,
+  paymentMethods,
+} = trap(account).props;
+const accountTypeLabel = trap(type).concat(" account");
+const initialAccBalance = signal(0);
+const allPMs = signal<PaymentMethod[]>([]);
+const unSelectedPaymentMethods = derive(() => {
+  const selectedPmIDs = paymentMethods?.value?.map((pm) => pm[ID_KEY]);
+  return allPMs.value.filter((pm) => !selectedPmIDs?.includes(pm[ID_KEY]));
+});
 
 const onPageMount = (urlParams: URLSearchParams) => {
-  vaultType.value = "digital";
+  allPMs.value = db.paymentMethods.get();
   const typeStr = urlParams.get("type");
   if (typeStr && ACCOUNT_TYPES_LIST.includes(typeStr as AccountType)) {
-    accountType.value = typeStr as AccountType;
+    account.set({ type: typeStr as AccountType });
   }
   const idStr = urlParams.get("id");
   if (!idStr) return;
@@ -55,29 +66,9 @@ const onPageMount = (urlParams: URLSearchParams) => {
   const editableAcc = db.accounts.get(accID);
   if (!editableAcc) return;
   editableAccount.value = db.accounts.get(accID);
-  accountType.value = editableAcc.type;
-  accountName.value = editableAcc.name;
-  accountUniqueId.value = editableAcc.uniqueId || "";
-  if (editableAcc.type === "expense") {
-    vaultType.value = editableAcc.vault;
-  }
+  delete (editableAcc as AccountRaw)[ID_KEY];
+  account.set({ ...editableAcc });
 };
-
-effect(() => {
-  const vType = vaultType.value;
-  const editableAcc = editableAccount.value;
-  if (!phase.currentIs("run")) return;
-  const initialSelectendPmIDs = editableAcc
-    ? (editableAcc.paymentMethods || []).map((pm) => pm.id)
-    : [];
-  allPMs.value = db.paymentMethods
-    .filter((pm) => pm.type === vType)
-    .map((pm) => ({
-      ...pm,
-      isSelected: initialSelectendPmIDs.includes(pm.id),
-    }));
-  // TODO: Filter out slave payment methods as well
-});
 
 const resetError = () => (error.value = "");
 
@@ -85,39 +76,39 @@ const onPaymentMethodTagTap = (tagIndex: number, isSelected: boolean) => {
   resetError();
   const pm = isSelected
     ? unSelectedPaymentMethods.value[tagIndex]
-    : selectedPaymentMethods.value[tagIndex];
-  allPMs.value = allPMs.value.map((p) => {
-    if (p.id === pm.id) p.isSelected = isSelected;
-    return p;
+    : (paymentMethods?.value as PaymentMethod[])[tagIndex];
+
+  account.set({
+    paymentMethods: isSelected
+      ? [...(paymentMethods?.value || []), pm]
+      : (paymentMethods?.value as PaymentMethod[]).filter(
+          (pmt) => pmt[ID_KEY] !== pm[ID_KEY]
+        ),
   });
 };
 
 const onPaymentMethodAdd = (name: string) => {
   resetError();
   const newPmName = deepTrim(name);
-  let existing = false;
-  let unselected = false;
-  const updatedAllPMs = allPMs.value.map((pm) => {
-    const pmFound = areNamesSimilar(pm.name, newPmName);
-    if (pmFound) {
-      existing = true;
-      unselected = !pm.isSelected;
-      pm.isSelected = unselected ? true : pm.isSelected;
-    }
-    return pm;
-  });
+  let existing = allPMs.value.find((pm) => areNamesSimilar(pm.name, newPmName));
+  let selected =
+    paymentMethods?.value &&
+    paymentMethods.value.findIndex((pm) => pm.name === newPmName) > -1;
 
   if (existing) {
-    if (unselected) allPMs.value = updatedAllPMs;
-    else return false;
+    if (selected) return false;
+    account.set({
+      paymentMethods: [...(paymentMethods?.value || []), existing],
+    });
   } else {
     const newPM = db.paymentMethods.push({
       isPermanent: 0,
       name: newPmName,
-      type: vaultType.value,
-      slave: false,
+      type: vault?.value as CurrencyType,
     });
-    allPMs.value = [...allPMs.value, { ...newPM, isSelected: true }];
+    account.set({
+      paymentMethods: [...(paymentMethods?.value || []), newPM],
+    });
   }
 
   return true;
@@ -125,25 +116,21 @@ const onPaymentMethodAdd = (name: string) => {
 
 const validateForm = () => {
   let err = "";
-  if (!accountName.value) err = "Name is empty.";
-  if (!nameRegex.test(accountName.value)) err = "Invalid name for account.";
+  if (!accName.value) err = "Name is empty.";
+  if (!nameRegex.test(accName.value)) err = "Invalid name for account.";
   error.value = err;
 };
 
 const onAccountSave = () => {
-  const uniqueIdObj = accountUniqueId.value
-    ? { uniqueId: accountUniqueId.value }
-    : {};
+  const uniqueIdObj = uniqueId?.value ? { uniqueId: uniqueId.value } : {};
   const vaultObj =
-    vaultType.value && accountType.value === "expense"
-      ? { vault: vaultType.value }
-      : {};
+    vault?.value && type.value === "expense" ? { vault: vault.value } : {};
   const updates: Pick<
     AccountRaw,
     "name" | "paymentMethods" | "vault" | "uniqueId"
   > = {
-    name: accountName.value,
-    paymentMethods: selectedPaymentMethods.value,
+    name: accName.value,
+    paymentMethods: paymentMethods?.value,
     ...vaultObj,
     ...uniqueIdObj,
   };
@@ -154,21 +141,21 @@ const onAccountSave = () => {
     // TODO: Check existing account before adding new
     const newAccount: AccountRaw = {
       isPermanent: 0,
-      type: accountType.value,
+      type: type.value,
       ...updates,
     };
     const newAcc = db.accounts.push(newAccount);
-    if (!accountBalance.value) return;
+    if (!initialAccBalance.value) return;
     const pmtID = db.payments.push({
-      amount: accountBalance.value,
+      amount: initialAccBalance.value,
       account: newAcc,
     });
     const firstBalanceUpdateTags = db.tags.filter((tag) =>
-      ["balanceupdate", "initialbalance"].includes(primitiveValue(tag))
+      ["balanceupdate", "initialbalance"].includes(unstructuredValue(tag))
     );
     const now = new Date();
     const title = "Set initial balance";
-    let existingTitle = db.titles.find((tt) => primitiveValue(tt) === title);
+    let existingTitle = db.titles.find((tt) => unstructuredValue(tt) === title);
     if (!existingTitle) existingTitle = db.titles.push(title);
     db.txns.push({
       date: now,
@@ -209,16 +196,16 @@ export default EditPage({
         Label({ text: "Name of account" }),
         TextBox({
           cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-          text: accountName,
+          text: accName,
           placeholder: "Account name",
-          onchange: (text) => (accountName.value = text),
+          onchange: (text) => account.set({ name: text }),
         }),
         Label({ text: "Unique id" }),
         TextBox({
           cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-          text: accountUniqueId,
+          text: uniqueId,
           placeholder: "Unique id (optional)",
-          onchange: (text) => (accountUniqueId.value = text),
+          onchange: (text) => account.set({ uniqueId: text }),
         }),
         m.If({
           subject: editableAccount,
@@ -227,16 +214,16 @@ export default EditPage({
               Label({ text: "Initial balance" }),
               NumberBox({
                 cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-                num: accountBalance,
+                num: initialAccBalance,
                 placeholder: "Unique id (optional)",
-                onchange: (val) => (accountBalance.value = val),
+                onchange: (val) => (initialAccBalance.value = val),
               }),
             ]),
         }),
       ],
     }),
     m.If({
-      subject: op(accountType).equals("expense").truthy,
+      subject: op(type).equals("expense").truthy,
       isTruthy: () =>
         Section({
           title: "Vault and payment methods",
@@ -246,16 +233,20 @@ export default EditPage({
               cssClasses: "mb2 f6 br3",
               anchor: "left",
               options: CURRENCY_TYPES,
-              selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(vaultType),
+              selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(
+                vault as DerivedSignal<CurrencyType>
+              ),
               targetFormattor: (option) => capitalize(option),
               optionFormattor: (option) => capitalize(option),
-              onChange: (o) => (vaultType.value = CURRENCY_TYPES[o]),
+              onChange: (o) => account.set({ vault: CURRENCY_TYPES[o] }),
             }),
             Label({ text: "Payment Methods" }),
             TagsSelector({
               onAdd: onPaymentMethodAdd,
               onTagTap: onPaymentMethodTagTap,
-              selectedTags: trap(selectedPaymentMethods).map((p) => p.name),
+              selectedTags: derive(() =>
+                (paymentMethods?.value || []).map((pm) => pm.name)
+              ),
               unSelectedTags: trap(unSelectedPaymentMethods).map((a) => a.name),
               textboxPlaceholder: "search and select, or create new",
             }),

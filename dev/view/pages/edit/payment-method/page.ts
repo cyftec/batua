@@ -1,103 +1,93 @@
-import { derive, effect, signal, trap } from "@cyftech/signal";
+import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { phase } from "@mufw/maya/utils";
+import { DbRecordID, ID_KEY } from "../../../../_kvdb";
+import {
+  CURRENCY_TYPES,
+  PaymentMethod,
+  PaymentMethodRaw,
+} from "../../../../models/core";
 import { db } from "../../../../state/localstorage/stores";
 import {
-  Account,
-  CURRENCY_TYPES,
-  CurrencyType,
-  PaymentMethodRaw,
-  PaymentMethod,
-} from "../../../../models/core";
-import { capitalize, nameRegex, uniqueIdRegex } from "../../../../state/utils";
+  areNamesSimilar,
+  capitalize,
+  deepTrim,
+  nameRegex,
+  uniqueIdRegex,
+} from "../../../../state/utils";
 import { Label, Link, Select, TextBox } from "../../../elements";
-import { DbRecordID } from "../../../../_kvdb";
 import { EditPage } from "../@components";
 
 const error = signal("");
-const paymentMethodType = signal<CurrencyType>("physical");
-const paymentMethodName = signal("");
-const paymentMethodUniqueID = signal("");
-const paymentMethodSlaveOf = signal<Account | undefined>(undefined);
-const allAccounts = signal<(Account & { isSelected: boolean })[]>([]);
+const paymentMethod = signal<PaymentMethodRaw>({
+  isPermanent: 0,
+  name: "",
+  uniqueId: "",
+  type: "physical",
+});
+const { type, name: pmName, uniqueId } = trap(paymentMethod).props;
 const editablePaymentMethod = signal<PaymentMethod | undefined>(undefined);
-const editablePaymentMethodName = derive(
-  () => editablePaymentMethod.value?.name || ""
-);
+const editablePaymentMethodName = signal("");
 
-effect(() => {
-  const pmType = paymentMethodType.value;
-  const editablePm = editablePaymentMethod.value;
-  if (!phase.currentIs("run")) return;
-  allAccounts.value = db.accounts
-    .get()
-    .map((acc) => ({
-      ...acc,
-      isSelected: !!acc.paymentMethods
-        ?.map((p) => p.id)
-        .includes(editablePm?.id || -1),
-    }))
-    .filter((acc) => acc.vault === pmType);
-});
+const onPageMount = (urlParams: URLSearchParams) => {
+  const idStr = urlParams.get("id");
+  if (!idStr) return;
+  const pmID: DbRecordID = +idStr;
+  const editablePM = db.paymentMethods.get(pmID);
+  if (!editablePM) throw `Error fetching payment method with id - ${pmID}`;
+  editablePaymentMethod.value = editablePM;
+  delete (editablePM as PaymentMethodRaw)[ID_KEY];
+  paymentMethod.set({ ...editablePM });
+};
 
-effect(() => {
-  const editablePm = editablePaymentMethod.value;
-  if (!editablePm) return;
-  paymentMethodType.value = editablePm.type;
-  paymentMethodName.value = editablePm.name;
-  paymentMethodUniqueID.value = editablePm.uniqueId || "";
-  paymentMethodSlaveOf.value = editablePm.slave
-    ? allAccounts.value.at(0)
-    : undefined;
-});
+const resetError = () => (error.value = "");
+
+const onTypeChange = (optionIndex: number) => {
+  resetError();
+  paymentMethod.set({ type: CURRENCY_TYPES[optionIndex] });
+};
+
+const onNameChange = (name: string) => {
+  resetError();
+  paymentMethod.set({ name });
+};
 
 const validateForm = () => {
   let err = "";
-  if (!paymentMethodName.value) err = "Name is empty.";
-  if (!nameRegex.test(paymentMethodName.value)) err = "Invalid method name.";
-  if (
-    paymentMethodUniqueID.value &&
-    !uniqueIdRegex.test(paymentMethodUniqueID.value)
-  )
+  const existing = db.paymentMethods.find((pm) =>
+    areNamesSimilar(pm.name, pmName.value)
+  );
+  if (!pmName.value) err = "Name is empty.";
+  else if (!nameRegex.test(pmName.value)) err = "Invalid method name.";
+  else if (deepTrim(pmName.value) !== pmName.value) {
+    console.log(pmName.value);
+    err = "Invalid spaces in the name.";
+  } else if (uniqueId?.value && !uniqueIdRegex.test(uniqueId.value))
     err = "Invalid method id.";
+  else if (existing)
+    err = `A method with similar name '${existing.name}' exists already.`;
+  else err = "";
+
   error.value = err;
 };
 
 const onPaymentMethodSave = () => {
-  const uniqueIdObj = paymentMethodUniqueID.value
-    ? { uniqueId: paymentMethodUniqueID.value }
-    : {};
+  const uniqueIdObj = uniqueId?.value ? { uniqueId: uniqueId.value } : {};
 
   if (editablePaymentMethod.value) {
     const updates: Partial<PaymentMethodRaw> = {
-      name: paymentMethodName.value,
-      type: paymentMethodType.value,
+      name: pmName.value,
+      type: type.value,
       ...uniqueIdObj,
     };
     db.paymentMethods.set(editablePaymentMethod.value.id, updates);
   } else {
-    // TODO: Check existing method before adding
     db.paymentMethods.push({
       isPermanent: 0,
-      name: paymentMethodName.value,
-      type: paymentMethodType.value,
-      slave: false,
+      name: pmName.value,
+      type: type.value,
       ...uniqueIdObj,
     });
   }
-  history.back();
-};
-
-const onPageMount = (urlParams: URLSearchParams) => {
-  // The value of paymentMethodType should be "digitial" initially.
-  // But just to trigger other signals derived from paymentMethodType
-  // its value is initially set to "physical" and here it is set to
-  // "digital" to trigger its derivatives
-  paymentMethodType.value = "digital";
-  const idStr = urlParams.get("id");
-  if (!idStr) return;
-  const pmID: DbRecordID = +idStr;
-  editablePaymentMethod.value = db.paymentMethods.get(pmID);
 };
 
 export default EditPage({
@@ -126,7 +116,7 @@ export default EditPage({
       cssClasses: "mb2",
       anchor: "left",
       options: CURRENCY_TYPES,
-      selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(paymentMethodType),
+      selectedOptionIndex: trap(CURRENCY_TYPES).indexOf(type),
       targetFormattor: (opt) => `${capitalize(opt)} Payments`,
       optionFormattor: (opt) =>
         m.Div({
@@ -138,22 +128,21 @@ export default EditPage({
             }),
           ],
         }),
-      onChange: (o) => (paymentMethodType.value = CURRENCY_TYPES[o]),
+      onChange: onTypeChange,
     }),
     Label({ text: "Name of the method" }),
     TextBox({
       cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-      text: paymentMethodName,
+      text: pmName,
       placeholder: "like GPay, PayPal, etc.",
-      onchange: (text) => (paymentMethodName.value = text.trim()),
+      onchange: onNameChange,
     }),
     Label({ text: "Unique id" }),
     TextBox({
       cssClasses: `mb2 fw5 ba b--light-silver bw1 br3 pa2 outline-0 w-100`,
-      text: paymentMethodUniqueID,
+      text: uniqueId,
       placeholder: "Unique id of the method",
-      onchange: (text) => (paymentMethodUniqueID.value = text.trim()),
+      onchange: (text) => paymentMethod.set({ uniqueId: text.trim() }),
     }),
-    // TODO: Implement a lock for slave payment method
   ]),
 });

@@ -4,10 +4,10 @@ import {
   DbUnsupportedType,
   Extend,
   ID_KEY,
-  PLAIN_EXTENDED_RECORD_VALUE_KEY,
+  UNSTRUCTURED_RECORD_VALUE_KEY,
   TableKey,
   DbRecordID,
-  PrimitiveExtendedRecord,
+  UnstructuredExtendedRecord,
 } from "./models";
 import {
   getMappedObject,
@@ -18,7 +18,7 @@ import {
   getDbForeignIdValue,
   getDbValue,
 } from "./transforms";
-import { primitiveValue } from "./utils";
+import { unstructuredValue } from "./utils";
 
 type RecordMatcher<ExtendedRecord> = (record: ExtendedRecord) => boolean;
 
@@ -135,7 +135,7 @@ export const createTable = <
     if (typeof rawRecord !== "object") {
       return {
         [ID_KEY]: id,
-        [PLAIN_EXTENDED_RECORD_VALUE_KEY]: rawRecord as RawRecord,
+        [UNSTRUCTURED_RECORD_VALUE_KEY]: rawRecord as RawRecord,
       } as unknown as ExtendedRecord;
     }
 
@@ -188,10 +188,11 @@ export const createTable = <
     if (typeof rawRecord !== "object") {
       const existingRawRecord = findRecord(
         (rec) =>
-          primitiveValue(rec as PrimitiveExtendedRecord<any>) === rawRecord
+          unstructuredValue(rec as UnstructuredExtendedRecord<any>) ===
+          rawRecord
       );
       if (existingRawRecord)
-        throw `A primitive record with same value - '${rawRecord}' already exists.`;
+        throw `A unstructured record with same value - '${rawRecord}' already exists.`;
     }
     const dbRecordID = kvsIdManager.useNewID((newDbRecordID) => {
       const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, newDbRecordID);

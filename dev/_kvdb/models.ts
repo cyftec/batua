@@ -6,21 +6,24 @@ export type TableKey = string;
 export type KvsRecordIDPrefix = `${TableKey}_`;
 export type KvsRecordID = `${KvsRecordIDPrefix}${DbRecordID}`;
 
-export type PrimitiveExtendedRecordValueKey = "value";
-export const PLAIN_EXTENDED_RECORD_VALUE_KEY: PrimitiveExtendedRecordValueKey =
+export type UnstructuredExtendedRecordValueKey = "value";
+export const UNSTRUCTURED_RECORD_VALUE_KEY: UnstructuredExtendedRecordValueKey =
   "value";
-// FIXME: The classification should be NonStructuredExtendedRecord and StructuredExtendedRecord
-// instead of PrimitiveExtendedRecord and ObjectExtendedRecord
-// Currently PrimitiveExtendedRecord only supports primitives and not array or objects
-// but there's a valid case like in analytics or settings where even multiple unstructured
-// objects are required to be stored in the db. Hence the suggestion.
-export type PrimitiveExtendedRecord<Record> = Record extends object
+export type UnstructuredExtendedRecord<Record> = Record extends object
   ? never
-  : WithID<{ [PLAIN_EXTENDED_RECORD_VALUE_KEY]: Record }>;
+  : WithID<{ [UNSTRUCTURED_RECORD_VALUE_KEY]: Record }>;
 export type WithID<Record extends object> = { [ID_KEY]: DbRecordID } & Record;
-export type ObjectExtendedRecord<Record> = Record extends object
+export type StructuredExtendedRecord<Record> = Record extends object
   ? WithID<Record>
   : never;
 export type Extend<RawRecord> = RawRecord extends object
-  ? ObjectExtendedRecord<RawRecord>
-  : PrimitiveExtendedRecord<RawRecord>;
+  ? StructuredExtendedRecord<RawRecord>
+  : UnstructuredExtendedRecord<RawRecord>;
+
+// export type UnstructuredRecord<Record> = WithID<{
+//   [UNSTRUCTURED_RECORD_VALUE_KEY]: Record;
+// }>;
+// export type StructuredRecord<Record extends object> = WithID<Record>;
+// export type DbRecord<Raw> = Raw extends object
+//   ? StructuredRecord<Raw> | UnstructuredRecord<Raw>
+//   : UnstructuredRecord<Raw>;

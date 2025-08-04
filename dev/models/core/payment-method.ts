@@ -7,7 +7,6 @@ export type PaymentMethodRaw = {
   uniqueId?: string;
   name: string;
   type: CurrencyType;
-  slave: boolean;
 };
 
 /**
@@ -28,12 +27,10 @@ export const NET_BANKING_PAYMENT_METHOD: PaymentMethodRaw = {
   isPermanent: 1,
   name: "Net Banking",
   type: "digital",
-  slave: false,
 };
 
 export const CASH_PAYMENT_METHOD: PaymentMethodRaw = {
   isPermanent: 1,
   name: "Notes & Coins",
   type: "physical",
-  slave: false,
 };
