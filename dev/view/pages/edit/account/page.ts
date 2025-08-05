@@ -1,10 +1,14 @@
 import { derive, DerivedSignal, op, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { DbRecordID, ID_KEY, unstructuredValue } from "../../../../_kvdb";
+import {
+  DbRecordID,
+  ID_KEY,
+  newUnstructuredRecord,
+  unstructuredValue,
+} from "../../../../_kvdb";
 import {
   Account,
   ACCOUNT_TYPES_LIST,
-  AccountRaw,
   AccountType,
   CURRENCY_TYPES,
   CurrencyType,
@@ -27,12 +31,12 @@ import {
 } from "../../../elements";
 import { EditPage, TagsSelector } from "../@components";
 
+const error = signal("");
 const editableAccount = signal<Account | undefined>(undefined);
 const editableAccountName = derive(() => editableAccount.value?.name || "");
-
-const error = signal("");
-const account = signal<AccountRaw>({
-  isPermanent: 0,
+const account = signal<Account>({
+  id: 0,
+  isPermanent: false,
   name: "",
   type: "expense",
   uniqueId: undefined,
@@ -66,7 +70,6 @@ const onPageMount = (urlParams: URLSearchParams) => {
   const editableAcc = db.accounts.get(accID);
   if (!editableAcc) return;
   editableAccount.value = db.accounts.get(accID);
-  delete (editableAcc as AccountRaw)[ID_KEY];
   account.set({ ...editableAcc });
 };
 
@@ -102,7 +105,8 @@ const onPaymentMethodAdd = (name: string) => {
     });
   } else {
     const newPM = db.paymentMethods.push({
-      isPermanent: 0,
+      id: 0,
+      isPermanent: false,
       name: newPmName,
       type: vault?.value as CurrencyType,
     });
@@ -126,7 +130,7 @@ const onAccountSave = () => {
   const vaultObj =
     vault?.value && type.value === "expense" ? { vault: vault.value } : {};
   const updates: Pick<
-    AccountRaw,
+    Account,
     "name" | "paymentMethods" | "vault" | "uniqueId"
   > = {
     name: accName.value,
@@ -139,14 +143,16 @@ const onAccountSave = () => {
     db.accounts.set(editableAccount.value.id, updates);
   } else {
     // TODO: Check existing account before adding new
-    const newAccount: AccountRaw = {
-      isPermanent: 0,
+    const newAccount: Account = {
+      id: 0,
+      isPermanent: false,
       type: type.value,
       ...updates,
     };
     const newAcc = db.accounts.push(newAccount);
     if (!initialAccBalance.value) return;
     const pmtID = db.payments.push({
+      id: 0,
       amount: initialAccBalance.value,
       account: newAcc,
     });
@@ -156,8 +162,10 @@ const onAccountSave = () => {
     const now = new Date();
     const title = "Set initial balance";
     let existingTitle = db.titles.find((tt) => unstructuredValue(tt) === title);
-    if (!existingTitle) existingTitle = db.titles.push(title);
+    if (!existingTitle)
+      existingTitle = db.titles.push(newUnstructuredRecord(title));
     db.txns.push({
+      id: 0,
       date: now,
       created: now,
       modified: now,

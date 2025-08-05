@@ -1,11 +1,12 @@
-import { NumBoolean } from "../models/core";
 import {
+  DbRecord,
+  DbRecordID,
   DbUnsupportedType,
   KvsRecordID,
   KvsRecordIDPrefix,
+  NumBoolean,
   TableKey,
-  DbRecordID,
-  Extend,
+  WithID,
 } from "./models";
 import { Table } from "./table";
 
@@ -52,9 +53,9 @@ type ReturnType<In> = In extends Date
   : In extends boolean
   ? NumBoolean
   : In;
-export const getDbValue = <Val extends Date | boolean | undefined>(
-  jsValue: Val
-): ReturnType<Val> => {
+export const getDbValue = <ForeignDbRecord extends Date | boolean | undefined>(
+  jsValue: ForeignDbRecord
+): ReturnType<ForeignDbRecord> => {
   if (jsValue instanceof Date) {
     return jsValue.getTime() as ReturnType<typeof jsValue>;
   }
@@ -65,7 +66,7 @@ export const getDbValue = <Val extends Date | boolean | undefined>(
 };
 
 export const getExtendedValue = (
-  table: Table<any, any>,
+  table: Table<DbRecord<any>>,
   rawValue?: DbRecordID | DbRecordID[]
 ) => {
   // rawValue can only be undefined | DbRecordID | DbRecordID[]
@@ -76,10 +77,9 @@ export const getExtendedValue = (
   return rawValue;
 };
 
-export const getDbForeignIdValue = <In extends object>(
-  extendedValue: Extend<In> | Extend<In>[] | undefined
+export const getForeignDbRecordIdValues = <ForeignDbRecord extends object>(
+  extendedValue: WithID<ForeignDbRecord> | WithID<ForeignDbRecord>[] | undefined
 ) => {
-  // rawValue can only be undefined | object | object[]
   if (Array.isArray(extendedValue)) {
     return extendedValue.map((rec) => rec.id);
   }

@@ -3,11 +3,8 @@ import { m } from "@mufw/maya";
 import { db } from "../../../../state/localstorage/stores";
 import {
   Account,
-  PaymentRaw,
   Tag,
-  TxnRaw,
   TxnSubType,
-  // TXN_NECESSITIES_WITH_ICONS,
   TxnType,
   Txn,
   Payment,
@@ -20,6 +17,7 @@ import {
   ID_KEY,
   UNSTRUCTURED_RECORD_VALUE_KEY,
   DbRecordID,
+  newUnstructuredRecord,
 } from "../../../../_kvdb";
 import { EditPage, TagsSelector } from "../@components";
 import { PaymentsEditor } from "./@components";
@@ -27,7 +25,8 @@ import { TransactionTypeSelector } from "./@components/TransactionTypeSelector";
 
 const error = signal("");
 const now = new Date();
-const txn = signal<TxnRaw>({
+const txn = signal<Txn>({
+  id: 0,
   date: now,
   created: now,
   modified: now,
@@ -42,7 +41,7 @@ const txnDate = signal<Date>(now);
 const txnCreated = signal<Date>(now);
 const txnModified = signal<Date>(now);
 const allAccounts = signal<Account[]>([]);
-const txnPayments = signal<PaymentRaw[]>([]);
+const txnPayments = signal<Payment[]>([]);
 const title = signal<string>("");
 
 const allTags = signal<(Tag & { isSelected: boolean })[]>([]);
@@ -67,10 +66,12 @@ const onPageMount = (urlParams: URLSearchParams) => {
   if (!txnIDStr) {
     txnPayments.value = [
       {
+        id: 0,
         amount: -100,
         account: allAccounts.value[1],
       },
       {
+        id: 0,
         amount: 100,
         account: allAccounts.value[0],
       },
@@ -97,11 +98,6 @@ const onPageMount = (urlParams: URLSearchParams) => {
 
 const resetError = () => (error.value = "");
 
-// const onTxnNecessityChange = (optionIndex: number) => {
-//   resetError();
-//   txnNecessity.value = TXN_NECESSITIES_WITH_ICONS[optionIndex].label;
-// };
-
 const onTxnDateChange = (newDate: Date) => {
   resetError();
   txnDate.value = newDate;
@@ -120,20 +116,21 @@ const onNewPeopleAccountAdd = () => {
     .sort((a, b) => a.type.localeCompare(b.type));
 };
 
-const onPaymentAdd = () => {
+const onNewPaymentAdd = () => {
   resetError();
   const oldPayments = txnPayments.value;
   const sum = oldPayments.reduce((s, p) => s + p.amount, 0);
   txnPayments.value = [
     ...oldPayments,
     {
+      id: 0,
       amount: sum === 0 ? 0 : -sum,
       account: allAccounts.value[0],
     },
   ];
 };
 
-const onPaymentUpdate = (newPayment: PaymentRaw, paymentIndex: number) => {
+const onPaymentUpdate = (newPayment: Payment, paymentIndex: number) => {
   resetError();
   const payments = txnPayments.value;
   const oldPayment = payments[paymentIndex];
@@ -200,7 +197,7 @@ const onTagAdd = (text: string) => {
       console.log(tagName, selectedTags.value);
     } else return false;
   } else {
-    const newTag = db.tags.push(tagName);
+    const newTag = db.tags.push(newUnstructuredRecord(tagName));
     allTags.value = [...allTags.value, { ...newTag, isSelected: true }];
   }
 
@@ -230,13 +227,15 @@ const onTxnSave = () => {
     let existingTitle = db.titles.find(
       (tt) => unstructuredValue(tt) === title.value
     );
-    if (!existingTitle) existingTitle = db.titles.push(title.value);
+    if (!existingTitle)
+      existingTitle = db.titles.push(newUnstructuredRecord(title.value));
     const pmts: Payment[] = [];
     txnPayments.value.forEach((pmt) => {
       const newPmt = db.payments.push(pmt);
       pmts.push(newPmt);
     });
     db.txns.push({
+      id: 0,
       type: "balance update",
       date: txnDate.value,
       created: now,
@@ -256,14 +255,6 @@ export default EditPage({
   validateForm: validateForm,
   onSave: onTxnSave,
   content: m.Div([
-    // Label({ text: "Necessity of transaction" }),
-    // TabbedSelect({
-    //   cssClasses: "ml3 mr2 mt2 mb3 pb2",
-    //   labelPosition: "bottom",
-    //   options: TXN_NECESSITIES_WITH_ICONS,
-    //   selectedOptionIndex: selectedNecessityOptionIndex,
-    //   onChange: onTxnNecessityChange,
-    // }),
     Section({
       title: "Basic details",
       children: [
@@ -298,7 +289,7 @@ export default EditPage({
       children: PaymentsEditor({
         payments: txnPayments,
         allAccounts,
-        onPaymentAdd,
+        onPaymentAdd: onNewPaymentAdd,
         onPaymentUpdate,
         onPaymentDelete,
         onNewPeopleAccountAdd,

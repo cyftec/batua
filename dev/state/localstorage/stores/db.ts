@@ -1,19 +1,12 @@
-import { createDb } from "../../../_kvdb";
+import { createDb, unstructuredValue } from "../../../_kvdb";
 import {
-  AccountRaw,
   Account,
-  PaymentRaw,
-  PaymentMethodRaw,
-  PaymentMethod,
+  Budget,
   Payment,
-  TagRaw,
+  PaymentMethod,
   Tag,
-  TxnRaw,
-  TitleRaw,
   Title,
   Txn,
-  BudgetRaw,
-  Budget,
 } from "../../../models/core";
 
 const PAYMENT_METHODS_TABLE_KEY = "pm";
@@ -27,17 +20,20 @@ const BUDGETS_TABLE_KEY = "b";
 export const dbschema = {
   paymentMethods: {
     key: PAYMENT_METHODS_TABLE_KEY,
-    structure: [{} as PaymentMethodRaw, {} as PaymentMethod],
+    structure: {} as PaymentMethod,
+    unstructured: false,
     foreignKeyMappings: {},
   },
   accounts: {
     key: ACCOUNTS_TABLE_KEY,
-    structure: [{} as AccountRaw, {} as Account],
+    structure: {} as Account,
+    unstructured: false,
     foreignKeyMappings: { paymentMethods: PAYMENT_METHODS_TABLE_KEY },
   },
   payments: {
     key: PAYMENTS_TABLE_KEY,
-    structure: [{} as PaymentRaw, {} as Payment],
+    structure: {} as Payment,
+    unstructured: false,
     foreignKeyMappings: {
       account: ACCOUNTS_TABLE_KEY,
       via: PAYMENT_METHODS_TABLE_KEY,
@@ -45,17 +41,20 @@ export const dbschema = {
   },
   tags: {
     key: TAGS_TABLE_KEY,
-    structure: ["" as TagRaw, {} as Tag],
+    structure: {} as Tag,
+    unstructured: true,
     foreignKeyMappings: {},
   },
   titles: {
     key: TITLES_TABLE_KEY,
-    structure: ["" as TitleRaw, {} as Title],
+    structure: {} as Title,
+    unstructured: true,
     foreignKeyMappings: {},
   },
   txns: {
     key: TRANSACTIONS_TABLE_KEY,
-    structure: [{} as TxnRaw, {} as Txn],
+    structure: {} as Txn,
+    unstructured: false,
     foreignKeyMappings: {
       tags: TAGS_TABLE_KEY,
       title: TITLES_TABLE_KEY,
@@ -65,7 +64,8 @@ export const dbschema = {
   },
   budgets: {
     key: BUDGETS_TABLE_KEY,
-    structure: [{} as BudgetRaw, {} as Budget],
+    structure: {} as Budget,
+    unstructured: false,
     foreignKeyMappings: {
       oneOf: TAGS_TABLE_KEY,
       allOf: TAGS_TABLE_KEY,

@@ -1,29 +1,29 @@
-export type DbUnsupportedType = "Date" | "Boolean";
-export type IDKey = "id";
-export const ID_KEY: IDKey = "id";
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+export type NumBoolean = 0 | 1;
+
+export const ID_KEY = "id" as const satisfies string;
+export const UNSTRUCTURED_RECORD_VALUE_KEY = "value" as const satisfies string;
+
+export type IDKey = typeof ID_KEY;
+export type UnstructuredRecordValueKey = typeof UNSTRUCTURED_RECORD_VALUE_KEY;
 export type DbRecordID = number;
 export type TableKey = string;
 export type KvsRecordIDPrefix = `${TableKey}_`;
 export type KvsRecordID = `${KvsRecordIDPrefix}${DbRecordID}`;
+export type DbUnsupportedType = "Date" | "Boolean";
 
-export type UnstructuredExtendedRecordValueKey = "value";
-export const UNSTRUCTURED_RECORD_VALUE_KEY: UnstructuredExtendedRecordValueKey =
-  "value";
-export type UnstructuredExtendedRecord<Record> = Record extends object
-  ? never
-  : WithID<{ [UNSTRUCTURED_RECORD_VALUE_KEY]: Record }>;
-export type WithID<Record extends object> = { [ID_KEY]: DbRecordID } & Record;
-export type StructuredExtendedRecord<Record> = Record extends object
-  ? WithID<Record>
-  : never;
-export type Extend<RawRecord> = RawRecord extends object
-  ? StructuredExtendedRecord<RawRecord>
-  : UnstructuredExtendedRecord<RawRecord>;
+export type WithID<RawRecord extends object> = {
+  [K in IDKey]: DbRecordID;
+} & RawRecord;
+export type Structured<RawRecord extends object> = Prettify<WithID<RawRecord>>;
+export type Unstructured<RawRecord> = Prettify<
+  WithID<{
+    [K in UnstructuredRecordValueKey]: RawRecord;
+  }>
+>;
 
-// export type UnstructuredRecord<Record> = WithID<{
-//   [UNSTRUCTURED_RECORD_VALUE_KEY]: Record;
-// }>;
-// export type StructuredRecord<Record extends object> = WithID<Record>;
-// export type DbRecord<Raw> = Raw extends object
-//   ? StructuredRecord<Raw> | UnstructuredRecord<Raw>
-//   : UnstructuredRecord<Raw>;
+export type DbRecord<RawRecord> = RawRecord extends object
+  ? Structured<RawRecord> | Unstructured<RawRecord>
+  : Unstructured<RawRecord>;

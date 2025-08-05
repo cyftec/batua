@@ -13,12 +13,12 @@ export const getKvStoreIDManager = (kvStore: KvStore): KvsIDManager => {
       if (!maxID) kvStore.setItem("maxID", "0");
       maxID = kvStore.getItem("maxID");
       if (maxID === undefined)
-        throw `Error setting the value for key 'maxID' in KV Store.`;
+        throw `Error setting and getting the value for key 'maxID' in KV Store.`;
       return +maxID;
     },
     useNewID: function (callback: (newId: DbRecordID) => void): DbRecordID {
-      const thisIDGen = this as KvsIDManager;
-      const newID = thisIDGen.getCurrentID() + 1;
+      const thisIDManager = this as KvsIDManager;
+      const newID = thisIDManager.getCurrentID() + 1;
       callback(newID);
       kvStore.setItem("maxID", `${newID}`);
       return newID;

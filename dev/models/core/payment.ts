@@ -1,13 +1,6 @@
-import { WithID } from "../../_kvdb";
+import { Structured } from "../../_kvdb";
 import { Account } from "./account";
-import { Prettify } from "./common";
 import { PaymentMethod } from "./payment-method";
-
-export type PaymentRaw = {
-  amount: number;
-  account: Account;
-  via?: PaymentMethod;
-};
 
 /**
  *
@@ -15,4 +8,8 @@ export type PaymentRaw = {
  * UI Models
  */
 
-export type Payment = Prettify<WithID<PaymentRaw>>;
+export type Payment = Structured<{
+  amount: number;
+  account: Account;
+  via?: PaymentMethod;
+}>;

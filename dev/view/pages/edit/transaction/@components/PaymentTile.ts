@@ -1,14 +1,14 @@
 import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { Account, PaymentRaw, PaymentMethod } from "../../../../../models/core";
+import { Account, Payment, PaymentMethod } from "../../../../../models/core";
 import { Icon, NumberBox, Select } from "../../../../elements";
 import { ID_KEY } from "../../../../../_kvdb";
 
 type PaymentTileProps = {
-  payment: PaymentRaw;
+  payment: Payment;
   allAccounts: Account[];
   onPeopleAccountAdd: () => void;
-  onChange: (newPayment: PaymentRaw) => void;
+  onChange: (newPayment: Payment) => void;
   onRemove: () => void;
 };
 

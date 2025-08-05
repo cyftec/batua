@@ -1,28 +1,28 @@
 import { effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../../state/localstorage/stores";
 import {
   Account,
-  ExpenseAccount,
-  PaymentMethod,
-  EXPENSE_ACCOUNT_TYPE,
-  LoanAccount,
-  DepositAccount,
-  PeopleAccount,
-  ShopAccount,
-  LOAN_ACCOUNT_TYPE,
   DEPOSIT_ACCOUNT_TYPE,
+  DepositAccount,
+  EXPENSE_ACCOUNT_TYPE,
+  ExpenseAccount,
+  LOAN_ACCOUNT_TYPE,
+  LoanAccount,
   PEOPLE_ACCOUNT_TYPE,
+  PaymentMethod,
+  PeopleAccount,
   SHOP_ACCOUNT_TYPE,
+  ShopAccount,
 } from "../../../models/core";
+import { db } from "../../../state/localstorage/stores";
 import { URL, getQueryParamValue, goToPage } from "../../../state/utils";
 import { HTMLPage, NavScaffold } from "../../components";
 import { TabBar } from "../../elements";
 import {
-  FundAccounts,
-  ExpenseAccounts,
-  PaymentMethods,
   EntityAccounts,
+  ExpenseAccounts,
+  FundAccounts,
+  PaymentMethods,
 } from "./@components";
 
 const ACCOUNTS_PAGE_TABS = [
@@ -51,11 +51,11 @@ effect(() => {
   const shopAccs: ShopAccount[] = [];
   const peopAccs: PeopleAccount[] = [];
   allAccounts.value.forEach((acc) => {
-    if (acc.type === EXPENSE_ACCOUNT_TYPE) expAccs.push(acc);
-    if (acc.type === LOAN_ACCOUNT_TYPE) laonAccs.push(acc);
-    if (acc.type === DEPOSIT_ACCOUNT_TYPE) depAccs.push(acc);
-    if (acc.type === SHOP_ACCOUNT_TYPE) shopAccs.push(acc);
-    if (acc.type === PEOPLE_ACCOUNT_TYPE) peopAccs.push(acc);
+    if (acc.type === EXPENSE_ACCOUNT_TYPE) expAccs.push(acc as ExpenseAccount);
+    if (acc.type === LOAN_ACCOUNT_TYPE) laonAccs.push(acc as LoanAccount);
+    if (acc.type === DEPOSIT_ACCOUNT_TYPE) depAccs.push(acc as DepositAccount);
+    if (acc.type === SHOP_ACCOUNT_TYPE) shopAccs.push(acc as ShopAccount);
+    if (acc.type === PEOPLE_ACCOUNT_TYPE) peopAccs.push(acc as PeopleAccount);
   });
   allExpenseAccounts.value = expAccs;
   allLoanAccounts.value = laonAccs;
@@ -69,7 +69,7 @@ const onPageMount = () => {
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
   allPaymentMethods.value = db.paymentMethods
     .get()
-    .sort((a, b) => b.isPermanent - a.isPermanent);
+    .sort((a, b) => +b.isPermanent - +a.isPermanent);
   allAccounts.value = db.accounts.get();
 };
 

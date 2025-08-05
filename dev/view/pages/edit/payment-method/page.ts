@@ -1,11 +1,7 @@
 import { signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { DbRecordID, ID_KEY } from "../../../../_kvdb";
-import {
-  CURRENCY_TYPES,
-  PaymentMethod,
-  PaymentMethodRaw,
-} from "../../../../models/core";
+import { DbRecordID } from "../../../../_kvdb";
+import { CURRENCY_TYPES, PaymentMethod } from "../../../../models/core";
 import { db } from "../../../../state/localstorage/stores";
 import {
   areNamesSimilar,
@@ -18,8 +14,9 @@ import { Label, Link, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
 
 const error = signal("");
-const paymentMethod = signal<PaymentMethodRaw>({
-  isPermanent: 0,
+const paymentMethod = signal<PaymentMethod>({
+  id: 0,
+  isPermanent: false,
   name: "",
   uniqueId: "",
   type: "physical",
@@ -35,7 +32,6 @@ const onPageMount = (urlParams: URLSearchParams) => {
   const editablePM = db.paymentMethods.get(pmID);
   if (!editablePM) throw `Error fetching payment method with id - ${pmID}`;
   editablePaymentMethod.value = editablePM;
-  delete (editablePM as PaymentMethodRaw)[ID_KEY];
   paymentMethod.set({ ...editablePM });
 };
 
@@ -74,7 +70,7 @@ const onPaymentMethodSave = () => {
   const uniqueIdObj = uniqueId?.value ? { uniqueId: uniqueId.value } : {};
 
   if (editablePaymentMethod.value) {
-    const updates: Partial<PaymentMethodRaw> = {
+    const updates: Partial<PaymentMethod> = {
       name: pmName.value,
       type: type.value,
       ...uniqueIdObj,
@@ -82,7 +78,8 @@ const onPaymentMethodSave = () => {
     db.paymentMethods.set(editablePaymentMethod.value.id, updates);
   } else {
     db.paymentMethods.push({
-      isPermanent: 0,
+      id: 0,
+      isPermanent: false,
       name: pmName.value,
       type: type.value,
       ...uniqueIdObj,

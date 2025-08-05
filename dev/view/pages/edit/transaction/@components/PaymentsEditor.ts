@@ -1,7 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
 import { db } from "../../../../../state/localstorage/stores";
-import { Account, PaymentRaw } from "../../../../../models/core";
+import { Account, Payment } from "../../../../../models/core";
 import { areNamesSimilar, nameRegex } from "../../../../../state/utils";
 import {
   DialogActionButtons,
@@ -13,10 +13,10 @@ import { PaymentTile } from "./PaymentTile";
 
 type PaymentsEditorProps = {
   cssClasses?: string;
-  payments: PaymentRaw[];
+  payments: Payment[];
   allAccounts: Account[];
   onPaymentAdd: () => void;
-  onPaymentUpdate: (newPayment: PaymentRaw, index: number) => void;
+  onPaymentUpdate: (newPayment: Payment, index: number) => void;
   onPaymentDelete: (index: number) => void;
   onNewPeopleAccountAdd: () => void;
 };
@@ -64,7 +64,8 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
       validate();
       if (error.value) return;
       db.accounts.push({
-        isPermanent: 0,
+        id: 0,
+        isPermanent: false,
         name: peopleAccountName.value,
         type: "people",
       });
@@ -74,7 +75,8 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
       );
       if (!newAcc) throw ``;
       const newPaymentIndex = paymentIndexForAddingPersonAcc.value;
-      const newPayment: PaymentRaw = {
+      const newPayment: Payment = {
+        id: 0,
         amount: payments.value[newPaymentIndex].amount,
         account: newAcc,
       };

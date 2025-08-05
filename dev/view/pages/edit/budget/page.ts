@@ -1,11 +1,7 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import {
-  ID_KEY,
-  UNSTRUCTURED_RECORD_VALUE_KEY,
-  unstructuredValue,
-} from "../../../../_kvdb";
-import { Budget, BudgetRaw, Tag as TagModel } from "../../../../models/core";
+import { newUnstructuredRecord, unstructuredValue } from "../../../../_kvdb";
+import { Budget, Tag as TagModel } from "../../../../models/core";
 import { db } from "../../../../state/localstorage/stores";
 import { TIME_PERIODS } from "../../../../state/transforms";
 import {
@@ -18,7 +14,8 @@ import { Label, NumberBox, Section, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
 
 const error = signal("");
-const budget = signal<BudgetRaw>({
+const budget = signal<Budget>({
+  id: 0,
   title: "",
   period: "Week",
   amount: 0,
@@ -105,7 +102,7 @@ const onTagAdd = (
   if (tagIndex < 0) {
     const newTagName = getLowercaseTagName(tagName);
     try {
-      db.tags.push(newTagName);
+      db.tags.push(newUnstructuredRecord(newTagName));
     } catch (error) {
       return false;
     }

@@ -1,17 +1,17 @@
-import { UnstructuredExtendedRecord } from "../../_kvdb";
-
-export type TitleRaw = string;
+import { newUnstructuredRecord, Unstructured } from "../../_kvdb";
 
 /**
  *
  *
  * UI Models
  */
-export type Title = UnstructuredExtendedRecord<TitleRaw>;
+export type Title = Unstructured<string>;
 
 /**
  *
  *
  * DATABASE's INITIAL DATA CONSTANTS
  */
-export const INITIAL_TXN_TITLES: TitleRaw[] = ["Record first account balance"];
+export const INITIAL_TXN_TITLES: Title[] = [
+  newUnstructuredRecord("Set initial balance"),
+];

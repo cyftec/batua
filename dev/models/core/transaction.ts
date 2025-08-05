@@ -1,5 +1,4 @@
-import { WithID } from "../../_kvdb";
-import { Prettify } from "./common";
+import { Structured } from "../../_kvdb";
 import { Payment } from "./payment";
 import { Tag } from "./tag";
 import { Title } from "./title";
@@ -30,7 +29,13 @@ export const TXN_NECESSITIES_WITH_ICONS: {
   { label: "Luxury", icon: "diamond_shine" },
 ];
 
-export type TxnRaw = {
+/**
+ *
+ *
+ * UI Models
+ */
+
+export type Txn = Structured<{
   date: Date;
   created: Date;
   modified: Date;
@@ -38,12 +43,4 @@ export type TxnRaw = {
   payments: Payment[];
   tags: Tag[];
   title: Title;
-};
-
-/**
- *
- *
- * UI Models
- */
-
-export type Txn = Prettify<WithID<TxnRaw>>;
+}>;

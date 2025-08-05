@@ -1,21 +1,18 @@
-import { WithID } from "../../_kvdb";
-import { NumBoolean, Prettify } from "./common";
+import { Structured } from "../../_kvdb";
 import { CurrencyType } from "./currency";
-
-export type PaymentMethodRaw = {
-  isPermanent: NumBoolean;
-  uniqueId?: string;
-  name: string;
-  type: CurrencyType;
-};
 
 /**
  *
  *
- * UI Models
+ * Models
  */
 
-export type PaymentMethod = Prettify<WithID<PaymentMethodRaw>>;
+export type PaymentMethod = Structured<{
+  isPermanent: boolean;
+  uniqueId?: string;
+  name: string;
+  type: CurrencyType;
+}>;
 
 /**
  *
@@ -23,14 +20,16 @@ export type PaymentMethod = Prettify<WithID<PaymentMethodRaw>>;
  * DATABASE's INITIAL DATA CONSTANTS
  */
 
-export const NET_BANKING_PAYMENT_METHOD: PaymentMethodRaw = {
-  isPermanent: 1,
+export const NET_BANKING_PAYMENT_METHOD: PaymentMethod = {
+  id: 0,
+  isPermanent: true,
   name: "Net Banking",
   type: "digital",
 };
 
-export const CASH_PAYMENT_METHOD: PaymentMethodRaw = {
-  isPermanent: 1,
+export const CASH_PAYMENT_METHOD: PaymentMethod = {
+  id: 0,
+  isPermanent: true,
   name: "Notes & Coins",
   type: "physical",
 };

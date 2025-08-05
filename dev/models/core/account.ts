@@ -1,92 +1,6 @@
-import { WithID } from "../../_kvdb";
-import { NumBoolean, Prettify } from "./common";
+import { Prettify, Structured } from "../../_kvdb";
 import { CurrencyType } from "./currency";
 import { PaymentMethod } from "./payment-method";
-
-export type ExpenseAccountType = "expense";
-export type LoanAccountType = "loan";
-export type DepositAccountType = "deposit";
-export type ShopAccountType = "shop";
-export type PeopleAccountType = "people";
-export type FundAccountType = LoanAccountType | DepositAccountType;
-export type EntityAccountType = ShopAccountType | PeopleAccountType;
-export type AccountType = Prettify<
-  ExpenseAccountType | FundAccountType | EntityAccountType
->;
-
-export type BaseAccountRaw = {
-  isPermanent: NumBoolean;
-  name: string;
-  uniqueId?: string;
-  vault?: CurrencyType;
-  paymentMethods?: PaymentMethod[];
-};
-export type ExpenseAccountRaw = Prettify<
-  BaseAccountRaw & {
-    type: ExpenseAccountType;
-    vault: CurrencyType;
-    paymentMethods: PaymentMethod[];
-  }
->;
-export type FundAccountRaw = Prettify<
-  BaseAccountRaw & {
-    vault?: undefined;
-    paymentMethods?: undefined;
-    type: FundAccountType;
-  }
->;
-export type LoanAccountRaw = Prettify<
-  Omit<FundAccountRaw, "type"> & {
-    type: LoanAccountType;
-  }
->;
-export type DepositAccountRaw = Prettify<
-  Omit<FundAccountRaw, "type"> & {
-    type: DepositAccountType;
-  }
->;
-export type EntityAccountRaw = Prettify<
-  BaseAccountRaw & {
-    vault?: undefined;
-    paymentMethods?: undefined;
-    type: EntityAccountType;
-  }
->;
-export type ShopAccountRaw = Prettify<
-  Omit<EntityAccountRaw, "type"> & {
-    type: ShopAccountType;
-  }
->;
-export type PeopleAccountRaw = Prettify<
-  Omit<EntityAccountRaw, "type"> & {
-    type: PeopleAccountType;
-  }
->;
-export type AccountRaw = Prettify<
-  BaseAccountRaw & {
-    vault?: CurrencyType;
-    paymentMethods?: PaymentMethod[];
-    type: AccountType;
-  }
->;
-
-/**
- *
- *
- * UI Models
- */
-
-export type ExpenseAccount = Prettify<WithID<ExpenseAccountRaw>>;
-export type LoanAccount = Prettify<WithID<LoanAccountRaw>>;
-export type DepositAccount = Prettify<WithID<DepositAccountRaw>>;
-export type ShopAccount = Prettify<WithID<ShopAccountRaw>>;
-export type PeopleAccount = Prettify<WithID<PeopleAccountRaw>>;
-export type Account =
-  | ExpenseAccount
-  | LoanAccount
-  | DepositAccount
-  | ShopAccount
-  | PeopleAccount;
 
 /**
  *
@@ -94,19 +8,72 @@ export type Account =
  * COMMON CONSTANTS
  */
 
-export const EXPENSE_ACCOUNT_TYPE: ExpenseAccountType = "expense";
-export const LOAN_ACCOUNT_TYPE: LoanAccountType = "loan";
-export const DEPOSIT_ACCOUNT_TYPE: DepositAccountType = "deposit";
-export const SHOP_ACCOUNT_TYPE: ShopAccountType = "shop";
-export const PEOPLE_ACCOUNT_TYPE: PeopleAccountType = "people";
+export const EXPENSE_ACCOUNT_TYPE = "expense" as const;
+export const LOAN_ACCOUNT_TYPE = "loan" as const;
+export const DEPOSIT_ACCOUNT_TYPE = "deposit" as const;
+export const SHOP_ACCOUNT_TYPE = "shop" as const;
+export const PEOPLE_ACCOUNT_TYPE = "people" as const;
 
-export const ACCOUNT_TYPES_LIST: AccountType[] = [
+export const ACCOUNT_TYPES_LIST = [
   EXPENSE_ACCOUNT_TYPE,
   LOAN_ACCOUNT_TYPE,
   DEPOSIT_ACCOUNT_TYPE,
   SHOP_ACCOUNT_TYPE,
   PEOPLE_ACCOUNT_TYPE,
-];
+] as const satisfies string[];
+
+/**
+ *
+ *
+ * MODELS
+ */
+
+export type AccountType = (typeof ACCOUNT_TYPES_LIST)[number];
+
+export type Account = Structured<{
+  isPermanent: boolean;
+  type: AccountType;
+  name: string;
+  uniqueId?: string;
+  vault?: CurrencyType;
+  paymentMethods?: PaymentMethod[];
+}>;
+
+export type ExpenseAccount = Prettify<
+  Omit<Account, "type" | "vault" | "paymentMethods"> & {
+    type: "expense";
+    vault: CurrencyType;
+    paymentMethods: PaymentMethod[];
+  }
+>;
+export type LoanAccount = Prettify<
+  Omit<Account, "type" | "vault" | "paymentMethods"> & {
+    type: "loan";
+    vault?: undefined;
+    paymentMethods?: undefined;
+  }
+>;
+export type DepositAccount = Prettify<
+  Omit<Account, "type" | "vault" | "paymentMethods"> & {
+    type: "deposit";
+    vault?: undefined;
+    paymentMethods?: undefined;
+  }
+>;
+export type ShopAccount = Prettify<
+  Omit<Account, "type" | "vault" | "paymentMethods"> & {
+    type: "shop";
+    vault?: undefined;
+    paymentMethods?: undefined;
+  }
+>;
+export type PeopleAccount = Prettify<
+  Omit<Account, "type" | "vault" | "paymentMethods"> & {
+    type: "people";
+    vault?: undefined;
+    paymentMethods?: undefined;
+  }
+>;
 
 /**
  *
@@ -114,16 +81,18 @@ export const ACCOUNT_TYPES_LIST: AccountType[] = [
  * DATABASE's INITIAL DATA CONSTANTS
  */
 
-export const CASH_EXPENSE_ACCOUNT: ExpenseAccountRaw = {
-  isPermanent: 0,
+export const CASH_EXPENSE_ACCOUNT: ExpenseAccount = {
+  id: 0,
+  isPermanent: false,
   name: "Wallet",
   vault: "physical",
   type: "expense",
   paymentMethods: [],
 };
 
-export const MARKET: ShopAccountRaw = {
-  isPermanent: 1,
+export const MARKET: ShopAccount = {
+  id: 0,
+  isPermanent: true,
   name: "Market",
   type: "shop",
 };

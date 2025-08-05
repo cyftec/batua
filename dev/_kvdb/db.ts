@@ -1,27 +1,25 @@
 import { KvStore, LOCALSTORAGE_AS_KVSTORE } from "./kv-stores";
-import { DbUnsupportedType, TableKey } from "./models";
+import { DbRecord, DbUnsupportedType, TableKey } from "./models";
 import { createTable, Table } from "./table";
 
-export type Schema = {
-  [Tabl in string]: {
+export type DatabaseSchema = {
+  [TableName in string]: {
     key: TableKey;
-    structure: readonly [any, any];
+    structure: DbRecord<any>;
+    unstructured: boolean;
     foreignKeyMappings?: Record<string, string>;
     dbToJsTypeMappings?: Record<string, DbUnsupportedType>;
   };
 };
 
-export type DB<DbSchema extends Schema> = {
-  [TableName in keyof DbSchema]: Table<
-    DbSchema[TableName]["structure"][0],
-    DbSchema[TableName]["structure"][1]
-  >;
+export type DB<Schema extends DatabaseSchema> = {
+  [TableName in keyof Schema]: Table<Schema[TableName]["structure"]>;
 };
 
-export const createDb = <DbSchema extends Schema>(
-  schema: DbSchema,
+export const createDb = <Schema extends DatabaseSchema>(
+  schema: Schema,
   kvStore?: KvStore
-): DB<DbSchema> => {
+): DB<Schema> => {
   const store: KvStore = kvStore || LOCALSTORAGE_AS_KVSTORE;
   const db = {};
 
@@ -35,22 +33,26 @@ export const createDb = <DbSchema extends Schema>(
       )}'`;
     const table = db[tableName];
     if (!table) throw `Table with key '${key}' not found in the DB`;
-    return table as Table<any, any>;
+    return table as Table<DbRecord<any>>;
   };
 
   Object.entries(schema).forEach(([tableName, tableDetails]) => {
-    const tableKey = tableDetails.key;
-    const fkMappings = tableDetails.foreignKeyMappings;
-    const db2jsMappings = tableDetails.dbToJsTypeMappings;
+    const {
+      key: tableKey,
+      unstructured,
+      foreignKeyMappings,
+      dbToJsTypeMappings,
+    } = tableDetails;
     const table = createTable(
       store,
       tableKey,
+      unstructured,
       getTableFromTableKey,
-      fkMappings,
-      db2jsMappings
+      foreignKeyMappings,
+      dbToJsTypeMappings
     );
     db[tableName] = table;
   });
 
-  return db as DB<DbSchema>;
+  return db as DB<Schema>;
 };
