@@ -60,6 +60,7 @@ const unSelectedPaymentMethods = derive(() => {
 
 const onPageMount = (urlParams: URLSearchParams) => {
   allPMs.value = db.paymentMethods.get();
+  account.set({ vault: "digital" });
   const typeStr = urlParams.get("type");
   if (typeStr && ACCOUNT_TYPES_LIST.includes(typeStr as AccountType)) {
     account.set({ type: typeStr as AccountType });

@@ -27,3 +27,8 @@ export type Unstructured<RawRecord> = Prettify<
 export type DbRecord<RawRecord> = RawRecord extends object
   ? Structured<RawRecord> | Unstructured<RawRecord>
   : Unstructured<RawRecord>;
+
+export type RawUnstructuredRecord<T extends Unstructured<any>> = T["value"];
+export type RawStructuredRecord<T extends Structured<object>> = {
+  [K in keyof T]: K extends IDKey ? never : T[K];
+};

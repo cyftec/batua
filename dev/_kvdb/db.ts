@@ -2,12 +2,14 @@ import { KvStore, LOCALSTORAGE_AS_KVSTORE } from "./kv-stores";
 import { DbRecord, DbUnsupportedType, TableKey } from "./models";
 import { createTable, Table } from "./table";
 
+export type ForeignTableData = { tableKey: TableKey; owned: boolean };
+
 export type DatabaseSchema = {
   [TableName in string]: {
     key: TableKey;
     structure: DbRecord<any>;
     unstructured: boolean;
-    foreignKeyMappings?: Record<string, string>;
+    foreignKeyMappings?: Record<string, ForeignTableData>;
     dbToJsTypeMappings?: Record<string, DbUnsupportedType>;
   };
 };

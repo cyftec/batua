@@ -26,7 +26,6 @@ export const INITIAL_TAGS: Tag[] = [
   newUnstructuredRecord("waiveoff"),
   newUnstructuredRecord("salary"),
   newUnstructuredRecord("sale"),
-  newUnstructuredRecord("interest"),
   newUnstructuredRecord("find"),
   newUnstructuredRecord("restructure"),
   newUnstructuredRecord("settlement"),

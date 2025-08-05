@@ -1,4 +1,4 @@
-import { createDb, unstructuredValue } from "../../../_kvdb";
+import { createDb } from "../../../_kvdb";
 import {
   Account,
   Budget,
@@ -28,15 +28,17 @@ export const dbschema = {
     key: ACCOUNTS_TABLE_KEY,
     structure: {} as Account,
     unstructured: false,
-    foreignKeyMappings: { paymentMethods: PAYMENT_METHODS_TABLE_KEY },
+    foreignKeyMappings: {
+      paymentMethods: { tableKey: PAYMENT_METHODS_TABLE_KEY, owned: false },
+    },
   },
   payments: {
     key: PAYMENTS_TABLE_KEY,
     structure: {} as Payment,
     unstructured: false,
     foreignKeyMappings: {
-      account: ACCOUNTS_TABLE_KEY,
-      via: PAYMENT_METHODS_TABLE_KEY,
+      account: { tableKey: ACCOUNTS_TABLE_KEY, owned: false },
+      via: { tableKey: PAYMENT_METHODS_TABLE_KEY, owned: false },
     },
   },
   tags: {
@@ -56,9 +58,9 @@ export const dbschema = {
     structure: {} as Txn,
     unstructured: false,
     foreignKeyMappings: {
-      tags: TAGS_TABLE_KEY,
-      title: TITLES_TABLE_KEY,
-      payments: PAYMENTS_TABLE_KEY,
+      tags: { tableKey: TAGS_TABLE_KEY, owned: false },
+      title: { tableKey: TITLES_TABLE_KEY, owned: false },
+      payments: { tableKey: PAYMENTS_TABLE_KEY, owned: true },
     },
     dbToJsTypeMappings: { date: "Date", created: "Date", modified: "Date" },
   },
@@ -67,8 +69,8 @@ export const dbschema = {
     structure: {} as Budget,
     unstructured: false,
     foreignKeyMappings: {
-      oneOf: TAGS_TABLE_KEY,
-      allOf: TAGS_TABLE_KEY,
+      oneOf: { tableKey: TAGS_TABLE_KEY, owned: false },
+      allOf: { tableKey: TAGS_TABLE_KEY, owned: false },
     },
   },
 } as const;

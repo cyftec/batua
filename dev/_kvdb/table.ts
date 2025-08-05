@@ -1,3 +1,4 @@
+import { ForeignTableData } from "./db";
 import { KvStore } from "./kv-stores";
 import { getKvStoreIDManager } from "./kvs-id-manager";
 import {
@@ -5,6 +6,8 @@ import {
   DbRecordID,
   DbUnsupportedType,
   ID_KEY,
+  RawStructuredRecord,
+  Structured,
   TableKey,
   UNSTRUCTURED_RECORD_VALUE_KEY,
   Unstructured,
@@ -53,14 +56,18 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
   tableKey: TableKey,
   isUnstructured: boolean,
   getForeignTableFromKey: (tableKey: TableKey) => Table<DbRecord<any>>,
-  foreignKeyMappings?: Partial<{ [k in keyof DatabaseRecord]: TableKey }>,
+  foreignKeyMappings?: Partial<{
+    [k in keyof DatabaseRecord]: ForeignTableData;
+  }>,
   dbToJsTypeMappings?: Partial<{
     [k in keyof DatabaseRecord]: DbUnsupportedType;
   }>
 ): Table<DatabaseRecord> => {
   const kvsIdManager = getKvStoreIDManager(kvStore);
 
-  const getDbFormatRecord = (record: object) => {
+  const getStructuredDbRecord = <T extends Structured<object>>(
+    record: T
+  ): RawStructuredRecord<T> => {
     if (foreignKeyMappings) {
       Object.keys(foreignKeyMappings).forEach((keysPath) => {
         const keysPathArray = keysPath.split(".");
@@ -79,14 +86,20 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
       });
     }
 
-    return record;
+    delete (record as RawStructuredRecord<T>).id;
+    return record as RawStructuredRecord<T>;
   };
 
-  const getUiFormatRecord = (record: object) => {
+  const getStructuredNormalRecord = <T extends object>(
+    id: DbRecordID,
+    record: T
+  ): Structured<T> => {
     if (foreignKeyMappings) {
       Object.keys(foreignKeyMappings).forEach((keysPath) => {
-        const foreignTableKey = foreignKeyMappings[keysPath] as TableKey;
-        const foreignTable = getForeignTableFromKey(foreignTableKey);
+        const foreignTableData = foreignKeyMappings[
+          keysPath
+        ] as ForeignTableData;
+        const foreignTable = getForeignTableFromKey(foreignTableData.tableKey);
         const keysPathArray = keysPath.split(".");
         record = getMappedObject(
           (rawValue) => getExtendedValue(foreignTable, rawValue),
@@ -108,7 +121,7 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
       });
     }
 
-    return record;
+    return { id, ...record };
   };
 
   const getAllIDs = (): DbRecordID[] => {
@@ -141,8 +154,7 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
       } as unknown as DatabaseRecord;
     }
 
-    const uiFormatRecord = getUiFormatRecord(rawRecord);
-    return { id, ...uiFormatRecord } as unknown as DatabaseRecord;
+    return getStructuredNormalRecord(id, rawRecord);
   };
 
   const getAllRecords = (ids?: DbRecordID[]): DatabaseRecord[] => {
@@ -195,7 +207,9 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
         unstructuredValue(record)
     );
     if (existingRecord)
-      throw `A unstructured record with same value - '${record}' already exists.`;
+      throw `A unstructured record with same value - ${JSON.stringify(
+        record
+      )} already exists.`;
   };
 
   const validateRecordStructure = (
@@ -226,7 +240,7 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
       const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, newDbRecordID);
       const dbRecord = isUnstructuredRecord(record)
         ? unstructuredValue(record as Unstructured<unknown>)
-        : getDbFormatRecord(record);
+        : getStructuredDbRecord(record as Structured<object>);
       const kvsRecordValue = JSON.stringify(dbRecord);
       kvStore.setItem(kvsRecordID, kvsRecordValue);
     });
@@ -242,7 +256,7 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
     if (previousRecord === undefined) throw `No record found for id - '${id}'`;
     const newRecord = isUnstructuredRecord(previousRecord)
       ? unstructuredValue(newOrPartiallyNewRecord as Unstructured<any>)
-      : getDbFormatRecord({
+      : getStructuredDbRecord({
           ...previousRecord,
           ...newOrPartiallyNewRecord,
         });
