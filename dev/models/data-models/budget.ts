@@ -1,5 +1,5 @@
 import { Structured } from "../../_kvdb";
-import { TimePeriod } from "../../state/transforms";
+import { TimePeriod } from "../../controllers/transforms";
 import { Tag } from "./tag";
 
 export type Budget = Structured<{

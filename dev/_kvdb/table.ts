@@ -32,14 +32,11 @@ type GetResponse<ReqIDs, DatabaseRecord> = undefined extends ReqIDs
   : DatabaseRecord[];
 
 export type Table<DatabaseRecord extends DbRecord<any>> = {
-  length: number;
+  count: number;
   get: <ReqIDs extends DbRecordID | DbRecordID[] | undefined>(
     requestedIDorIDs?: ReqIDs
   ) => GetResponse<ReqIDs, DatabaseRecord>;
-  set: (
-    id: DbRecordID,
-    newOrPartiallyNewRecord: Partial<DatabaseRecord>
-  ) => void;
+  put: (record: DatabaseRecord) => DatabaseRecord;
   find: (
     recordMatcher: RecordMatcher<DatabaseRecord>
   ) => DatabaseRecord | undefined;
@@ -47,8 +44,7 @@ export type Table<DatabaseRecord extends DbRecord<any>> = {
     recordMatcher: RecordMatcher<DatabaseRecord>,
     count?: number
   ) => DatabaseRecord[];
-  push: (record: DatabaseRecord) => DatabaseRecord;
-  pop: (dbRecordID: DbRecordID) => void;
+  delete: (dbRecordID: DbRecordID) => void;
 };
 
 export const createTable = <DatabaseRecord extends DbRecord<any>>(
@@ -70,9 +66,13 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
   ): RawStructuredRecord<T> => {
     if (foreignKeyMappings) {
       Object.keys(foreignKeyMappings).forEach((keysPath) => {
+        const foreignTableData = foreignKeyMappings[
+          keysPath
+        ] as ForeignTableData;
+        const foreignTable = getForeignTableFromKey(foreignTableData.tableKey);
         const keysPathArray = keysPath.split(".");
         record = getMappedObject(
-          getForeignDbRecordIdValues,
+          (rawValue) => getForeignDbRecordIdValues(foreignTable, rawValue),
           record,
           keysPathArray
         );
@@ -136,6 +136,7 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
   };
 
   const getRawRecord = (id: DbRecordID): any => {
+    if (id === 0) throw `Record with id - '0' tried to be fetched.`;
     const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, id);
     const kvsRecordValue = kvStore.getItem(kvsRecordID);
     if (kvsRecordValue === undefined) return;
@@ -234,35 +235,32 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
       validateExistingUnstructuredRecord(record as Unstructured<any>);
   };
 
-  const addRecord = (record: DatabaseRecord): DatabaseRecord => {
-    validateNewRecord(record, isUnstructured);
-    const dbRecordID = kvsIdManager.useNewID((newDbRecordID) => {
-      const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, newDbRecordID);
-      const dbRecord = isUnstructuredRecord(record)
-        ? unstructuredValue(record as Unstructured<unknown>)
-        : getStructuredDbRecord(record as Structured<object>);
-      const kvsRecordValue = JSON.stringify(dbRecord);
+  const putRecord = (record: DatabaseRecord): DatabaseRecord => {
+    let recordID: DbRecordID = record.id;
+    const isNewRecord = recordID === 0;
+    if (isNewRecord) validateNewRecord(record, isUnstructured);
+    const newRecord: DatabaseRecord = {
+      ...(isNewRecord ? {} : getRawRecord(recordID) || {}),
+      ...record,
+    };
+
+    const sanitisedRecord = isUnstructuredRecord(record)
+      ? unstructuredValue(newRecord as Unstructured<any>)
+      : getStructuredDbRecord(newRecord as Structured<object>);
+    const kvsRecordValue = JSON.stringify(sanitisedRecord);
+
+    const kvsRecordUpdator = (id: DbRecordID) => {
+      const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, id);
       kvStore.setItem(kvsRecordID, kvsRecordValue);
-    });
-    return getRecord(dbRecordID) as DatabaseRecord;
-  };
+    };
 
-  const setRecord = (
-    id: DbRecordID,
-    newOrPartiallyNewRecord: Partial<DatabaseRecord>
-  ): void => {
-    const kvsRecordID = getKvsRecordIDFromDbRecordID(tableKey, id);
-    const previousRecord = getRawRecord(id);
-    if (previousRecord === undefined) throw `No record found for id - '${id}'`;
-    const newRecord = isUnstructuredRecord(previousRecord)
-      ? unstructuredValue(newOrPartiallyNewRecord as Unstructured<any>)
-      : getStructuredDbRecord({
-          ...previousRecord,
-          ...newOrPartiallyNewRecord,
-        });
+    if (recordID === 0) {
+      recordID = kvsIdManager.useNewID(kvsRecordUpdator);
+    } else {
+      kvsRecordUpdator(recordID);
+    }
 
-    const newKvsRecordValue: string = JSON.stringify(newRecord);
-    kvStore.setItem(kvsRecordID, newKvsRecordValue);
+    return getRecord(recordID) as DatabaseRecord;
   };
 
   const deleteRecord = (dbRecordID: DbRecordID): void => {
@@ -271,14 +269,13 @@ export const createTable = <DatabaseRecord extends DbRecord<any>>(
   };
 
   return {
-    get length() {
+    get count() {
       return getAllIDs().length;
     },
     get: getRecord,
-    set: setRecord,
+    put: putRecord,
     find: findRecord,
     filter: getAllWhere,
-    push: addRecord,
-    pop: deleteRecord,
+    delete: deleteRecord,
   };
 };

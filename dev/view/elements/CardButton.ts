@@ -1,6 +1,6 @@
 import { dispose, tmpl } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { handleTap } from "../../state/utils";
+import { handleTap } from "../../controllers/utils";
 import { Icon } from "./Icon";
 
 type CardButtonProps = {

@@ -1,4 +1,4 @@
-import { createDb } from "../../../_kvdb";
+import { createDb } from "../../_kvdb";
 import {
   Account,
   Budget,
@@ -7,7 +7,7 @@ import {
   Tag,
   Title,
   Txn,
-} from "../../../models/core";
+} from "../../models/data-models";
 
 const PAYMENT_METHODS_TABLE_KEY = "pm";
 const ACCOUNTS_TABLE_KEY = "a";

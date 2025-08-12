@@ -1,18 +1,14 @@
-import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { db } from "../../../../state/localstorage/stores";
-import { Budget } from "../../../../models/core";
-import { goToPage, handleTap, URL } from "../../../../state/utils";
-import { CardButton } from "../../../elements";
 import { unstructuredValue } from "../../../../_kvdb";
+import { store } from "../../../../controllers/state";
+import { goToPage, handleTap, URL } from "../../../../controllers/utils";
+import { CardButton } from "../../../elements";
 
 type BudgetProps = {};
 
 export const Budgets = component<BudgetProps>(({}) => {
-  const budgets = signal<Budget[]>([]);
-
   const onMount = () => {
-    budgets.value = db.budgets.get();
+    store.initialize();
   };
 
   return m.Div({
@@ -20,7 +16,7 @@ export const Budgets = component<BudgetProps>(({}) => {
     children: [
       m.Div({
         children: m.For({
-          subject: budgets,
+          subject: store.budgets.list,
           map: (budget) =>
             m.Div({
               class: "ba bw1 br4 b--light-silver pa2 mb3",

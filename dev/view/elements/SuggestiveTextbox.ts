@@ -7,6 +7,7 @@ type SuggestiveTextboxProps = {
   textboxClasses?: string;
   placeholder?: string;
   disabled?: boolean;
+  error?: string;
   text?: string;
   suggestion?: string;
   onmount?: (currentElement: MHtmlElement<HTMLInputElement>) => void;
@@ -22,6 +23,7 @@ export const SuggestiveTextbox = component<SuggestiveTextboxProps>(
     textboxClasses,
     placeholder,
     disabled,
+    error,
     text,
     suggestion,
     onmount,
@@ -32,26 +34,36 @@ export const SuggestiveTextbox = component<SuggestiveTextboxProps>(
   }) => {
     return m.Div({
       class: tmpl`${cssClasses}`,
-      children: m.Div({
-        class: "relative",
-        children: [
-          m.Span({
-            class: tmpl`bn bg-transparent normal outline-0 relative absolute--fill themecol ${textboxClasses}`,
-            children: trap(suggestion).or("&nbsp;"),
-          }),
-          TextBox({
-            cssClasses: tmpl`pl0 bn bg-transparent normal outline-0 absolute absolute--fill ${textboxClasses}`,
-            placeholder,
-            disabled,
-            text,
-            onmount,
-            onchange,
-            onkeydown,
-            onfocus,
-            onblur,
-          }),
-        ],
-      }),
+      children: [
+        m.If({
+          subject: error,
+          isTruthy: () =>
+            m.Div({
+              class: "red f8",
+              children: error,
+            }),
+        }),
+        m.Div({
+          class: "relative",
+          children: [
+            m.Span({
+              class: tmpl`bn bg-transparent normal outline-0 relative absolute--fill themecol ${textboxClasses}`,
+              children: trap(suggestion).or("&nbsp;"),
+            }),
+            TextBox({
+              cssClasses: tmpl`pl0 bn bg-transparent normal outline-0 absolute absolute--fill ${textboxClasses}`,
+              placeholder,
+              disabled,
+              text,
+              onmount,
+              onchange,
+              onkeydown,
+              onfocus,
+              onblur,
+            }),
+          ],
+        }),
+      ],
     });
   }
 );

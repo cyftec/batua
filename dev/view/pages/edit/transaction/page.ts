@@ -1,6 +1,6 @@
 import { derive, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../../../state/localstorage/stores";
+import { db } from "../../../../controllers/state";
 import {
   Account,
   Tag,
@@ -8,9 +8,9 @@ import {
   TxnType,
   Txn,
   Payment,
-} from "../../../../models/core";
-import { isFutureDate } from "../../../../state/transforms";
-import { getLowercaseTagName, nameRegex } from "../../../../state/utils";
+} from "../../../../models/data-models";
+import { isFutureDate } from "../../../../controllers/transforms";
+import { getLowercaseTagName, nameRegex } from "../../../../controllers/utils";
 import { DateTimePicker, Label, Section, TextBox } from "../../../elements";
 import {
   unstructuredValue,
@@ -197,7 +197,7 @@ const onTagAdd = (text: string) => {
       console.log(tagName, selectedTags.value);
     } else return false;
   } else {
-    const newTag = db.tags.push(newUnstructuredRecord(tagName));
+    const newTag = db.tags.put(newUnstructuredRecord(tagName));
     allTags.value = [...allTags.value, { ...newTag, isSelected: true }];
   }
 
@@ -228,13 +228,13 @@ const onTxnSave = () => {
       (tt) => unstructuredValue(tt) === title.value
     );
     if (!existingTitle)
-      existingTitle = db.titles.push(newUnstructuredRecord(title.value));
+      existingTitle = db.titles.put(newUnstructuredRecord(title.value));
     const pmts: Payment[] = [];
     txnPayments.value.forEach((pmt) => {
-      const newPmt = db.payments.push(pmt);
+      const newPmt = db.payments.put(pmt);
       pmts.push(newPmt);
     });
-    db.txns.push({
+    db.txns.put({
       id: 0,
       type: "balance update",
       date: txnDate.value,

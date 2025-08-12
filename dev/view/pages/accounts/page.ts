@@ -1,7 +1,8 @@
 import { effect, signal, trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
+import { store } from "../../../controllers/state";
+import { URL, getQueryParamValue, goToPage } from "../../../controllers/utils";
 import {
-  Account,
   DEPOSIT_ACCOUNT_TYPE,
   DepositAccount,
   EXPENSE_ACCOUNT_TYPE,
@@ -9,13 +10,10 @@ import {
   LOAN_ACCOUNT_TYPE,
   LoanAccount,
   PEOPLE_ACCOUNT_TYPE,
-  PaymentMethod,
   PeopleAccount,
   SHOP_ACCOUNT_TYPE,
   ShopAccount,
-} from "../../../models/core";
-import { db } from "../../../state/localstorage/stores";
-import { URL, getQueryParamValue, goToPage } from "../../../state/utils";
+} from "../../../models/data-models";
 import { HTMLPage, NavScaffold } from "../../components";
 import { TabBar } from "../../elements";
 import {
@@ -36,8 +34,6 @@ const header = trap([
   "My loan and deposit accounts",
   "Shops and people",
 ]).at(selectedTabIndex);
-const allPaymentMethods = signal<PaymentMethod[]>([]);
-const allAccounts = signal<Account[]>([]);
 const allExpenseAccounts = signal<ExpenseAccount[]>([]);
 const allLoanAccounts = signal<LoanAccount[]>([]);
 const allDepositAccounts = signal<DepositAccount[]>([]);
@@ -50,7 +46,7 @@ effect(() => {
   const depAccs: DepositAccount[] = [];
   const shopAccs: ShopAccount[] = [];
   const peopAccs: PeopleAccount[] = [];
-  allAccounts.value.forEach((acc) => {
+  store.accounts.list.value.forEach((acc) => {
     if (acc.type === EXPENSE_ACCOUNT_TYPE) expAccs.push(acc as ExpenseAccount);
     if (acc.type === LOAN_ACCOUNT_TYPE) laonAccs.push(acc as LoanAccount);
     if (acc.type === DEPOSIT_ACCOUNT_TYPE) depAccs.push(acc as DepositAccount);
@@ -67,10 +63,7 @@ effect(() => {
 const onPageMount = () => {
   const queryParamTabId = getQueryParamValue("tab") || "";
   selectedTabIndex.value = queryParamTabId === "" ? 0 : +queryParamTabId;
-  allPaymentMethods.value = db.paymentMethods
-    .get()
-    .sort((a, b) => +b.isPermanent - +a.isPermanent);
-  allAccounts.value = db.accounts.get();
+  store.initialize();
 };
 
 export default HTMLPage({
@@ -85,7 +78,7 @@ export default HTMLPage({
             0: () =>
               m.Div([
                 ExpenseAccounts({ expenseAccounts: allExpenseAccounts }),
-                PaymentMethods({ paymentMethods: allPaymentMethods }),
+                PaymentMethods({ paymentMethods: store.paymentMethods.list }),
               ]),
             1: () =>
               FundAccounts({

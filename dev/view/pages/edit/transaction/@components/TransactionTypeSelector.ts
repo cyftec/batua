@@ -4,8 +4,8 @@ import {
   TXN_TYPE_SUBTYPE_MAP,
   TxnSubType,
   TxnType,
-} from "../../../../../models/core";
-import { capitalize } from "../../../../../state/utils";
+} from "../../../../../models/data-models";
+import { capitalize } from "../../../../../controllers/utils";
 import { PairSelect } from "../../../../elements";
 
 type TransactionTypeSelectorProps = {

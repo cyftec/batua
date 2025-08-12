@@ -1,6 +1,10 @@
 import { derive, op, PlainValue, signal, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { Account, Payment, PaymentMethod } from "../../../../../models/core";
+import {
+  Account,
+  Payment,
+  PaymentMethod,
+} from "../../../../../models/data-models";
 import { Icon, NumberBox, Select } from "../../../../elements";
 import { ID_KEY } from "../../../../../_kvdb";
 

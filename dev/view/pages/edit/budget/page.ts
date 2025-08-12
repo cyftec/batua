@@ -1,142 +1,32 @@
-import { derive, signal, trap } from "@cyftech/signal";
+import { trap } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { newUnstructuredRecord, unstructuredValue } from "../../../../_kvdb";
-import { Budget, Tag as TagModel } from "../../../../models/core";
-import { db } from "../../../../state/localstorage/stores";
-import { TIME_PERIODS } from "../../../../state/transforms";
-import {
-  deepTrimmedLowercase,
-  getLowercaseTagName,
-  nameRegex,
-} from "../../../../state/utils";
+import { unstructuredValue } from "../../../../_kvdb";
+import { getBudgetEditor } from "../../../../controllers/state";
+import { TIME_PERIODS } from "../../../../controllers/transforms";
 import { Tag, TagsList } from "../../../components";
 import { Label, NumberBox, Section, Select, TextBox } from "../../../elements";
 import { EditPage } from "../@components";
 
-const error = signal("");
-const budget = signal<Budget>({
-  id: 0,
-  title: "",
-  period: "Week",
-  amount: 0,
-  oneOf: [],
-  allOf: [],
-});
-const { title, period, amount, oneOf, allOf } = trap(budget).props;
-const editableBudget = signal<Budget | undefined>(undefined);
-const allTags = signal<TagModel[]>([]);
-const unSelectedTags = derive(() => {
-  const selectedTagNames = [
-    ...allOf.value.map(unstructuredValue),
-    ...oneOf.value.map(unstructuredValue),
-  ];
-  return allTags.value.filter(
-    (t) => !selectedTagNames.includes(unstructuredValue(t))
-  );
-});
-
-const onPageMount = (urlParams: URLSearchParams) => {
-  allTags.value = db.tags.get();
-  const budgetId = +(urlParams.get("id") || "");
-  if (!budgetId) return;
-  const fetchedBudget = db.budgets.get(budgetId);
-  if (!fetchedBudget) throw `No budget found in DB for id - ${budgetId}`;
-  editableBudget.value = fetchedBudget;
-};
-
-const resetError = () => (error.value = "");
-
-const onPeriodSelect = (index: number) => {
-  resetError();
-  budget.set({ period: TIME_PERIODS[index] });
-};
-
-const onTitleChange = (title: string) => {
-  resetError();
-  budget.set({ title });
-};
-
-const onAmountChange = (amount: number) => {
-  resetError();
-  budget.set({ amount });
-};
-
-const onTagSelect = (
-  tagIndex: number,
-  isSelected: boolean,
-  andOr: "and" | "or"
-) => {
-  resetError();
-  if (isSelected) {
-    const tag = unSelectedTags.value[tagIndex];
-    budget.set({
-      allOf: andOr === "and" ? [...allOf.value, tag] : allOf.value,
-      oneOf: andOr === "or" ? [...oneOf.value, tag] : oneOf.value,
-    });
-  } else {
-    const isAnd = andOr === "and";
-    let tag = isAnd ? allOf.value[tagIndex] : oneOf.value[tagIndex];
-    budget.set({
-      allOf: allOf.value.filter((t) =>
-        isAnd ? unstructuredValue(t) !== unstructuredValue(tag) : true
-      ),
-      oneOf: oneOf.value.filter((t) =>
-        isAnd ? true : unstructuredValue(t) !== unstructuredValue(tag)
-      ),
-    });
-  }
-};
-
-const onTagAdd = (
-  tagName: string,
-  isSelected: boolean,
-  andOr: "and" | "or"
-) => {
-  const tagsList = isSelected
-    ? unSelectedTags.value
-    : andOr === "and"
-    ? allOf.value
-    : oneOf.value;
-  const tagIndex = tagsList.findIndex((t) => unstructuredValue(t) === tagName);
-
-  if (tagIndex < 0) {
-    const newTagName = getLowercaseTagName(tagName);
-    try {
-      db.tags.push(newUnstructuredRecord(newTagName));
-    } catch (error) {
-      return false;
-    }
-    allTags.value = db.tags.get();
-    return true;
-  }
-  onTagSelect(tagIndex, isSelected, andOr);
-  return true;
-};
-
-const validateForm = () => {
-  let err = "";
-  if (!nameRegex.test(title.value)) err = "Invalid title for budget";
-  if (amount.value < 1) err = "Budget amount should be greater than zero";
-  if (allOf.value.length === 0 && oneOf.value.length === 0)
-    err = "Add at least one tag for this budget";
-  const existing = db.budgets.find(
-    (b) => deepTrimmedLowercase(b.title) === deepTrimmedLowercase(title.value)
-  );
-  if (existing) err = `Budget with similar name '${existing.title}' exists.`;
-  error.value = err;
-};
-
-const onBudgetSave = () => {
-  db.budgets.push(budget.value);
-};
+const {
+  onPageMount,
+  editableItemTitle,
+  itemProps: { title, period, amount, oneOf, allOf },
+  unSelectedTags,
+  error,
+  onChange,
+  onTagSelect,
+  onTagAdd,
+  onFormValidate,
+  onSave,
+} = getBudgetEditor();
 
 export default EditPage({
   error: error,
   editableItemType: "budget",
-  editableItemTitle: "",
+  editableItemTitle: editableItemTitle,
   onMount: onPageMount,
-  validateForm: validateForm,
-  onSave: onBudgetSave,
+  validateForm: onFormValidate,
+  onSave: onSave,
   content: m.Div([
     Section({
       title: "Basic details",
@@ -146,21 +36,21 @@ export default EditPage({
           anchor: "left",
           options: TIME_PERIODS,
           selectedOptionIndex: trap(TIME_PERIODS).indexOf(period),
-          onChange: onPeriodSelect,
+          onChange: (index) => onChange({ period: TIME_PERIODS[index] }),
         }),
         Label({ text: "Budget title" }),
         TextBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
           text: title,
           placeholder: "title of the budget",
-          onchange: onTitleChange,
+          onchange: (title) => onChange({ title }),
         }),
         Label({ text: "Budget limit" }),
         NumberBox({
           cssClasses: `w-100 ba bw1 br3 b--light-silver pa2`,
           num: amount,
           placeholder: "title of the budget",
-          onchange: onAmountChange,
+          onchange: (amount) => onChange({ amount }),
         }),
       ],
     }),

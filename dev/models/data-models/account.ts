@@ -8,11 +8,11 @@ import { PaymentMethod } from "./payment-method";
  * COMMON CONSTANTS
  */
 
-export const EXPENSE_ACCOUNT_TYPE = "expense" as const;
-export const LOAN_ACCOUNT_TYPE = "loan" as const;
-export const DEPOSIT_ACCOUNT_TYPE = "deposit" as const;
-export const SHOP_ACCOUNT_TYPE = "shop" as const;
-export const PEOPLE_ACCOUNT_TYPE = "people" as const;
+export const EXPENSE_ACCOUNT_TYPE = "expense";
+export const LOAN_ACCOUNT_TYPE = "loan";
+export const DEPOSIT_ACCOUNT_TYPE = "deposit";
+export const SHOP_ACCOUNT_TYPE = "shop";
+export const PEOPLE_ACCOUNT_TYPE = "people";
 
 export const ACCOUNT_TYPES_LIST = [
   EXPENSE_ACCOUNT_TYPE,

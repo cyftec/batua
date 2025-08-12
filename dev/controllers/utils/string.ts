@@ -19,5 +19,5 @@ export const getLowercaseTagName = (input: string): string => {
   return removeSpaces(input).toLowerCase();
 };
 
-export const areNamesSimilar = (str1: string, str2: string) =>
+export const areStringsSimilar = (str1: string, str2: string) =>
   deepTrimmedLowercase(str1) === deepTrimmedLowercase(str2);

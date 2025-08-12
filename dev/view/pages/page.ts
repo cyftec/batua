@@ -1,18 +1,12 @@
-import { signal } from "@cyftech/signal";
 import { m } from "@mufw/maya";
-import { db } from "../../state/localstorage/stores";
-import { Txn } from "../../models/core";
-import { URL, goToPage, handleTap } from "../../state/utils";
+import { unstructuredValue } from "../../_kvdb";
+import { store } from "../../controllers/state";
+import { URL, goToPage, handleTap } from "../../controllers/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";
 import { Button, Icon } from "../elements";
-import { unstructuredValue } from "../../_kvdb";
-
-const allTxns = signal<Txn[]>([]);
 
 const onPageMount = () => {
-  allTxns.value = db.txns
-    .get()
-    .sort((a, b) => b.date.getTime() - a.date.getTime());
+  store.initialize();
 };
 
 export default HTMLPage({
@@ -21,7 +15,7 @@ export default HTMLPage({
     header: "Transactions",
     content: m.Div({
       children: m.For({
-        subject: allTxns,
+        subject: store.txns.list,
         map: (txn) =>
           m.Div({
             class: "flex justify-between mb3",

@@ -1,6 +1,6 @@
 import { derive, dispose, op, tmpl } from "@cyftech/signal";
 import { Children, component, m } from "@mufw/maya";
-import { handleTap } from "../../state/utils";
+import { handleTap } from "../../controllers/utils";
 
 export type TagState = "selected" | "unselected" | "idle" | "error";
 

@@ -1,6 +1,6 @@
 import { derive, op, signal, tmpl, trap } from "@cyftech/signal";
 import { Child, component, m } from "@mufw/maya";
-import { handleTap } from "../../state/utils";
+import { handleTap } from "../../controllers/utils";
 import { Icon } from "./Icon";
 
 type TabbedSelectOption = {

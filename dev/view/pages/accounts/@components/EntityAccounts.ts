@@ -1,7 +1,7 @@
 import { component, m } from "@mufw/maya";
-import { URL, goToPage, handleTap } from "../../../../state/utils";
+import { URL, goToPage, handleTap } from "../../../../controllers/utils";
 import { CardButton, Section } from "../../../elements";
-import { PeopleAccount, ShopAccount } from "../../../../models/core";
+import { PeopleAccount, ShopAccount } from "../../../../models/data-models";
 
 type EntityAccountsProps = {
   allShopAccounts: ShopAccount[];

@@ -1,6 +1,6 @@
 import { dispose, tmpl, trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { handleTap } from "../../state/utils";
+import { handleTap } from "../../controllers/utils";
 
 type IconProps = {
   cssClasses?: string;

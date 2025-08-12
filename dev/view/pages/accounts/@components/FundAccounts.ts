@@ -1,7 +1,7 @@
 import { component, m } from "@mufw/maya";
-import { DepositAccount, LoanAccount } from "../../../../models/core";
+import { DepositAccount, LoanAccount } from "../../../../models/data-models";
 import { CardButton, Section } from "../../../elements";
-import { goToPage, URL } from "../../../../state/utils";
+import { goToPage, URL } from "../../../../controllers/utils";
 import { AccountCard } from "./AccountCard";
 
 type FundAccountsProps = {

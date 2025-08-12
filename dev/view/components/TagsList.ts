@@ -1,7 +1,7 @@
 import { derive, effect, op, signal, tmpl, trap } from "@cyftech/signal";
 import { component, m, MHtmlElement } from "@mufw/maya";
 import { Tag, TagState } from ".";
-import { deepTrimmedLowercase } from "../../state/utils";
+import { deepTrim, deepTrimmedLowercase } from "../../controllers/utils";
 import { CustomKeyDownEvent, SuggestiveTextbox } from "../elements";
 
 type TagsListProps = {
@@ -33,6 +33,7 @@ export const TagsList = component<TagsListProps>(
     tagsState,
   }) => {
     let textboxElem: MHtmlElement<HTMLInputElement>;
+    const error = signal("");
     const existingTag = signal("");
     const textboxText = signal("");
     const filteredTags = derive(() => {
@@ -65,16 +66,25 @@ export const TagsList = component<TagsListProps>(
     });
 
     const onTextboxKeydown = ({ key, text }: CustomKeyDownEvent) => {
+      error.value = "";
       textboxText.value = text;
       existingTag.value = "";
 
       if (key === "Backspace") suggestion.value = textboxText.value;
       if (key === "Enter" && textboxElem) {
-        const readyForAdd = hideSuggestion?.value
+        const extraWhitespaces =
+          textboxText.value !== deepTrim(textboxText.value);
+        if (extraWhitespaces) {
+          error.value = "Unnecessary whitespaces";
+          return;
+        }
+
+        const textboxTextValid = hideSuggestion?.value
           ? textboxText.value
           : textboxText.value && textboxText.value === suggestion.value;
 
-        if (onTagAdd && readyForAdd) {
+        if (onTagAdd && textboxTextValid) {
+          console.log(text);
           const addedSuccessfully = onTagAdd(text);
           if (!addedSuccessfully) {
             existingTag.value = text;
@@ -89,8 +99,8 @@ export const TagsList = component<TagsListProps>(
 
         textboxText.value = suggestionMatchRequired ? suggestion.value : "";
         textboxElem.value = suggestionMatchRequired ? suggestion.value : "";
-        textboxElem.focus();
       }
+      textboxElem.focus();
     };
 
     const onTagClick = (tagName: string) => {
@@ -103,25 +113,23 @@ export const TagsList = component<TagsListProps>(
     return m.Div({
       class: cssClasses,
       children: [
-        m.If({
-          subject: onTagAdd,
-          isTruthy: () =>
-            SuggestiveTextbox({
-              onmount: (tbElem) => (textboxElem = tbElem),
-              onkeydown: onTextboxKeydown,
-              cssClasses: tmpl`w-70 f6 ph2 pv1 br3 ba bw1 b--moon-gray ${tagClasses}`,
+        m.Div({
+          class: tmpl`w-100 flex flex-wrap ${tagsContainerClasses}`,
+          children: m.For({
+            subject: filteredTags,
+            n: 0,
+            nthChild: SuggestiveTextbox({
+              cssClasses: tmpl`w-60 f6 ph2 pv1 br3 ba bw1 b--moon-gray ${tagClasses}`,
               textboxClasses: tmpl`bn ${op(existingTag).ternary(
                 "red",
                 "black"
               )} `,
               placeholder: trap(placeholder).or("add new"),
+              error,
               suggestion: suggestionText,
+              onmount: (tbElem) => (textboxElem = tbElem),
+              onkeydown: onTextboxKeydown,
             }),
-        }),
-        m.Div({
-          class: tmpl`w-100 flex flex-wrap ${tagsContainerClasses}`,
-          children: m.For({
-            subject: filteredTags,
             map: (tag) => {
               const tagState = derive(() =>
                 existingTag.value === tag

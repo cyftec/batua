@@ -1,12 +1,4 @@
-import { getLastInteraction } from "../localstorage";
-import { NavbarLink } from "../../models";
-import { getMinutesInMS } from "./date-time";
-
-export const isLastInteractionLongBack = () => {
-  const now = new Date().getTime();
-  const lastIntrxn = getLastInteraction();
-  return now - lastIntrxn > getMinutesInMS(1);
-};
+import { NavbarLink } from "../../models/view-models";
 
 export const getNavbarRoutes = (urlPath: string): NavbarLink[] => {
   return [

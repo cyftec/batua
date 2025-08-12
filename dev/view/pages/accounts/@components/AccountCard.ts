@@ -5,11 +5,11 @@ import {
   CurrencyType,
   ExpenseAccount,
   PaymentMethod,
-} from "../../../../models/core";
-import { handleTap } from "../../../../state/utils";
+} from "../../../../models/data-models";
+import { handleTap } from "../../../../controllers/utils";
 import { Tag } from "../../../components";
 import { Icon } from "../../../elements";
-import { db } from "../../../../state/localstorage/stores";
+import { store } from "../../../../controllers/state";
 
 type AccountCardProps = {
   onTap?: () => void;
@@ -31,7 +31,7 @@ export const AccountCard = component<AccountCardProps>(
     );
 
     const onCardMount = () => {
-      const allPayments = db.payments.filter(
+      const allPayments = store.payments.filter(
         (p) => p.account.id === account.value.id
       );
       const balance = allPayments.reduce((s, p) => s + p.amount, 0);

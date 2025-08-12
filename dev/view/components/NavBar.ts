@@ -1,7 +1,7 @@
 import { compute, dispose, op, signal, tmpl } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { getNavbarRoutes } from "../../state/transforms";
-import { handleTap } from "../../state/utils";
+import { getNavbarRoutes } from "../../controllers/transforms";
+import { handleTap } from "../../controllers/utils";
 import { Icon } from "../elements";
 
 type NavBarProps = {

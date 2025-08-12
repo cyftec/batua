@@ -78,13 +78,23 @@ export const getExtendedValue = (
 };
 
 export const getForeignDbRecordIdValues = <ForeignDbRecord extends object>(
+  foreignTable: Table<DbRecord<any>>,
   extendedValue: WithID<ForeignDbRecord> | WithID<ForeignDbRecord>[] | undefined
 ) => {
   if (Array.isArray(extendedValue)) {
-    return extendedValue.map((rec) => rec.id);
+    return extendedValue.map((rec) => {
+      if (rec.id) return rec.id;
+      if (rec.id === undefined) throw "Invalid extended foreign values list";
+      const newCreatedRecord = foreignTable.put(rec);
+      return newCreatedRecord.id;
+    });
   }
-  if (typeof extendedValue === "object" && extendedValue !== null)
-    return extendedValue.id;
+  if (typeof extendedValue === "object" && extendedValue !== null) {
+    if (extendedValue.id) return extendedValue.id;
+    if (extendedValue.id === undefined) throw "Invalid extended foreign value";
+    const newCreatedRecord = foreignTable.put(extendedValue);
+    return newCreatedRecord.id;
+  }
   return extendedValue;
 };
 

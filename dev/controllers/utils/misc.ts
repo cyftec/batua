@@ -1,5 +1,4 @@
 import { phase } from "@mufw/maya/utils";
-import { updateInteractionTime } from "../localstorage";
 
 const vibrateOnTap = () => {
   if (!!window.navigator?.vibrate) {
@@ -10,7 +9,7 @@ const vibrateOnTap = () => {
 export const handleTap = (fn: ((...args: any[]) => any) | undefined) => {
   return (...args: any) => {
     if (fn) vibrateOnTap();
-    updateInteractionTime(new Date());
+    // updateInteractionTime(new Date());
     return fn && fn(...args);
   };
 };

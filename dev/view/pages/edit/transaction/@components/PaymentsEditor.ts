@@ -1,8 +1,7 @@
 import { signal } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { db } from "../../../../../state/localstorage/stores";
-import { Account, Payment } from "../../../../../models/core";
-import { areNamesSimilar, nameRegex } from "../../../../../state/utils";
+import { Account, Payment } from "../../../../../models/data-models";
+import { areStringsSimilar, nameRegex } from "../../../../../controllers/utils";
 import {
   DialogActionButtons,
   Link,
@@ -10,6 +9,7 @@ import {
   TextBox,
 } from "../../../../elements";
 import { PaymentTile } from "./PaymentTile";
+import { store } from "../../../../../controllers/state";
 
 type PaymentsEditorProps = {
   cssClasses?: string;
@@ -50,8 +50,8 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
         error.value = `Name should be alpha-numeric max 36 chars, should not repeat, start or end with (allowed) special chars.`;
         return;
       }
-      const existingAccount = db.accounts.find((acc) =>
-        areNamesSimilar(acc.name, peopleAccountName.value)
+      const existingAccount = store.accounts.find((acc) =>
+        areStringsSimilar(acc.name, peopleAccountName.value)
       );
       if (existingAccount) {
         error.value = `Account with name '${existingAccount.name}' already exists`;
@@ -63,7 +63,7 @@ export const PaymentsEditor = component<PaymentsEditorProps>(
     const onPeopleAccountAdd = () => {
       validate();
       if (error.value) return;
-      db.accounts.push({
+      store.accounts.save({
         id: 0,
         isPermanent: false,
         name: peopleAccountName.value,

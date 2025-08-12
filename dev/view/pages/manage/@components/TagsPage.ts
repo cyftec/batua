@@ -1,47 +1,60 @@
-import { signal, trap } from "@cyftech/signal";
+import { trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { db } from "../../../../state/localstorage/stores";
-import {
-  Account,
-  PaymentMethod,
-  Tag,
-  TXN_NECESSITIES,
-} from "../../../../models/core";
-import { getLowercaseTagName } from "../../../../state/utils";
+import { newUnstructuredRecord, unstructuredValue } from "../../../../_kvdb";
+import { store } from "../../../../controllers/state";
+import { getLowercaseTagName } from "../../../../controllers/utils";
+import { TXN_NECESSITIES } from "../../../../models/data-models";
 import { Section, TagsList } from "../../../components";
 import { Icon } from "../../../elements";
-import { unstructuredValue } from "../../../../_kvdb";
 import { TagCategory } from "./TagsCategory";
 
 type TagsPageProps = {};
 
 export const TagsPage = component<TagsPageProps>(({}) => {
-  const allAccounts = signal<Account[]>([]);
-  const allPaymentMethods = signal<PaymentMethod[]>([]);
-  const allTags = signal<Tag[]>([]);
-
   const onTagAdd = (newTag: string): boolean => {
     const newTagName = getLowercaseTagName(newTag);
-    const existingTag = db.tags.find(
+    const existingTag = store.tags.find(
       (tag) => unstructuredValue(tag) === newTagName
     );
     if (existingTag) return false;
-    db.tags.push(newTagName);
-    allTags.value = db.tags.get();
+    store.tags.save(newUnstructuredRecord(newTagName));
     return true;
   };
 
   const onTagsPageMount = () => {
-    allAccounts.value = db.accounts.get();
-    allPaymentMethods.value = db.paymentMethods.get();
-    allTags.value = db.tags
-      .get()
-      .sort((a, b) => unstructuredValue(a).localeCompare(unstructuredValue(b)));
+    store.initialize();
   };
 
   return m.Div({
     onmount: onTagsPageMount,
     children: [
+      Section({
+        title: "Meta Tags",
+        children: [
+          TagCategory({
+            cssClasses: "mb3",
+            icon: "flag",
+            title: "BASED ON NECESSITY",
+            tags: TXN_NECESSITIES.map((s) => getLowercaseTagName(s)),
+          }),
+          TagCategory({
+            cssClasses: "mb3",
+            icon: "account_balance",
+            title: "ACCOUNTS AS TAGS",
+            tags: trap(store.accounts.list).map((acc) =>
+              getLowercaseTagName(acc.name)
+            ),
+          }),
+          TagCategory({
+            cssClasses: "mb3",
+            icon: "credit_card",
+            title: "PAYMENT METHODS AS TAGS",
+            tags: trap(store.paymentMethods.list).map((pm) =>
+              getLowercaseTagName(pm.name)
+            ),
+          }),
+        ],
+      }),
       Section({
         title: "Customizable Tags",
         children: [
@@ -57,32 +70,7 @@ export const TagsPage = component<TagsPageProps>(({}) => {
             tagsState: "idle",
             hideSuggestion: true,
             tagClasses: "mt2 mr2",
-            tags: trap(allTags).map(unstructuredValue),
-          }),
-        ],
-      }),
-      Section({
-        title: "Meta Tags",
-        children: [
-          TagCategory({
-            cssClasses: "mb4",
-            icon: "flag",
-            title: "BASED ON NECESSITY",
-            tags: TXN_NECESSITIES.map((s) => getLowercaseTagName(s)),
-          }),
-          TagCategory({
-            cssClasses: "mb4",
-            icon: "account_balance",
-            title: "ACCOUNTS AS TAGS",
-            tags: trap(allAccounts).map((acc) => getLowercaseTagName(acc.name)),
-          }),
-          TagCategory({
-            cssClasses: "mb4",
-            icon: "credit_card",
-            title: "PAYMENT METHODS AS TAGS",
-            tags: trap(allPaymentMethods).map((pm) =>
-              getLowercaseTagName(pm.name)
-            ),
+            tags: trap(store.tags.list).map(unstructuredValue),
           }),
         ],
       }),
