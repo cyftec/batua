@@ -1,4 +1,4 @@
-import { createDb } from "../../_kvdb";
+import { createDb } from "@cyftec/kvdb";
 import {
   Account,
   Budget,

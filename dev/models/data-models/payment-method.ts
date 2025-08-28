@@ -1,4 +1,4 @@
-import { Structured } from "../../_kvdb";
+import { Structured } from "@cyftec/kvdb";
 import { CurrencyType } from "./currency";
 
 /**
@@ -30,6 +30,6 @@ export const NET_BANKING_PAYMENT_METHOD: PaymentMethod = {
 export const CASH_PAYMENT_METHOD: PaymentMethod = {
   id: 0,
   isPermanent: true,
-  name: "Notes & Coins",
+  name: "Coins & Notes",
   type: "physical",
 };

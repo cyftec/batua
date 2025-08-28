@@ -1,5 +1,5 @@
+import { DbRecord, DbRecordID } from "@cyftec/kvdb";
 import { DerivedSignal } from "@cyftech/signal";
-import { DbRecord, DbRecordID } from "../../_kvdb";
 
 export type NavbarLink = {
   label: string;

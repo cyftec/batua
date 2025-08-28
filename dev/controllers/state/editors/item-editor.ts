@@ -1,3 +1,4 @@
+import { DbRecord, DbRecordID } from "@cyftec/kvdb";
 import {
   derive,
   DerivedSignal,
@@ -5,7 +6,6 @@ import {
   SourceSignal,
   trap,
 } from "@cyftech/signal";
-import { DbRecord, DbRecordID } from "../../../_kvdb";
 import { DataStore, ItemEditor } from "../../../models/view-models";
 import { areStringsSimilar } from "../../utils";
 

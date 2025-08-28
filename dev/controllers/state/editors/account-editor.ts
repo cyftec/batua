@@ -1,17 +1,13 @@
+import { ID_KEY, newUnstructuredRecord, unstructuredValue } from "@cyftec/kvdb";
 import { derive, effect, signal, trap } from "@cyftech/signal";
-import {
-  ID_KEY,
-  newUnstructuredRecord,
-  unstructuredValue,
-} from "../../../_kvdb";
-import { store } from "../state";
-import { areStringsSimilar, nameRegex } from "../../utils";
 import {
   Account,
   ACCOUNT_TYPES_LIST,
   AccountType,
   CurrencyType,
 } from "../../../models/data-models";
+import { areStringsSimilar, nameRegex } from "../../utils";
+import { store } from "../state";
 import { getItemEditor } from "./item-editor";
 
 export const getAccountEditor = () => {

@@ -1,5 +1,5 @@
+import { unstructuredValue } from "@cyftec/kvdb";
 import { m } from "@mufw/maya";
-import { unstructuredValue } from "../../_kvdb";
 import { store } from "../../controllers/state";
 import { URL, goToPage, handleTap } from "../../controllers/utils";
 import { HTMLPage, NavScaffold, Tag } from "../components";

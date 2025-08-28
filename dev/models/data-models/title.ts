@@ -1,4 +1,4 @@
-import { newUnstructuredRecord, Unstructured } from "../../_kvdb";
+import { newUnstructuredRecord, Unstructured } from "@cyftec/kvdb";
 
 /**
  *

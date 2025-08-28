@@ -1,5 +1,5 @@
+import { DbRecord, DbRecordID } from "@cyftec/kvdb";
 import { derive, signal } from "@cyftech/signal";
-import { DbRecord, DbRecordID } from "../../../_kvdb";
 import { Table } from "../../../_kvdb/table";
 import { DataStore } from "../../../models/view-models";
 

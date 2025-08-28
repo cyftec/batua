@@ -50,9 +50,10 @@ export const config: KarmaConfig = {
   },
   packageJson: {
     dependencies: {
-      "@mufw/maya": "0.1.32",
+      "@cyftec/kvdb": "^0.1.1",
       "@cyftech/immutjs": "0.1.0",
       "@cyftech/signal": "0.1.15",
+      "@mufw/maya": "0.1.32",
     },
   },
   vscode: {

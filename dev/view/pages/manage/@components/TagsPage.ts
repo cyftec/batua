@@ -1,6 +1,6 @@
+import { newUnstructuredRecord, unstructuredValue } from "@cyftec/kvdb";
 import { trap } from "@cyftech/signal";
 import { component, m } from "@mufw/maya";
-import { newUnstructuredRecord, unstructuredValue } from "../../../../_kvdb";
 import { store } from "../../../../controllers/state";
 import { getLowercaseTagName } from "../../../../controllers/utils";
 import { TXN_NECESSITIES } from "../../../../models/data-models";

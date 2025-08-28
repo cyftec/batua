@@ -1,4 +1,4 @@
-import { Prettify, Structured } from "../../_kvdb";
+import { Prettify, Structured } from "@cyftec/kvdb";
 import { CurrencyType } from "./currency";
 import { PaymentMethod } from "./payment-method";
 

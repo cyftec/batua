@@ -1,4 +1,4 @@
-import { Structured } from "../../_kvdb";
+import { Structured } from "@cyftec/kvdb";
 import { Account } from "./account";
 import { PaymentMethod } from "./payment-method";
 

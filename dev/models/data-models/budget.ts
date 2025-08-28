@@ -1,4 +1,4 @@
-import { Structured } from "../../_kvdb";
+import { Structured } from "@cyftec/kvdb";
 import { TimePeriod } from "../../controllers/transforms";
 import { Tag } from "./tag";
 
